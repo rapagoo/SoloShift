@@ -46,7 +46,7 @@ cp .env.example .env.local
 3. Fill in:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
 4. Apply the SQL migration in your Supabase project.
 
@@ -68,3 +68,4 @@ npm run build
 
 - The app renders a setup card instead of crashing when Supabase env vars are missing.
 - Playwright smoke tests are included, but they only run meaningfully when `E2E_EMAIL` and `E2E_PASSWORD` are provided.
+

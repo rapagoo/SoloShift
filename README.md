@@ -1,79 +1,70 @@
-# SoloShift
+﻿# SoloShift
 
-혼자 공부하거나 취업 준비하는 사람이, 가상의 회사에 출근하듯 하루를 운영하는 자기관리 앱입니다.
+SoloShift is a web MVP for running a solo study or job-search day like a structured workday.
+It focuses on a simple loop:
 
-## 프로젝트 소개
-집에서 혼자 공부하거나 취업 준비를 하다 보면 다음과 같은 문제가 생기기 쉽습니다.
+- Check in
+- Set today's goal and first task
+- Change current status
+- Run focus sessions
+- Check out with a short review
+- Review daily and weekly history
 
-- 출근 감각이 없음
-- 소속감이 없음
-- 긴장감이 없음
-- 하루가 흐물흐물해짐
+## Stack
 
-SoloShift는 이 문제를 해결하기 위해 기획된 **가벼운 회사 롤플레잉 기반 온라인 출근 앱**입니다.
-사용자는 가상의 회사에 출근하듯 하루를 시작하고, 현재 업무 상태를 기록하고, 집중 세션을 수행하고, 퇴근 시 하루를 정리할 수 있습니다.
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Supabase Auth + Postgres
+- Vercel-ready deployment setup
 
-## 핵심 컨셉
-- **생산성 앱 + 가벼운 게임화**
-- 감시 도구가 아니라 **근무 감각을 만들어주는 자기관리 도구**
-- 재미 요소는 넣되, 사용자를 죄책감에 빠뜨릴 정도의 강한 압박은 지양
+## Implemented MVP
 
-## 핵심 기능(MVP)
-- 출근 / 퇴근 기록
-- 오늘 목표 / 첫 작업 설정
-- 현재 상태 변경
-- 집중 세션 진행
-- 퇴근 회고 작성
-- 주간 기록 대시보드
-- 캐릭터의 짧은 반응 대사
-- 간단한 포인트 시스템
+- Email/password login flow
+- First-run onboarding for nickname, timezone, and default check-in time
+- Dashboard at `/`
+- History view at `/history`
+- Check-in, status change, focus session, and check-out flows via server actions
+- Light gamification with point events and short company-style feedback
+- Supabase schema + RLS migration in `supabase/migrations/20260409_000001_soloshift_mvp.sql`
+- Unit tests, linting, and production build setup
 
-## 게임화 원칙
-- 세계관은 **가상의 회사**
-- 캐릭터가 출근/지각/퇴근 시 짧게 반응
-- 정시 출근, 집중 세션 완료, 목표 달성 등에 포인트 부여
-- 강한 처벌보다 **약한 페널티 + 자주 주는 보상** 구조 지향
+## Local Setup
 
-## MVP 범위에서 제외되는 기능
-- 사무실 꾸미기
-- 직급 시스템
-- 동료 NPC
-- 친구 / 스터디원 공유 기능
-- 도전 모드 / 랭킹
-- 엄격 모드 / 난이도 분리
+1. Install dependencies.
 
-위 기능들은 MVP 완성 후 확장 요소로 검토합니다.
+```bash
+npm install
+```
 
-## 타겟 사용자
-1차 타겟은 다음과 같습니다.
+2. Copy env values.
 
-- 혼자 취업 준비하는 사람
-- 집에서 공부하는 대학생 / 졸업생
-- 자격증 / 시험 준비생
+```bash
+cp .env.example .env.local
+```
 
-## 플랫폼 방향
-초기 버전은 **웹 앱 우선**으로 개발합니다.
+3. Fill in:
 
-이유:
-- 실제 사용 환경이 책상 앞 PC/노트북 중심
-- 상태 표시와 대시보드에 적합
-- Codex를 활용한 빠른 프로토타이핑에 유리
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-## 기술 스택(예상)
-- Frontend: Next.js
-- UI: Tailwind CSS
-- Backend / Auth / DB: Supabase
-- Deployment: Vercel
+4. Apply the SQL migration in your Supabase project.
 
-## 개발 방향
-- 먼저 코어 기능을 구현
-- 이후 캐릭터 반응과 보상 시스템 추가
-- 마지막으로 꾸미기, 직급, 도전 모드 등 확장 검토
+5. Run the app.
 
-## 문서
-- 1차 기획안: `solo_shift_planning_v1.md`
-- 와이어프레임 / 기능명세: 별도 문서 예정
+```bash
+npm run dev
+```
 
-## 비고
-이 프로젝트는 단순한 공부 기록 앱이 아니라,
-**무소속 개인 작업자에게 출근 감각과 하루의 구조를 제공하는 앱**을 목표로 합니다.
+## Verification
+
+```bash
+npm run lint
+npm test
+npm run build
+```
+
+## Notes
+
+- The app renders a setup card instead of crashing when Supabase env vars are missing.
+- Playwright smoke tests are included, but they only run meaningfully when `E2E_EMAIL` and `E2E_PASSWORD` are provided.

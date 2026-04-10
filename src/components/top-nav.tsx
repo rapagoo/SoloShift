@@ -7,12 +7,16 @@ interface TopNavProps {
   current: "home" | "history" | "onboarding";
 }
 
-const navItems = [
+const baseNavItems = [
   { href: "/", label: "대시보드", key: "home" },
   { href: "/history", label: "기록 보기", key: "history" },
 ] as const;
 
 export function TopNav({ nickname, current }: TopNavProps) {
+  const navItems = current === "onboarding"
+    ? [{ href: "/onboarding", label: "초기 설정", key: "onboarding" }, ...baseNavItems]
+    : baseNavItems;
+
   return (
     <header className="mb-8 flex flex-col gap-4 rounded-[2rem] border border-[var(--line)] bg-white/70 px-5 py-4 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
       <div>

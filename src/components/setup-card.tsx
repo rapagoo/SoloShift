@@ -14,13 +14,13 @@ export function SetupCard() {
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
           <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code>,
-          <code>SUPABASE_SERVICE_ROLE_KEY</code>를 <code>.env.local</code>에 넣으면 로그인, 저장,
+          <code>SUPABASE_SECRET_KEY</code>를 <code>.env.local</code>에 넣으면 로그인, 저장,
           기록 조회가 모두 활성화됩니다.
         </p>
         <div className="mt-8 rounded-3xl bg-slate-950 p-5 text-sm text-slate-200">
           <pre className="overflow-x-auto whitespace-pre-wrap">NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
-SUPABASE_SERVICE_ROLE_KEY=...</pre>
+SUPABASE_SECRET_KEY=...</pre>
         </div>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button onClick={() => window.location.reload()} type="button">
@@ -31,4 +31,5 @@ SUPABASE_SERVICE_ROLE_KEY=...</pre>
     </div>
   );
 }
+
 

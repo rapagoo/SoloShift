@@ -18,16 +18,19 @@ It focuses on a simple loop:
 - Supabase Auth + Postgres
 - Vercel-ready deployment setup
 
-## Implemented MVP
+## MVP Status
+
+The core MVP day flow is implemented and usable:
 
 - Email/password login flow
-- First-run onboarding for nickname, timezone, and default check-in time
+- First-run onboarding
 - Dashboard at `/`
 - History view at `/history`
-- Check-in, status change, focus session, and check-out flows via server actions
+- Check-in, status change, focus session, and check-out flows
+- Dashboard profile editing for nickname, timezone, and default check-in time
 - Light gamification with point events and short company-style feedback
-- Supabase schema + RLS migration in `supabase/migrations/20260409_000001_soloshift_mvp.sql`
-- Unit tests, linting, and production build setup
+- Korean-labeled timezone picker and Korean auth messaging
+- Improved dashboard guidance and history readability
 
 ## Local Setup
 
@@ -36,6 +39,8 @@ It focuses on a simple loop:
 ```bash
 npm install
 ```
+
+On Windows PowerShell, `npm.cmd` may be more reliable than `npm` depending on execution policy.
 
 2. Copy env values.
 
@@ -47,7 +52,7 @@ cp .env.example .env.local
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_SECRET_KEY`
 
 4. Apply the SQL migration in your Supabase project.
 
@@ -65,8 +70,16 @@ npm test
 npm run build
 ```
 
+## Docs
+
+- `docs/STATUS.md`: current project state
+- `docs/NEXT_STEPS.md`: remaining QA and post-MVP backlog
+- `docs/WORK_LOG.md`: dated implementation history
+- `docs/PLAN.md`: cleaned MVP plan reference
+
 ## Notes
 
-- The app renders a setup card instead of crashing when Supabase env vars are missing.
+- The app renders a setup card instead of crashing when required Supabase env vars are missing.
 - Playwright smoke tests are included, but they only run meaningfully when `E2E_EMAIL` and `E2E_PASSWORD` are provided.
+- Server writes use the Supabase secret key on the server only. Never expose `SUPABASE_SECRET_KEY` in the browser.
 

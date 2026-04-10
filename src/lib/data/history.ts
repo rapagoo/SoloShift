@@ -25,9 +25,9 @@ export async function getWeeklySummary(
   const currentLocalDate = getCurrentLocalDate(profile.timezone);
   const weekStart = startOfWeek(parseISO(currentLocalDate), { weekStartsOn: 1 });
   const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-  const start = weekStart.toISOString().slice(0, 10);
-  const end = weekEnd.toISOString().slice(0, 10);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const start = format(weekStart, "yyyy-MM-dd");
+  const end = format(weekEnd, "yyyy-MM-dd");
 
   const { data: workdays } = await supabase
     .from("workdays")
@@ -165,4 +165,3 @@ function averageClock(values: number[]) {
   const average = Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
   return minutesToClockLabel(average);
 }
-

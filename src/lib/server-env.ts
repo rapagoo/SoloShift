@@ -3,7 +3,7 @@
 import { getPublicEnv } from "@/lib/env";
 
 const serverEnvSchema = z.object({
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  SUPABASE_SECRET_KEY: z.string().min(1),
 });
 
 export function getServerEnv() {
@@ -14,7 +14,7 @@ export function getServerEnv() {
   }
 
   const serverEnv = serverEnvSchema.safeParse({
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
   });
 
   if (!serverEnv.success) {
@@ -25,7 +25,7 @@ export function getServerEnv() {
     success: true as const,
     data: {
       ...publicEnv.data,
-      SUPABASE_SERVICE_ROLE_KEY: serverEnv.data.SUPABASE_SERVICE_ROLE_KEY,
+      SUPABASE_SECRET_KEY: serverEnv.data.SUPABASE_SECRET_KEY,
     },
   };
 }
@@ -43,4 +43,5 @@ export function requireServerEnv() {
 
   return parsed.data;
 }
+
 

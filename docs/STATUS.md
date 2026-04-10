@@ -1,20 +1,21 @@
-# SoloShift Status
+﻿# SoloShift Status
 
-Last updated: 2026-04-09
+Last updated: 2026-04-10
 
 ## Snapshot
 
-SoloShift is no longer in a docs-only planning state. The project now has a working MVP skeleton built with Next.js, Supabase Auth/Postgres, and Tailwind CSS.
+SoloShift is now past the “skeleton only” stage. The MVP day flow is implemented end-to-end and polished enough to be treated as the current product baseline.
 
-The core user loop is implemented:
+The current MVP loop supports:
 
-- Email signup and login
-- First-run onboarding
-- Check in
-- Change current status
-- Start and finish focus sessions
-- Check out with a daily review
-- View daily and weekly history
+- email signup and login
+- onboarding
+- check-in
+- current status changes
+- focus session start and finish
+- check-out with daily review
+- daily and weekly history review
+- profile editing from the dashboard
 
 ## Implemented
 
@@ -25,14 +26,25 @@ The core user loop is implemented:
 - Dashboard page at `/`
 - History page at `/history`
 - Modal-based workday actions from the dashboard
+- Dashboard profile edit modal for nickname, timezone, and default check-in time
+
+### UX polish
+
+- Korean timezone dropdown with readable labels
+- Korean auth error messages for common login/signup failures
+- Top navigation that keeps the current page visible
+- Dashboard “flow snapshot” guidance for the next action
+- Sidebar states for before check-in, in-progress workdays, and checked-out workdays
+- More readable history cards with labeled status logs, focus sessions, and point events
 
 ### Data and backend
 
-- Supabase environment-based connection
+- Supabase public and server environment handling
 - Supabase Auth email/password flow
 - Postgres schema and RLS policies
 - Server actions for auth, profile, and workday flow
 - UTC timestamp storage with profile timezone-based local date grouping
+- Weekly summary date-range calculation updated to use local-date-safe formatting
 
 ### Workday logic
 
@@ -54,14 +66,14 @@ The core user loop is implemented:
 
 ## Verified
 
-The following checks passed during implementation:
+The following checks passed on the current codebase:
 
 - `npx tsc --noEmit`
 - `npm run lint`
 - `npm test`
 - `npm run build`
 
-Manual smoke testing has also started. The current feedback is that the overall skeleton is in place, while polish and refinement are still needed.
+User-driven smoke testing has also been started in a real Supabase/Vercel setup.
 
 ## Current Setup
 
@@ -69,31 +81,37 @@ Required local environment variables:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SECRET_KEY`
 
 Current database setup file:
 
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`
 
-## Known Gaps
+## Remaining Gaps
 
-- Dashboard profile edit UI is not implemented yet
-- UI polish and copy refinement are still needed across the app
-- E2E test spec exists, but full real-account execution has not been completed
-- History/status presentation can be made more readable
-- Error handling is functional but still basic in places
+There are no known blockers left in the MVP day-flow implementation itself.
 
-## Next Priorities
+The main remaining work is now outside the core implementation pass:
 
-1. Improve dashboard and history UI polish for real daily use.
-2. Add profile edit controls on the dashboard.
-3. Expand validation and empty/error states for smoother UX.
-4. Run a fuller end-to-end test pass against a real Supabase project.
-5. Tighten mobile layout and interaction details.
+- run full manual verification from a fresh account in the deployed environment
+- test both email-confirmation-on and email-confirmation-off auth flows
+- run real-account E2E verification against the connected Supabase project
+- define the next architecture step for office/NPC/conversation expansion
+
+## Documentation Process
+
+After each meaningful development pass, update these files together:
+
+- `docs/STATUS.md`
+- `docs/NEXT_STEPS.md`
+- `docs/WORK_LOG.md`
 
 ## Useful Files
 
 - `README.md`: local setup and run instructions
-- `docs/PLAN.md`: agreed MVP plan and delivery order
-- `docs/NEXT_STEPS.md`: current implementation checklist for the next pass
+- `docs/PLAN.md`: cleaned MVP scope and delivery order
+- `docs/NEXT_STEPS.md`: current QA and post-MVP checklist
+- `docs/WORK_LOG.md`: dated implementation history
 - `docs/solo_shift_planning_v1.md`: original product planning document
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`: schema and RLS setup
+

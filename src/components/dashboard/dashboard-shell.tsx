@@ -10,7 +10,10 @@ import {
   finishFocusSessionAction,
   startFocusSessionAction,
 } from "@/app/actions/workday";
+import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
+import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { EmptyState } from "@/components/empty-state";
+import { ProfileForm } from "@/components/onboarding/profile-form";
 import { Button } from "@/components/ui/button";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +29,7 @@ const statusLabelMap = Object.fromEntries(
   STATUS_OPTIONS.map((option) => [option.value, option.label]),
 );
 
-type ModalKey = "checkin" | "status" | "focus" | "finish" | "checkout" | null;
+type ModalKey = "checkin" | "status" | "focus" | "finish" | "checkout" | "profile" | null;
 
 interface DashboardShellProps {
   profile: Profile;
@@ -35,6 +38,7 @@ interface DashboardShellProps {
 
 export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
   const [openModal, setOpenModal] = useState<ModalKey>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [checkInState, checkInFormAction] = useActionState(checkInAction, initialState);
   const [statusState, statusFormAction] = useActionState(changeStatusAction, initialState);
@@ -89,7 +93,8 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
     statusState.message ||
     focusState.message ||
     finishState.message ||
-    checkoutState.message;
+    checkoutState.message ||
+    notice;
 
   const statusOptions = useMemo(
     () => STATUS_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
@@ -126,6 +131,15 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
           </div>
         </div>
       </section>
+
+      <DashboardOverview
+        activeStatus={dashboard.active_status}
+        hasFocusSession={dashboard.focus_sessions.length > 0}
+        isCheckedOut={Boolean(workday?.check_out_at)}
+        onOpenProfile={() => setOpenModal("profile")}
+        profile={profile}
+        workday={workday}
+      />
 
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-6">
@@ -293,68 +307,31 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
           </div>
         </div>
 
-        <aside className="space-y-6">
-          <section className="rounded-[2rem] border border-[var(--line)] bg-white/75 p-5 shadow-sm">
-            <h3 className="font-['Space_Grotesk'] text-2xl font-semibold text-slate-950">
-              오늘 집중 세션
-            </h3>
-            <div className="mt-4 space-y-3">
-              {dashboard.focus_sessions.length === 0 ? (
-                <EmptyState
-                  description="25분 또는 50분 세션으로 오늘의 리듬을 만드세요."
-                  title="집중 세션 기록이 없습니다."
-                />
-              ) : (
-                dashboard.focus_sessions.map((session) => (
-                  <div className="rounded-3xl bg-slate-900/5 px-4 py-3" key={session.id}>
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="font-medium text-slate-900">
-                          {session.is_completed ? "완료 세션" : session.end_at ? "중단 세션" : "진행 중 세션"}
-                        </p>
-                        <p className="mt-1 text-sm text-slate-500">
-                          {formatTimeOnly(session.start_at, profile.timezone)}
-                          {session.end_at
-                            ? ` - ${formatTimeOnly(session.end_at, profile.timezone)}`
-                            : " - 진행 중"}
-                        </p>
-                      </div>
-                      <span className="rounded-full bg-white px-3 py-1 text-sm text-slate-700">
-                        {session.end_at ? `${session.duration_minutes}분` : `목표 ${session.duration_minutes}분`}
-                      </span>
-                    </div>
-                    {session.memo ? (
-                      <p className="mt-3 text-sm leading-6 text-slate-500">{session.memo}</p>
-                    ) : null}
-                  </div>
-                ))
-              )}
-            </div>
-          </section>
-
-          <section className="rounded-[2rem] border border-[var(--line)] bg-white/75 p-5 shadow-sm">
-            <h3 className="font-['Space_Grotesk'] text-2xl font-semibold text-slate-950">
-              퇴근 준비
-            </h3>
-            <p className="mt-3 text-sm leading-6 text-slate-500">
-              오늘 막판에 회고와 내일 첫 작업을 남기면 다음 출근 진입이 훨씬 쉬워집니다.
-            </p>
-            <div className="mt-4 grid gap-3">
-              <MiniRow label="퇴근 예정" value={workday?.check_out_at ? "완료" : "미완료"} />
-              <MiniRow label="내일 첫 작업" value={workday?.tomorrow_first_task ?? "아직 없음"} />
-              <MiniRow label="기록 화면" value="일간/주간 요약 확인 가능" />
-            </div>
-            <div className="mt-5">
-              <Link
-                className="inline-flex w-full items-center justify-center rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-50"
-                href="/history"
-              >
-                기록 화면 열기
-              </Link>
-            </div>
-          </section>
-        </aside>
+        <DashboardSidebar
+          currentStatusLabel={currentStatusLabel}
+          dashboard={dashboard}
+          profile={profile}
+        />
       </section>
+
+      <Modal
+        description="닉네임, 시간대, 출근 기준 시각을 바꾸면 이후 기록과 요약이 같은 기준으로 다시 계산됩니다."
+        onClose={() => setOpenModal(null)}
+        open={openModal === "profile"}
+        title="프로필 수정"
+      >
+        <ProfileForm
+          helperText="시간대와 기본 출근 시각은 이후 출근 판정과 기록 요약의 기준으로 사용됩니다."
+          onSaved={() => {
+            setNotice("프로필 설정을 저장했습니다.");
+            setOpenModal(null);
+          }}
+          pendingLabel="프로필 저장 중..."
+          profile={profile}
+          submitLabel="프로필 저장"
+          successRedirectTo={null}
+        />
+      </Modal>
 
       <Modal
         description="오늘 목표와 첫 작업을 적고 하루를 명시적으로 시작합니다."
@@ -566,3 +543,7 @@ function MiniRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+
+
+

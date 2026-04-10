@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 import { saveProfileAction } from "@/app/actions/profile";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
@@ -14,13 +15,53 @@ import {
 import { ActionState, Profile } from "@/lib/types";
 
 const initialState: ActionState = { ok: false };
+const DEFAULT_HELPER_TEXT =
+  "시간대와 기본 출근 시각은 정시/지각 판정과 일간/주간 요약의 기준으로 사용됩니다.";
 
 interface ProfileFormProps {
   profile: Profile | null;
+  submitLabel?: string;
+  pendingLabel?: string;
+  helperText?: string;
+  successRedirectTo?: string | null;
+  onSaved?: () => void;
 }
 
-export function ProfileForm({ profile }: ProfileFormProps) {
+export function ProfileForm({
+  profile,
+  submitLabel = "설정 저장하고 시작하기",
+  pendingLabel = "설정 저장 중...",
+  helperText = DEFAULT_HELPER_TEXT,
+  successRedirectTo = "/",
+  onSaved,
+}: ProfileFormProps) {
+  const router = useRouter();
+  const handledSuccessRef = useRef(false);
   const [state, formAction] = useActionState(saveProfileAction, initialState);
+
+  useEffect(() => {
+    if (!state.ok || handledSuccessRef.current) {
+      return;
+    }
+
+    handledSuccessRef.current = true;
+
+    if (onSaved) {
+      onSaved();
+    }
+
+    if (successRedirectTo) {
+      router.replace(successRedirectTo);
+    }
+
+    router.refresh();
+  }, [onSaved, router, state.ok, successRedirectTo]);
+
+  useEffect(() => {
+    if (!state.ok) {
+      handledSuccessRef.current = false;
+    }
+  }, [state.ok]);
 
   return (
     <form action={formAction} className="mt-8 space-y-5">
@@ -50,13 +91,15 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         </label>
       </div>
       <div className="rounded-[1.5rem] bg-slate-900/5 px-4 py-4 text-sm leading-7 text-slate-600">
-        MVP에서는 이 값으로 정시 출근과 지각 판정을 계산합니다. 나중에 대시보드에서 다시 바꿀 수 있습니다.
+        {helperText}
       </div>
       {state.error ? <p className="text-sm text-rose-600">{state.error}</p> : null}
+      {state.message && !successRedirectTo ? (
+        <p className="text-sm text-emerald-700">{state.message}</p>
+      ) : null}
       <div className="flex justify-end">
-        <FormSubmitButton idleLabel="설정 저장하고 시작하기" pendingLabel="설정 저장 중..." size="lg" />
+        <FormSubmitButton idleLabel={submitLabel} pendingLabel={pendingLabel} size="lg" />
       </div>
     </form>
   );
 }
-

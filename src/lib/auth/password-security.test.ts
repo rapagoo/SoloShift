@@ -1,4 +1,4 @@
-import { validatePasswordSecurity } from "@/lib/auth/password-security";
+﻿import { validatePasswordSecurity } from "@/lib/auth/password-security";
 
 describe("password security", () => {
   afterEach(() => {

@@ -1,59 +1,39 @@
-# SoloShift Next Steps
+﻿# SoloShift Next Steps
 
-Last updated: 2026-04-09
+Last updated: 2026-04-10
 
-## How To Use This File
+## Completed In The MVP 100% Pass
 
-Use this as the working checklist after reviewing `docs/STATUS.md`.
+- [x] Polish the dashboard layout for daily use.
+- [x] Polish the history page so status logs and point events are easier to scan.
+- [x] Clean up rough copy and helper text across login, onboarding, dashboard, and history.
+- [x] Add profile edit UI for nickname, timezone, and default check-in time.
+- [x] Improve mobile-friendly card stacking and dashboard guidance.
+- [x] Add clearer empty states for first-time users.
+- [x] Add clearer Korean error messages for common auth failures.
+- [x] Review modal flows so users always understand the next action.
+- [x] Re-check timezone-sensitive weekly summary calculations.
+- [x] Re-run `npm run lint`, `npm test`, and `npm run build` after the MVP polish pass.
 
-- Mark items as done when they are implemented and tested.
-- If scope changes, update this file first so the next session starts with the same assumptions.
-- Keep completed items for history until the next major milestone is reached.
+## External Verification Still Recommended
 
-## Immediate Tasks
-
-- [ ] Polish the dashboard layout for daily use.
-- [ ] Polish the history page so status logs and point events are easier to scan.
-- [ ] Clean up rough copy and helper text across login, onboarding, dashboard, and history.
-- [ ] Add profile edit UI for nickname, timezone, and default check-in time.
-- [ ] Improve mobile spacing and action layout on the main dashboard.
-
-## UX And Validation
-
-- [ ] Add clearer empty states for first-time users.
-- [ ] Add clearer error messages for failed auth, failed saves, and invalid workday actions.
-- [ ] Review modal flows so users always understand the next action.
-- [ ] Confirm check-in, focus, and checkout forms behave well after refresh or repeat clicks.
-
-## Data And Logic Checks
-
-- [ ] Re-check point rules against the latest product intent.
-- [ ] Verify late check-in scoring is still correct for 0 minutes, 1-10 minutes, and 11+ minutes late.
-- [ ] Verify five-day streak bonus behavior matches the intended reward cadence.
-- [ ] Review history summary calculations for timezone edge cases.
-
-## Test Pass
-
-- [ ] Run a full manual smoke test from signup to checkout.
-- [ ] Verify `/history` reflects the same-day actions correctly.
+- [ ] Run a full manual smoke test from signup to checkout in the deployed environment.
+- [ ] Verify `/history` reflects same-day actions correctly after a real workday pass.
 - [ ] Test with email confirmation enabled in Supabase.
 - [ ] Test with email confirmation disabled in Supabase.
 - [ ] Run E2E login and core flow tests against a real Supabase project.
-- [ ] Re-run `npm run lint`, `npm test`, and `npm run build` after the next UI pass.
 
-## Suggested Order
+## Post-MVP Product And Architecture
 
-1. Dashboard and history UI polish
-2. Profile edit UI
-3. Validation and error-state improvements
-4. Manual smoke test pass
-5. E2E test pass
+- [ ] Define the office/room/NPC/conversation data model for the next expansion phase.
+- [ ] Design how world events or activity-feed style interactions should be stored.
+- [ ] Decide whether future character interactions stay rule-based or move to AI-assisted generation.
+- [ ] Plan the first post-MVP release scope beyond the day-flow baseline.
 
-## Done When
+## Logging Rule
 
-This checklist can be considered complete for the current MVP pass when:
+Whenever a meaningful implementation change is shipped, update these files in the same pass:
 
-- The main dashboard feels stable and readable on desktop and mobile
-- Profile values can be updated without going through first-run onboarding
-- Manual end-to-end testing succeeds without confusion or broken states
-- Core automated verification passes again
+- `docs/STATUS.md`
+- `docs/NEXT_STEPS.md`
+- `docs/WORK_LOG.md`

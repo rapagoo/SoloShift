@@ -1,7 +1,6 @@
 ﻿"use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import { requireUser } from "@/lib/auth";
 import { getProfileFormValues, profileSchema } from "@/lib/profile-validation";
@@ -35,6 +34,6 @@ export async function saveProfileAction(
 
   revalidatePath("/");
   revalidatePath("/history");
-  redirect("/");
-}
 
+  return { ok: true, message: "프로필 설정을 저장했습니다." };
+}

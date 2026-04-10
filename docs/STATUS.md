@@ -99,6 +99,7 @@ The current product baseline now supports:
 - Online user list with current room and current work state
 - Same-room coworker panel for the currently selected office room
 - Private-channel client config with authenticated-only `realtime.messages` policies
+- Realtime client now calls `supabase.realtime.setAuth()` before joining the private office Presence channel
 - Graceful error copy when the realtime channel cannot be joined because of missing auth or missing Realtime authorization
 - Shared presence state now drives both the room-switch cards and the right-side live panel so occupancy counts stay consistent
 - Room-switch cards and the top occupancy badge now show realtime connection state instead of falling back to misleading static counts when presence is unavailable

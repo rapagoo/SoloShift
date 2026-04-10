@@ -43,7 +43,8 @@ export function useOfficePresence({
   });
 
   useEffect(() => {
-    const channel = supabase.channel(topic, {
+    let cancelled = false;
+    let channel = supabase.channel(topic, {
       config: {
         private: true,
         presence: {
@@ -53,41 +54,65 @@ export function useOfficePresence({
     });
 
     const handleSync = () => {
+      if (cancelled) {
+        return;
+      }
+
       syncPresence(channel.presenceState<OfficePresencePayload>());
     };
 
-    channel
-      .on("presence", { event: "sync" }, handleSync)
-      .on("presence", { event: "join" }, handleSync)
-      .on("presence", { event: "leave" }, handleSync)
-      .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          setConnectionState("live");
-          await channel.track({
-            userId: profile.id,
-            nickname: profile.nickname,
-            roomId: currentRoomId,
-            topLevelState,
-            statusLabel,
-            onlineAt: new Date().toISOString(),
-          });
-          handleSync();
+    void (async () => {
+      try {
+        await supabase.realtime.setAuth();
+
+        if (cancelled) {
           return;
         }
 
-        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        channel
+          .on("presence", { event: "sync" }, handleSync)
+          .on("presence", { event: "join" }, handleSync)
+          .on("presence", { event: "leave" }, handleSync)
+          .subscribe(async (status) => {
+            if (cancelled) {
+              return;
+            }
+
+            if (status === "SUBSCRIBED") {
+              setConnectionState("live");
+              await channel.track({
+                userId: profile.id,
+                nickname: profile.nickname,
+                roomId: currentRoomId,
+                topLevelState,
+                statusLabel,
+                onlineAt: new Date().toISOString(),
+              });
+              handleSync();
+              return;
+            }
+
+            if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+              setMembers([]);
+              setConnectionState("error");
+              return;
+            }
+
+            if (status === "CLOSED") {
+              setMembers([]);
+              setConnectionState("connecting");
+            }
+          });
+      } catch {
+        if (!cancelled) {
           setMembers([]);
           setConnectionState("error");
-          return;
         }
-
-        if (status === "CLOSED") {
-          setMembers([]);
-          setConnectionState("connecting");
-        }
-      });
+      }
+    })();
 
     return () => {
+      cancelled = true;
       void supabase.removeChannel(channel);
     };
   }, [

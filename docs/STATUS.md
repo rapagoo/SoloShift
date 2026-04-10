@@ -103,6 +103,7 @@ The current product baseline now supports:
 - Graceful error copy when the realtime channel cannot be joined because of missing auth or missing Realtime authorization
 - Shared presence state now drives both the room-switch cards and the right-side live panel so occupancy counts stay consistent
 - Room-switch cards and the top occupancy badge now show realtime connection state instead of falling back to misleading static counts when presence is unavailable
+- The live panel now surfaces more specific private-channel error detail so auth/session problems are easier to distinguish from policy problems
 
 ## Verified
 

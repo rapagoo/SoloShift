@@ -29,7 +29,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
     name: room.name,
     shortLabel: room.shortLabel,
   }));
-  const { members, roomCounts, connectionState } = useOfficePresence({
+  const { members, roomCounts, connectionState, errorDetail } = useOfficePresence({
     currentRoomId: currentRoom.id,
     profile: { id: profile.id, nickname: profile.nickname },
     roomOptions,
@@ -228,6 +228,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
           <OfficePresencePanel
             currentRoomId={currentRoom.id}
             connectionState={connectionState}
+            errorDetail={errorDetail}
             members={members}
             roomCounts={roomCounts}
             roomOptions={roomOptions}

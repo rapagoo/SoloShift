@@ -15,6 +15,7 @@ interface OfficePresencePanelProps {
   members: OfficePresenceMember[];
   roomCounts: Record<OfficeRoomId, number>;
   connectionState: OfficeRealtimeConnectionState;
+  errorDetail?: string | null;
 }
 
 export function OfficePresencePanel({
@@ -23,6 +24,7 @@ export function OfficePresencePanel({
   members,
   roomCounts,
   connectionState,
+  errorDetail,
 }: OfficePresencePanelProps) {
   const others = members.filter((member) => !member.self);
   const currentRoomOthers = others.filter((member) => member.roomId === currentRoomId);
@@ -80,6 +82,11 @@ export function OfficePresencePanel({
             <p className="mt-3 text-sm leading-6 text-rose-600">
               실시간 오피스 채널에 연결하지 못했습니다. 로그인 상태와 Supabase Realtime
               authorization 정책을 확인해주세요.
+              {errorDetail ? (
+                <span className="mt-2 block rounded-xl bg-rose-50 px-3 py-2 text-xs leading-5 text-rose-700">
+                  {errorDetail}
+                </span>
+              ) : null}
             </p>
           ) : currentRoomOthers.length === 0 ? (
             <p className="mt-3 text-sm leading-6 text-slate-500">

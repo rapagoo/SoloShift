@@ -141,6 +141,7 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Corrected the docs to explicitly include `20260410_000002_security_hardening.sql` in the recommended migration order.
 - Updated the office room-switch and top occupancy labels so failed realtime joins show connection-state messaging instead of stale static headcounts.
 - Added an explicit `supabase.realtime.setAuth()` call before subscribing so private Presence channels can authorize against the current browser session more reliably.
+- Added more specific client-side error detail for private Presence joins so session-token failures and policy failures are easier to diagnose during QA.
 
 ### Verification
 

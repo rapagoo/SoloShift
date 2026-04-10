@@ -38,10 +38,14 @@ Last updated: 2026-04-10
 ## Post-MVP Product And Architecture
 
 - [x] Write the shared office vision and architecture baseline document.
-- [ ] Turn `docs/SHARED_OFFICE_VISION.md` into the first implementation slice for `/office`.
-- [ ] Finalize how office events should connect to the existing activity feed.
+- [x] Turn `docs/SHARED_OFFICE_VISION.md` into the first implementation slice for `/office`.
+- [x] Reuse existing workday, task, focus, and activity-feed data as the first office preview data source.
+- [ ] QA `/office` in the deployed environment across before-check-in, active-focus, and checked-out states.
+- [ ] Decide whether the next office pass should stay config-driven or introduce persistent office tables.
+- [ ] Add office-side event storage so room reactions can outgrow the personal activity feed.
 - [ ] Decide whether future character interactions stay rule-based or move to AI-assisted generation.
 - [ ] Plan the first post-MVP release scope beyond the day-flow baseline.
+- [ ] Define the smallest safe presence slice for showing other online users by room.
 
 ## Logging Rule
 

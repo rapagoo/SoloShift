@@ -95,6 +95,20 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Drafted the next-step data model for offices, rooms, memberships, NPCs, conversations, and office activity events.
 - Documented the recommended branching strategy for the shared-office implementation phase.
 
+### Phase 3A Office Preview Pass
+
+- Added `src/app/office/page.tsx` and a new `/office` route that follows the same auth/profile guard flow as the dashboard and history pages.
+- Added office-domain types, config, and data composition helpers so the office view can be powered by existing workday data without a new database schema.
+- Added `src/components/office/office-shell.tsx` to render:
+  - room switching
+  - room ambience panels
+  - NPC summaries
+  - short rule-based conversation threads
+  - an office pulse view based on tasks, focus time, points, and activity feed
+- Added office-domain tests covering room resolution and room-safe NPC conversation selection.
+- Extended the top navigation with an `오피스` entry so the first shared-office slice is reachable from the main product shell.
+- Synced the office branch with a pending-copy fix by restoring plain Korean loading messages in the dashboard modals.
+
 ### Verification
 
 - `npx tsc --noEmit`

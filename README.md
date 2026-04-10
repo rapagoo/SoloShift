@@ -1,7 +1,7 @@
 ﻿# SoloShift
 
 SoloShift is a web MVP for running a solo study or job-search day like a structured workday.
-It now covers the full day loop plus a first post-MVP foundation layer for tasks and activity tracking.
+It now covers the full day loop, a task/activity foundation layer, and the first shared-office preview slice.
 
 ## Core Loop
 
@@ -12,6 +12,8 @@ It now covers the full day loop plus a first post-MVP foundation layer for tasks
 - Add and update tasks
 - Check out with a short review
 - Review daily and weekly history
+- Enter the office preview and switch rooms
+- Open rule-based NPC conversations based on the current day state
 
 ## Stack
 
@@ -28,6 +30,7 @@ The core MVP day flow is implemented and usable:
 - Email/password login flow
 - First-run onboarding
 - Dashboard at `/`
+- Office preview at `/office`
 - History view at `/history`
 - Check-in, status change, focus session, and check-out flows
 - Dashboard profile editing for nickname, timezone, and default check-in time
@@ -36,6 +39,7 @@ The core MVP day flow is implemented and usable:
 - Task board for the current workday
 - Activity feed for check-in, status, focus, task, and checkout events
 - Improved dashboard guidance and history readability
+- Office preview with room switching, NPC summaries, and short conversation threads
 
 ## Local Setup
 
@@ -65,6 +69,8 @@ At minimum, a fresh project should apply:
 
 - `20260409_000001_soloshift_mvp.sql`
 - `20260410_000002_tasks_activity_feed.sql`
+
+The current `/office` preview does not require an extra migration yet.
 
 5. Run the app.
 

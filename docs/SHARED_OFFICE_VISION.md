@@ -86,6 +86,12 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 - 우선 room-level presence만 지원
 - 채팅은 최소화하거나 읽기 전용 반응 위주
 
+현재 진행 상태:
+
+- `/office`에 Presence 기반 온라인 패널 구현 완료
+- 같은 오피스 내 온라인 유저 수, 방별 인원 수, 현재 방 동료 목록 표시
+- 아직 private channel authorization, 채팅, room event persistence는 없음
+
 ### Phase 3C: 실시간 상호작용
 
 목표:
@@ -381,6 +387,8 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 3. `/office` 페이지 와이어프레임 구현
 4. NPC 반응 시스템 연결
 5. 그 다음에 Realtime presence 도입 여부 결정
+
+현재 코드베이스는 4번과 5번의 첫 미니 슬라이스까지 완료한 상태다. 다음 결정 지점은 `public presence preview를 유지할지` 혹은 `private channel + authorization policy`로 올릴지다.
 
 ## 성공 기준
 

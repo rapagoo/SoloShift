@@ -2,7 +2,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { EmptyState } from "@/components/empty-state";
+import { OfficePresencePanel } from "@/components/office/office-presence-panel";
 import { getStatusLabel } from "@/lib/constants";
+import { OFFICE_REALTIME_TOPIC } from "@/lib/office/config";
 import { OfficeExperience, OfficeNpcId, OfficeRoomId } from "@/lib/office/types";
 import { formatTimeOnly, formatTimestamp } from "@/lib/time";
 import { Profile } from "@/lib/types";
@@ -199,6 +201,19 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
         </div>
 
         <div className="space-y-6">
+          <OfficePresencePanel
+            currentRoomId={currentRoom.id}
+            profile={{ id: profile.id, nickname: profile.nickname }}
+            roomOptions={rooms.map((room) => ({
+              id: room.id,
+              name: room.name,
+              shortLabel: room.shortLabel,
+            }))}
+            statusLabel={activeStatus ? getStatusLabel(activeStatus.status_type) : null}
+            topLevelState={dashboard.top_level_state}
+            topic={OFFICE_REALTIME_TOPIC}
+          />
+
           <SectionPanel
             eyebrow="Conversation"
             title={

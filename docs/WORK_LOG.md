@@ -111,6 +111,15 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Applied a QA follow-up contrast fix so room-switch cards and NPC conversation CTA buttons remain readable on the office screen.
 - Applied a second office contrast sweep so strong badges, selected-room pills, conversation headers, user-message bubbles, and the dashboard-return CTA all use the same readable accent treatment.
 
+### Phase 3B Presence Preview Pass
+
+- Added `src/components/office/office-presence-panel.tsx` as a client-side realtime panel for `/office`.
+- Added `src/lib/office/presence.ts` and `src/lib/office/presence.test.ts` to normalize Supabase Presence state and derive room counts in a testable way.
+- Added a shared office realtime topic constant and new office presence payload/member types.
+- Wired `/office` to publish the current user’s nickname, room, and top-level work state into a Supabase Realtime Presence channel.
+- Added live room occupancy counts, a same-room coworker list, and an overall online-user panel to the office screen.
+- Added fallback copy for cases where the realtime channel fails, so the preview degrades more clearly in environments where public realtime access is restricted.
+
 ### Verification
 
 - `npx tsc --noEmit`

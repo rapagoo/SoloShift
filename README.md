@@ -1,7 +1,7 @@
 ﻿# SoloShift
 
 SoloShift is a web MVP for running a solo study or job-search day like a structured workday.
-It now covers the full day loop, a task/activity foundation layer, and the first shared-office preview slice.
+It now covers the full day loop, a task/activity foundation layer, a shared-office preview, and a light realtime presence layer.
 
 ## Core Loop
 
@@ -14,6 +14,7 @@ It now covers the full day loop, a task/activity foundation layer, and the first
 - Review daily and weekly history
 - Enter the office preview and switch rooms
 - Open rule-based NPC conversations based on the current day state
+- See who is online in the office and which room they are currently in
 
 ## Stack
 
@@ -40,6 +41,7 @@ The core MVP day flow is implemented and usable:
 - Activity feed for check-in, status, focus, task, and checkout events
 - Improved dashboard guidance and history readability
 - Office preview with room switching, NPC summaries, and short conversation threads
+- Light realtime presence on `/office` using Supabase Realtime Presence
 
 ## Local Setup
 
@@ -70,7 +72,7 @@ At minimum, a fresh project should apply:
 - `20260409_000001_soloshift_mvp.sql`
 - `20260410_000002_tasks_activity_feed.sql`
 
-The current `/office` preview does not require an extra migration yet.
+The current `/office` and presence previews do not require an extra migration yet.
 
 5. Run the app.
 
@@ -101,5 +103,6 @@ npm run build
 - Playwright smoke tests are included, but they only run meaningfully when `E2E_EMAIL` and `E2E_PASSWORD` are provided.
 - Server writes use the Supabase secret key on the server only. Never expose `SUPABASE_SECRET_KEY` in the browser.
 - If you already created a Supabase project before the task/activity pass, apply the second migration before testing the new dashboard sections.
+- The current presence preview assumes your project can join a Supabase Realtime channel from authenticated clients. If your project disables public Realtime channel access, the `/office` live panel will show a connection warning until private-channel authorization is added.
 
 

@@ -2,6 +2,7 @@
 
 export type OfficeRoomId = "lobby" | "focus-room" | "lounge";
 export type OfficeNpcId = "mina" | "jiho" | "sora";
+export type OfficeRealtimeConnectionState = "connecting" | "live" | "error";
 
 export interface OfficeRoomConfig {
   id: OfficeRoomId;
@@ -57,6 +58,20 @@ export interface OfficePulse {
   detail: string;
   stats: OfficePulseStat[];
   recentActivity: ActivityFeedEntry[];
+}
+
+export interface OfficePresencePayload {
+  userId: string;
+  nickname: string;
+  roomId: OfficeRoomId;
+  topLevelState: DashboardData["top_level_state"];
+  statusLabel: string | null;
+  onlineAt: string;
+}
+
+export interface OfficePresenceMember extends OfficePresencePayload {
+  self: boolean;
+  connectionCount: number;
 }
 
 export interface OfficeExperience {

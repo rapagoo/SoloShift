@@ -4,7 +4,7 @@ Last updated: 2026-04-10
 
 ## Snapshot
 
-SoloShift is now beyond the MVP-only baseline. The full day-flow MVP is complete, the task/activity foundation layer is in place, and the first shared-office slice has been implemented as a new `/office` experience.
+SoloShift is now beyond the MVP-only baseline. The full day-flow MVP is complete, the task/activity foundation layer is in place, and the shared-office branch now includes both the first `/office` slice and a light realtime presence preview.
 
 The current product baseline now supports:
 
@@ -18,6 +18,7 @@ The current product baseline now supports:
 - dashboard activity feed for the current day
 - daily and weekly history review
 - office room switching and rule-based NPC conversations at `/office`
+- realtime office presence showing who is online and which room they are in
 
 ## Implemented
 
@@ -33,6 +34,7 @@ The current product baseline now supports:
 - Task creation modal from the dashboard
 - Task status updates directly from the task board
 - Query-driven office room switching and NPC conversation panels
+- Live office presence panel powered by Supabase Realtime Presence
 
 ### UX polish
 
@@ -88,6 +90,14 @@ The current product baseline now supports:
 - QA follow-up contrast fix for office room cards and conversation CTA buttons
 - QA follow-up contrast sweep for office strong badges, conversation headers, user bubbles, and dashboard-return CTA
 
+### Shared office realtime preview
+
+- Supabase Realtime Presence channel for the shared office preview
+- Live room counts by lobby, focus room, and lounge
+- Online user list with current room and current work state
+- Same-room coworker panel for the currently selected office room
+- Graceful error copy when the realtime channel cannot be joined
+
 ## Verified
 
 The following checks passed on the current codebase:
@@ -112,7 +122,7 @@ Current database setup files:
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`
 - `supabase/migrations/20260410_000002_tasks_activity_feed.sql`
 
-No additional Supabase migration is required for the first `/office` preview slice.
+No additional Supabase migration is required for the current `/office` or realtime presence preview slices.
 
 ## Remaining Gaps
 
@@ -124,10 +134,11 @@ The main remaining work is now:
 - run a full manual smoke test from a fresh account in the deployed environment
 - verify `/history` reflects task and activity-feed updates correctly after a real workday pass
 - verify `/office` across before-check-in, active-focus, and checked-out states in the deployed environment
+- verify realtime presence with two or more real sessions in the deployed environment
 - test both email-confirmation-on and email-confirmation-off auth flows
 - run real-account E2E verification against the connected Supabase project
 - add persistent office-side data when the preview slice is ready to move beyond config-driven rooms and NPCs
-- decide how far the next pass should go between office event storage, richer NPC dialogue, and realtime presence
+- decide how far the next pass should go between office event storage, richer NPC dialogue, and private-channel presence authorization
 
 ## Documentation Process
 

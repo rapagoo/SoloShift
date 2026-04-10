@@ -6,10 +6,10 @@ import { TopNav } from "@/components/top-nav";
 import { getOptionalSession, isProfileComplete } from "@/lib/auth";
 import { getHistoryEntries, getWeeklySummary } from "@/lib/data/history";
 import { getProfileByUserId } from "@/lib/data/profile";
-import { hasSupabaseEnv } from "@/lib/env";
+import { hasServerSupabaseEnv } from "@/lib/server-env";
 
 export default async function HistoryPage() {
-  if (!hasSupabaseEnv()) {
+  if (!hasServerSupabaseEnv()) {
     return <SetupCard />;
   }
 
@@ -37,3 +37,4 @@ export default async function HistoryPage() {
     </main>
   );
 }
+

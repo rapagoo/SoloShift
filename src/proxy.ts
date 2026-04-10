@@ -1,10 +1,10 @@
 ﻿import { NextRequest } from "next/server";
 
-import { hasSupabaseEnv } from "@/lib/env";
+import { hasServerSupabaseEnv } from "@/lib/server-env";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function proxy(request: NextRequest) {
-  if (!hasSupabaseEnv()) {
+  if (!hasServerSupabaseEnv()) {
     return undefined;
   }
 

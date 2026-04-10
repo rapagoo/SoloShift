@@ -3,13 +3,13 @@
 import { getTodayDashboard } from "@/lib/data/dashboard";
 import { getProfileByUserId } from "@/lib/data/profile";
 import { getOptionalSession, isProfileComplete } from "@/lib/auth";
-import { hasSupabaseEnv } from "@/lib/env";
+import { hasServerSupabaseEnv } from "@/lib/server-env";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { SetupCard } from "@/components/setup-card";
 import { TopNav } from "@/components/top-nav";
 
 export default async function HomePage() {
-  if (!hasSupabaseEnv()) {
+  if (!hasServerSupabaseEnv()) {
     return <SetupCard />;
   }
 
@@ -34,3 +34,4 @@ export default async function HomePage() {
     </main>
   );
 }
+

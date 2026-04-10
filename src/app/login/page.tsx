@@ -2,12 +2,12 @@
 
 import { getProfileByUserId } from "@/lib/data/profile";
 import { getOptionalSession, isProfileComplete } from "@/lib/auth";
-import { hasSupabaseEnv } from "@/lib/env";
+import { hasServerSupabaseEnv } from "@/lib/server-env";
 import { AuthPanel } from "@/components/auth/auth-panel";
 import { SetupCard } from "@/components/setup-card";
 
 export default async function LoginPage() {
-  if (!hasSupabaseEnv()) {
+  if (!hasServerSupabaseEnv()) {
     return <SetupCard />;
   }
 
@@ -55,3 +55,4 @@ function Feature({ title, body }: { title: string; body: string }) {
     </div>
   );
 }
+

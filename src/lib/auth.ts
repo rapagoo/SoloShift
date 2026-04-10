@@ -1,11 +1,11 @@
 ﻿import { redirect } from "next/navigation";
 
-import { hasSupabaseEnv } from "@/lib/env";
 import { Profile } from "@/lib/types";
+import { hasServerSupabaseEnv } from "@/lib/server-env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function getOptionalSession() {
-  if (!hasSupabaseEnv()) {
+  if (!hasServerSupabaseEnv()) {
     return { user: null };
   }
 
@@ -32,3 +32,4 @@ export function isProfileComplete(profile: Profile | null) {
     profile?.nickname && profile?.timezone && profile?.default_check_in_time,
   );
 }
+

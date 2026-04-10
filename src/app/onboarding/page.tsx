@@ -1,22 +1,14 @@
 ﻿import { redirect } from "next/navigation";
 
-import { submitProfileAction } from "@/app/actions/profile";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { ProfileForm } from "@/components/onboarding/profile-form";
 import { SetupCard } from "@/components/setup-card";
 import { TopNav } from "@/components/top-nav";
 import { getOptionalSession, isProfileComplete } from "@/lib/auth";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_TIMEZONE,
-  TIMEZONE_OPTIONS,
-} from "@/lib/constants";
-import { hasSupabaseEnv } from "@/lib/env";
 import { getProfileByUserId } from "@/lib/data/profile";
+import { hasServerSupabaseEnv } from "@/lib/server-env";
 
 export default async function OnboardingPage() {
-  if (!hasSupabaseEnv()) {
+  if (!hasServerSupabaseEnv()) {
     return <SetupCard />;
   }
 
@@ -46,42 +38,9 @@ export default async function OnboardingPage() {
           닉네임, 시간대, 기본 출근 시각을 저장하면 정시/지각 판정과 기록 요약이 모두 같은 기준으로 동작합니다.
         </p>
 
-        <form action={submitProfileAction} className="mt-8 space-y-5">
-          <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">닉네임</span>
-            <Input defaultValue={profile?.nickname ?? ""} name="nickname" placeholder="예: Rapagoo" required />
-          </label>
-          <div className="grid gap-5 md:grid-cols-2">
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-700">시간대</span>
-              <Select defaultValue={profile?.timezone ?? DEFAULT_TIMEZONE} name="timezone" required>
-                {TIMEZONE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-700">기본 출근 시각</span>
-              <Input
-                defaultValue={profile?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME}
-                name="default_check_in_time"
-                required
-                type="time"
-              />
-            </label>
-          </div>
-          <div className="rounded-[1.5rem] bg-slate-900/5 px-4 py-4 text-sm leading-7 text-slate-600">
-            MVP에서는 이 값으로 정시 출근과 지각 판정을 계산합니다. 나중에 대시보드에서 다시 바꿀 수 있습니다.
-          </div>
-          <div className="flex justify-end">
-            <Button size="lg" type="submit">
-              설정 저장하고 시작하기
-            </Button>
-          </div>
-        </form>
+        <ProfileForm profile={profile} />
       </section>
     </main>
   );
 }
+

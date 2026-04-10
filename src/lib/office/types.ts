@@ -1,4 +1,4 @@
-﻿import { ActivityFeedEntry, DashboardData } from "@/lib/types";
+import { DashboardData, OfficeActivityEvent } from "@/lib/types";
 
 export type OfficeRoomId = "lobby" | "focus-room" | "lounge";
 export type OfficeNpcId = "mina" | "jiho" | "sora";
@@ -57,7 +57,7 @@ export interface OfficePulse {
   headline: string;
   detail: string;
   stats: OfficePulseStat[];
-  recentActivity: ActivityFeedEntry[];
+  recentActivity: OfficeActivityEvent[];
 }
 
 export interface OfficePresencePayload {

@@ -311,7 +311,15 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
                   {officePulse.recentActivity.map((item) => (
                     <li className="rounded-[1.25rem] bg-slate-900/5 px-4 py-3" key={item.id}>
                       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                        <span className="font-medium text-slate-900">{item.title}</span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-medium text-slate-900">{item.title}</span>
+                          <span className="rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-slate-600">
+                            {item.actor_nickname}
+                          </span>
+                          <span className="rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-slate-500">
+                            {getRoomShortLabel(item.room_id, roomOptions)}
+                          </span>
+                        </div>
                         <span className="text-slate-500">
                           {formatTimestamp(item.created_at, profile.timezone)}
                         </span>
@@ -380,7 +388,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
             <div className="mt-4 rounded-[1.5rem] bg-slate-900/5 px-4 py-4 text-sm leading-6 text-slate-600">
               {workday?.check_out_at
                 ? "퇴근 뒤에는 라운지와 회고 톤이 더 강해집니다. 다음 단계에서는 이 흐름이 실제 NPC 관계와 공간 이벤트로 이어집니다."
-                : "지금 단계의 오피스는 읽기 중심의 공간입니다. 다음 패스에서는 룸 이벤트 저장과 더 깊은 NPC 상호작용을 붙일 예정입니다."}
+                : "지금 단계의 오피스는 메인 오피스 이벤트를 쌓기 시작한 읽기 중심 공간입니다. 다음 패스에서는 룸 이벤트와 더 깊은 NPC 상호작용을 붙일 예정입니다."}
             </div>
           </SectionPanel>
         </div>
@@ -427,6 +435,13 @@ function getRealtimeOccupancyLabel(
   }
 
   return "실시간 연결 중";
+}
+
+function getRoomShortLabel(
+  roomId: OfficeRoomId,
+  roomOptions: { id: OfficeRoomId; name: string; shortLabel: string }[],
+) {
+  return roomOptions.find((room) => room.id === roomId)?.shortLabel ?? roomId;
 }
 
 function SectionPanel({

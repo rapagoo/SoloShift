@@ -122,6 +122,8 @@ export async function checkInAction(
     });
     await recordActivityEvent({
       workdayId: (createdWorkday as Workday).id,
+      userId: user.id,
+      actorNickname: profile.nickname,
       eventType: "check_in",
       title: "출근 기록",
       description: `오늘 목표: ${parsed.data.today_goal} · 첫 작업: ${parsed.data.today_first_task}`,
@@ -210,10 +212,13 @@ export async function changeStatusAction(
 
     await recordActivityEvent({
       workdayId: workdayBundle.workday.id,
+      userId: user.id,
+      actorNickname: profile.nickname,
       eventType: "status_changed",
       title: "상태 변경",
       description: `${getStatusLabel(parsed.data.status_type)} 상태로 전환했습니다.${parsed.data.memo ? ` 메모: ${parsed.data.memo}` : ""}`,
       meta: { statusType: parsed.data.status_type },
+      statusType: parsed.data.status_type,
     });
 
     revalidateAll();
@@ -275,6 +280,8 @@ export async function startFocusSessionAction(
 
     await recordActivityEvent({
       workdayId: workdayBundle.workday.id,
+      userId: user.id,
+      actorNickname: profile.nickname,
       eventType: "focus_session_started",
       title: "집중 세션 시작",
       description: `${parsed.data.duration_minutes}분 집중 세션을 시작했습니다.`,
@@ -359,6 +366,8 @@ export async function finishFocusSessionAction(
 
     await recordActivityEvent({
       workdayId: workdayBundle.workday.id,
+      userId: user.id,
+      actorNickname: profile.nickname,
       eventType: isCompleted ? "focus_session_completed" : "focus_session_interrupted",
       title: isCompleted ? "집중 세션 완료" : "집중 세션 중단",
       description: `${sessionPatch.duration_minutes}분 동안 ${isCompleted ? "집중을 완료했습니다." : "세션을 중단했습니다."}${parsed.data.memo ? ` 메모: ${parsed.data.memo}` : ""}`,
@@ -500,6 +509,8 @@ export async function checkOutAction(
 
     await recordActivityEvent({
       workdayId: workdayBundle.workday.id,
+      userId: user.id,
+      actorNickname: profile.nickname,
       eventType: "check_out",
       title: goalCompleted ? "목표 달성 퇴근" : "퇴근 기록",
       description: `회고를 저장하고 ${goalCompleted ? "목표 달성으로" : "일반"} 퇴근을 완료했습니다.`,

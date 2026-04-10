@@ -4,7 +4,7 @@ Last updated: 2026-04-10
 
 ## Snapshot
 
-SoloShift is now beyond the MVP-only baseline. The full day-flow MVP is complete, the task/activity foundation layer is in place, and the shared-office branch now includes the first `/office` slice plus a private authenticated realtime presence layer.
+SoloShift is now beyond the MVP-only baseline. The full day-flow MVP is complete, the task/activity foundation layer is in place, and the shared-office branch now includes the first `/office` slice, a private authenticated realtime presence layer, and a persistent office-side event timeline.
 
 The current product baseline now supports:
 
@@ -20,6 +20,7 @@ The current product baseline now supports:
 - office room switching and rule-based NPC conversations at `/office`
 - realtime office presence showing who is online and which room they are in
 - private authenticated-only office presence channels for signed-in users
+- shared office activity events that power the office pulse independently from the personal dashboard feed
 
 ## Implemented
 
@@ -57,7 +58,8 @@ The current product baseline now supports:
 - UTC timestamp storage with profile timezone-based local date grouping
 - Weekly summary date-range calculation updated to use local-date-safe formatting
 - Task and activity-feed schema with dedicated migration and RLS policies
-- Office preview data composed from existing workday, task, focus, and activity-feed records without a new schema yet
+- Office preview still keeps rooms and NPCs config-driven, while shared office pulse data now has a dedicated event schema
+- Dedicated `office_activity_events` storage for the main shared office, with authenticated read access and server-side writes
 
 ### Workday logic
 
@@ -87,9 +89,11 @@ The current product baseline now supports:
 - Rule-based room selection driven by current workday state
 - Three NPC personas with room-based summaries and short conversation threads
 - Office pulse panel that reframes task, focus, point, and activity-feed data as room ambience
+- Office pulse now reads from `office_activity_events` first, so recent room reactions are shared across signed-in users instead of being limited to the current user's dashboard feed
 - Office snapshot panel that links the new space view back to the current dashboard flow
 - QA follow-up contrast fix for office room cards and conversation CTA buttons
 - QA follow-up contrast sweep for office strong badges, conversation headers, user bubbles, and dashboard-return CTA
+- Office pulse cards now show actor nickname and room label for each shared office event
 
 ### Shared office realtime preview
 
@@ -115,6 +119,7 @@ The following checks passed on the current codebase:
 - `npm run build`
 
 User-driven smoke testing has also been started in a real Supabase/Vercel setup.
+The connected Supabase project now also has the private office-presence policies and `office_activity_events` table applied.
 
 ## Current Setup
 
@@ -130,6 +135,7 @@ Current database setup files:
 - `supabase/migrations/20260410_000002_security_hardening.sql`
 - `supabase/migrations/20260410_000002_tasks_activity_feed.sql`
 - `supabase/migrations/20260410_000003_office_private_presence.sql`
+- `supabase/migrations/20260410_000004_office_activity_events.sql`
 
 Recommended apply order:
 
@@ -137,6 +143,7 @@ Recommended apply order:
 2. `20260410_000002_security_hardening.sql`
 3. `20260410_000002_tasks_activity_feed.sql`
 4. `20260410_000003_office_private_presence.sql`
+5. `20260410_000004_office_activity_events.sql`
 
 There are two `20260410_000002_*` files, so follow the order above instead of relying on filename sorting alone.
 
@@ -146,17 +153,14 @@ There are no known blockers in the MVP day-flow itself.
 
 The main remaining work is now:
 
-- apply the second migration to any existing Supabase project that was created before the task/activity pass
 - run a full manual smoke test from a fresh account in the deployed environment
 - verify `/history` reflects task and activity-feed updates correctly after a real workday pass
 - verify `/office` across before-check-in, active-focus, and checked-out states in the deployed environment
 - verify realtime presence with two or more real sessions in the deployed environment
-- apply the security-hardening migration to any Supabase project that was created before that pass
-- apply the private-presence migration to any Supabase project that was created before this pass
+- verify that office pulse cards show shared events from more than one signed-in user after the new office-activity migration is applied
 - test both email-confirmation-on and email-confirmation-off auth flows
 - run real-account E2E verification against the connected Supabase project
-- add persistent office-side data when the preview slice is ready to move beyond config-driven rooms and NPCs
-- decide how far the next pass should go between office event storage, richer NPC dialogue, and `office_memberships`
+- decide how far the next pass should go between richer NPC dialogue, room-level broadcast interactions, and `office_memberships`
 
 ## Documentation Process
 
@@ -178,5 +182,6 @@ After each meaningful development pass, update these files together:
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`: MVP schema and RLS setup
 - `supabase/migrations/20260410_000002_tasks_activity_feed.sql`: tasks and activity feed schema
 - `supabase/migrations/20260410_000003_office_private_presence.sql`: authenticated-only private Realtime Presence policies for `/office`
+- `supabase/migrations/20260410_000004_office_activity_events.sql`: shared office event timeline for the single main office
 
 

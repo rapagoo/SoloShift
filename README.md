@@ -1,7 +1,7 @@
 ﻿# SoloShift
 
 SoloShift is a web MVP for running a solo study or job-search day like a structured workday.
-It now covers the full day loop, a task/activity foundation layer, a shared-office preview, and a private authenticated realtime presence layer.
+It now covers the full day loop, a task/activity foundation layer, a shared-office preview, a private authenticated realtime presence layer, and a first shared office-event timeline.
 
 ## Core Loop
 
@@ -42,6 +42,7 @@ The core MVP day flow is implemented and usable:
 - Improved dashboard guidance and history readability
 - Office preview with room switching, NPC summaries, and short conversation threads
 - Private authenticated office presence on `/office` using Supabase Realtime Presence
+- Shared office activity events that power the office pulse separately from the personal dashboard feed
 
 ## Local Setup
 
@@ -73,6 +74,7 @@ At minimum, a fresh project should apply:
 - `20260410_000002_security_hardening.sql`
 - `20260410_000002_tasks_activity_feed.sql`
 - `20260410_000003_office_private_presence.sql`
+- `20260410_000004_office_activity_events.sql`
 
 Note:
 
@@ -110,6 +112,8 @@ npm run build
 - Server writes use the Supabase secret key on the server only. Never expose `SUPABASE_SECRET_KEY` in the browser.
 - If you already created a Supabase project before the task/activity pass, apply both `20260410_000002_security_hardening.sql` and `20260410_000002_tasks_activity_feed.sql` before testing the newer dashboard sections.
 - If you already created a Supabase project before the private office-presence pass, apply the third migration before testing `/office`.
+- If you already created a Supabase project before the shared office-event pass, apply `20260410_000004_office_activity_events.sql` before expecting the office pulse to show shared event history.
 - `/office` now uses a private Presence topic. If the live panel shows an authorization warning, check the Realtime policies from `20260410_000003_office_private_presence.sql` and confirm the user is signed in.
+- `/office` falls back to the current user's dashboard activity feed if `office_activity_events` has not been created yet, but the intended baseline is the dedicated shared office-event timeline.
 
 

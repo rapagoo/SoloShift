@@ -70,7 +70,8 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 
 - `/office` 첫 화면 구현 완료
 - 룸 전환, NPC 카드, 규칙형 대화, 오피스 펄스 패널 구현 완료
-- 아직 DB 영속 저장, Realtime, 유저 간 상호작용은 없음
+- 메인 오피스 기준 `office_activity_events` 영속 저장 추가
+- 아직 다중 오피스, 유저 간 상호작용, 관계도 저장은 없음
 
 ### Phase 3B: 실시간 존재감 추가
 
@@ -90,7 +91,8 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 
 - `/office`에 Presence 기반 온라인 패널 구현 완료
 - 같은 오피스 내 온라인 유저 수, 방별 인원 수, 현재 방 동료 목록 표시
-- 아직 private channel authorization, 채팅, room event persistence는 없음
+- private authenticated-only Presence 전환 완료
+- 아직 채팅, room-level broadcast 상호작용, membership 기반 권한 분리는 없음
 
 ### Phase 3C: 실시간 상호작용
 
@@ -390,7 +392,7 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 6. private authenticated-only Presence로 보안 기준선 올리기
 7. 그 다음에 `office_memberships`가 필요한 시점을 판단하기
 
-현재 코드베이스는 6번까지 완료한 상태다. 다음 결정 지점은 `office_memberships`를 바로 붙일지, 아니면 먼저 office-side event storage와 더 깊은 NPC 반응부터 갈지 정하는 것이다.
+현재 코드베이스는 6번까지 완료했고, 메인 오피스 기준 `office_activity_events`도 붙은 상태다. 다음 결정 지점은 `office_memberships`를 바로 붙일지, 아니면 먼저 더 깊은 NPC 반응과 room-level interaction부터 갈지 정하는 것이다.
 
 `office_memberships`는 두 번째 오피스, 초대형 오피스, 팀 단위 visibility 분리가 필요해지는 시점에 도입하는 것이 가장 적절하다. private channel 전환의 상세 계획과 현재 기준선은 `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`를 기준으로 본다.
 

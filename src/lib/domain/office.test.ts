@@ -56,6 +56,7 @@ describe("office domain helpers", () => {
           memo: null,
         },
       }),
+      officeActivity: [],
       nickname: "서진",
       requestedRoomId: "focus-room",
       requestedNpcId: "mina",
@@ -79,6 +80,7 @@ describe("office domain helpers", () => {
         },
         active_focus_session: createFocusSession(),
       }),
+      officeActivity: [],
       nickname: "서진",
       requestedRoomId: "focus-room",
       requestedNpcId: "jiho",
@@ -87,6 +89,44 @@ describe("office domain helpers", () => {
     expect(experience.selectedConversation?.npcId).toBe("jiho");
     expect(experience.selectedConversation?.title).toContain("포커스 룸");
     expect(experience.selectedConversation?.messages[1]?.body).toContain("25분");
+  });
+
+  it("prefers shared office activity for the pulse feed", () => {
+    const experience = buildOfficeExperience({
+      dashboard: createDashboard({
+        workday,
+        activity_feed: [
+          {
+            id: "personal-1",
+            workday_id: workday.id,
+            event_type: "task_created",
+            title: "개인 피드 항목",
+            description: "대시보드 전용 활동입니다.",
+            meta: {},
+            created_at: "2026-04-10T03:10:00.000Z",
+          },
+        ],
+      }),
+      officeActivity: [
+        {
+          id: "office-1",
+          office_slug: "soloshift-commons",
+          user_id: "user-2",
+          actor_nickname: "민지",
+          room_id: "focus-room",
+          workday_id: "workday-2",
+          event_type: "focus_session_started",
+          title: "집중 세션 시작",
+          description: "25분 세션을 열었습니다.",
+          meta: {},
+          created_at: "2026-04-10T03:15:00.000Z",
+        },
+      ],
+      nickname: "서진",
+    });
+
+    expect(experience.officePulse.recentActivity[0]?.id).toBe("office-1");
+    expect(experience.officePulse.detail).toContain("민지");
   });
 });
 

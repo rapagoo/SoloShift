@@ -144,6 +144,17 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Added more specific client-side error detail for private Presence joins so session-token failures and policy failures are easier to diagnose during QA.
 - Aligned the office Realtime policies more closely with Supabase's topic-authorization examples by using `(select realtime.topic())` and allowing topic-scoped Presence/Broadcast checks on the office channel.
 
+### Office Activity Storage Pass
+
+- Added `supabase/migrations/20260410_000004_office_activity_events.sql` for a dedicated shared office timeline in the single main office.
+- Added `OfficeActivityEvent` to the shared app model and introduced `OFFICE_SLUG` so office-specific data can share one consistent identity across Realtime and Postgres.
+- Expanded `recordActivityEvent()` so every check-in, status change, focus update, task event, and checkout also writes a best-effort office event without risking the core workday flow if the new table is not present yet.
+- Added room derivation rules for office events so checkout lands in the lounge, focus events land in the focus room, and the rest of the shared office timeline defaults to the lobby.
+- Updated the `/office` data loader so it reads `office_activity_events` first and falls back to the current user's dashboard activity feed when the new table is not available yet.
+- Updated the office pulse UI so recent office reactions now show actor nickname and room label, making the shared timeline feel distinct from the personal dashboard feed.
+- Added a domain test that verifies the office pulse prefers shared office activity over the current user's personal activity feed.
+- Applied the new office-activity migration to the connected Supabase project and verified that the table and authenticated RLS policies exist.
+
 ### Verification
 
 - `npx tsc --noEmit`

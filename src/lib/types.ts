@@ -112,6 +112,20 @@ export interface ActivityFeedEntry {
   created_at: string;
 }
 
+export interface OfficeActivityEvent {
+  id: string;
+  office_slug: string;
+  user_id: string;
+  actor_nickname: string;
+  room_id: "lobby" | "focus-room" | "lounge";
+  workday_id: string | null;
+  event_type: ActivityEventType;
+  title: string;
+  description: string | null;
+  meta: Record<string, unknown>;
+  created_at: string;
+}
+
 export interface WeeklySummary {
   range_label: string;
   days_checked_in: number;

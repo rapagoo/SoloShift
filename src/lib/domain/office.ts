@@ -1,5 +1,11 @@
 ﻿import { getStatusLabel } from "@/lib/constants";
-import { OFFICE_NAME, OFFICE_NPCS, OFFICE_ROOMS, OFFICE_TAGLINE } from "@/lib/office/config";
+import {
+  OFFICE_NAME,
+  OFFICE_NPCS,
+  OFFICE_ROOMS,
+  OFFICE_SLUG,
+  OFFICE_TAGLINE,
+} from "@/lib/office/config";
 import {
   OfficeConversation,
   OfficeExperience,
@@ -10,13 +16,14 @@ import {
   OfficeRoomId,
   OfficeRoomSummary,
 } from "@/lib/office/types";
-import { DashboardData } from "@/lib/types";
+import { DashboardData, OfficeActivityEvent, StatusType } from "@/lib/types";
 import { formatMinutes } from "@/lib/time";
 
 const OFFICE_ROOM_IDS = new Set<OfficeRoomId>(OFFICE_ROOMS.map((room) => room.id));
 
 export function buildOfficeExperience(params: {
   dashboard: DashboardData;
+  officeActivity: OfficeActivityEvent[];
   nickname: string;
   requestedRoomId?: string | null;
   requestedNpcId?: string | null;
@@ -40,7 +47,7 @@ export function buildOfficeExperience(params: {
         })
       : null,
     selectedNpcId,
-    officePulse: buildOfficePulse(params.dashboard),
+    officePulse: buildOfficePulse(params.dashboard, params.officeActivity),
     dashboard: params.dashboard,
   };
 }
@@ -85,6 +92,32 @@ function buildRoomSummaries(dashboard: DashboardData, currentRoomId: OfficeRoomI
       hint: getRoomHint(room, dashboard),
     };
   });
+}
+
+export function resolveOfficeRoomForActivity(params: {
+  eventType: OfficeActivityEvent["event_type"];
+  statusType?: StatusType | null;
+}): OfficeRoomId {
+  if (params.eventType === "check_out") {
+    return "lounge";
+  }
+
+  if (
+    params.eventType === "focus_session_started" ||
+    params.eventType === "focus_session_completed" ||
+    params.eventType === "focus_session_interrupted"
+  ) {
+    return "focus-room";
+  }
+
+  if (
+    params.eventType === "status_changed" &&
+    (params.statusType === "break" || params.statusType === "meal")
+  ) {
+    return "lounge";
+  }
+
+  return "lobby";
 }
 
 function buildNpcSummary(npc: OfficeNpcConfig, dashboard: DashboardData): OfficeNpcSummary {
@@ -248,10 +281,10 @@ function buildNpcConversation(params: {
   }
 }
 
-function buildOfficePulse(dashboard: DashboardData) {
+function buildOfficePulse(dashboard: DashboardData, officeActivity: OfficeActivityEvent[]) {
   const completedTasks = dashboard.tasks.filter((task) => task.status === "done").length;
   const totalTasks = dashboard.tasks.length;
-  const latestActivity = dashboard.activity_feed[0];
+  const latestActivity = officeActivity[0];
 
   const headline = !dashboard.workday
     ? "오피스는 대기 중입니다."
@@ -263,9 +296,11 @@ function buildOfficePulse(dashboard: DashboardData) {
           ? `완료 작업 ${completedTasks}개로 흐름이 쌓이고 있습니다.`
           : "아직 큰 이벤트는 적지만 오피스 리듬은 열려 있습니다.";
 
-  const detail = latestActivity?.description ?? (!dashboard.workday
-    ? "출근을 시작하면 로비와 활동 피드가 바로 살아납니다."
-    : "최근 활동이 이 공간의 분위기를 계속 바꾸고 있습니다.");
+  const detail = latestActivity
+    ? `${latestActivity.actor_nickname} · ${latestActivity.description ?? latestActivity.title}`
+    : !dashboard.workday
+      ? "출근을 시작하면 로비와 활동 피드가 바로 살아납니다."
+      : "최근 활동이 이 공간의 분위기를 계속 바꾸고 있습니다.";
 
   return {
     headline,
@@ -275,8 +310,30 @@ function buildOfficePulse(dashboard: DashboardData) {
       { label: "집중 시간", value: formatMinutes(dashboard.focus_minutes_live) },
       { label: "포인트", value: `${dashboard.workday?.total_points ?? 0}P` },
     ],
-    recentActivity: dashboard.activity_feed.slice(0, 4),
+    recentActivity: officeActivity.slice(0, 4),
   };
+}
+
+export function createFallbackOfficeActivity(params: {
+  dashboard: DashboardData;
+  nickname: string;
+}): OfficeActivityEvent[] {
+  return params.dashboard.activity_feed.map((entry) => ({
+    id: `fallback-${entry.id}`,
+    office_slug: OFFICE_SLUG,
+    user_id: params.dashboard.workday?.user_id ?? "unknown-user",
+    actor_nickname: params.nickname,
+    room_id: resolveOfficeRoomForActivity({
+      eventType: entry.event_type,
+      statusType: normalizeStatusType(entry.meta?.statusType),
+    }),
+    workday_id: entry.workday_id,
+    event_type: entry.event_type,
+    title: entry.title,
+    description: entry.description,
+    meta: entry.meta,
+    created_at: entry.created_at,
+  }));
 }
 
 function getRoomHint(room: OfficeRoomConfig, dashboard: DashboardData) {
@@ -312,4 +369,19 @@ function normalizeNpcId(requestedNpcId: string | null | undefined, npcsInRoom: O
 
 function isOfficeRoomId(value: string): value is OfficeRoomId {
   return OFFICE_ROOM_IDS.has(value as OfficeRoomId);
+}
+
+function normalizeStatusType(value: unknown): StatusType | null {
+  if (
+    value === "study_algorithm" ||
+    value === "portfolio" ||
+    value === "resume" ||
+    value === "break" ||
+    value === "meal" ||
+    value === "away"
+  ) {
+    return value;
+  }
+
+  return null;
 }

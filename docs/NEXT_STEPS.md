@@ -28,8 +28,8 @@ Last updated: 2026-04-10
 
 ## External Verification Still Recommended
 
-- [ ] Apply `20260410_000002_security_hardening.sql` to the connected Supabase project if it has not been applied yet.
-- [ ] Apply `20260410_000002_tasks_activity_feed.sql` to the connected Supabase project if it has not been applied yet.
+- [x] Apply `20260410_000002_security_hardening.sql` to the connected Supabase project.
+- [x] Apply `20260410_000002_tasks_activity_feed.sql` to the connected Supabase project.
 - [ ] Run a full manual smoke test from signup to checkout in the deployed environment.
 - [ ] Verify `/history` reflects same-day tasks and activity events correctly after a real workday pass.
 - [ ] Test with email confirmation enabled in Supabase.
@@ -46,9 +46,11 @@ Last updated: 2026-04-10
 - [ ] QA `/office` in the deployed environment across before-check-in, active-focus, and checked-out states.
 - [ ] QA realtime presence with two or more real browser sessions in the deployed environment.
 - [x] Write the private-channel transition plan for office presence.
-- [ ] Apply `20260410_000003_office_private_presence.sql` to the connected Supabase project if it has not been applied yet.
+- [x] Apply `20260410_000003_office_private_presence.sql` to the connected Supabase project.
+- [x] Apply `20260410_000004_office_activity_events.sql` to the connected Supabase project.
 - [ ] Decide whether the next office pass should stay config-driven or introduce persistent office tables.
-- [ ] Add office-side event storage so room reactions can outgrow the personal activity feed.
+- [x] Add office-side event storage so room reactions can outgrow the personal activity feed.
+- [ ] QA `/office` after the office-activity migration with at least two real accounts so the pulse feed shows truly shared events.
 - [x] Decide whether the realtime preview should stay on public channels or move to private channels with authorization policies.
 - [ ] Decide whether future character interactions stay rule-based or move to AI-assisted generation.
 - [ ] Plan the first post-MVP release scope beyond the day-flow baseline.

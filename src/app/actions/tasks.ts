@@ -82,6 +82,8 @@ export async function createTaskAction(
 
     await recordActivityEvent({
       workdayId: workday.id,
+      userId: user.id,
+      actorNickname: profile.nickname,
       eventType: "task_created",
       title: "작업 추가",
       description: `"${parsed.data.title}" 작업을 등록했습니다.`,
@@ -164,6 +166,8 @@ export async function updateTaskStatusAction(
 
     await recordActivityEvent({
       workdayId: workday.id,
+      userId: user.id,
+      actorNickname: profile.nickname,
       eventType: activity.eventType,
       title: activity.title,
       description: activity.description,

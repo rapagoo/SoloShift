@@ -75,9 +75,13 @@ The current migration only authorizes Presence traffic for one topic:
 
 - `office:soloshift-commons:presence`
 
-The policies intentionally do not cover:
+The policies are intentionally scoped so they are compatible with:
 
-- broadcast
+- Presence
+- Broadcast authorization checks on the same topic
+
+The repo still does not use those policies for:
+
 - room chat
 - room event streams
 - multi-office membership checks

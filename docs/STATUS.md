@@ -85,6 +85,7 @@ The current product baseline now supports:
 - Three NPC personas with room-based summaries and short conversation threads
 - Office pulse panel that reframes task, focus, point, and activity-feed data as room ambience
 - Office snapshot panel that links the new space view back to the current dashboard flow
+- QA follow-up contrast fix for office room cards and conversation CTA buttons
 
 ## Verified
 

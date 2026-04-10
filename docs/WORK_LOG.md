@@ -108,6 +108,7 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Added office-domain tests covering room resolution and room-safe NPC conversation selection.
 - Extended the top navigation with an `오피스` entry so the first shared-office slice is reachable from the main product shell.
 - Synced the office branch with a pending-copy fix by restoring plain Korean loading messages in the dashboard modals.
+- Applied a QA follow-up contrast fix so room-switch cards and NPC conversation CTA buttons remain readable on the office screen.
 
 ### Verification
 

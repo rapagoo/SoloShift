@@ -67,30 +67,37 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
                     className={cn(
                       "rounded-[1.75rem] border p-4 transition",
                       room.isCurrent
-                        ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-950/10"
+                        ? "border-slate-950 bg-amber-50 text-slate-950 shadow-lg shadow-amber-200/50"
                         : "border-[var(--line)] bg-white/80 text-slate-900 hover:-translate-y-0.5 hover:bg-white",
                     )}
                     href={href}
                     key={room.id}
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <p className="font-['Space_Grotesk'] text-xl font-semibold">{room.shortLabel}</p>
+                      <p
+                        className={cn(
+                          "font-['Space_Grotesk'] text-xl font-semibold",
+                          room.isCurrent ? "text-slate-950" : "text-slate-950",
+                        )}
+                      >
+                        {room.shortLabel}
+                      </p>
                       <span
                         className={cn(
                           "rounded-full px-3 py-1 text-xs font-medium",
-                          room.isCurrent ? "bg-white/15 text-white" : "bg-slate-900/5 text-slate-600",
+                          room.isCurrent ? "bg-slate-950 text-white" : "bg-slate-900/5 text-slate-600",
                         )}
                       >
                         {room.isCurrent ? "현재 방" : "이동"}
                       </span>
                     </div>
-                    <p className={cn("mt-2 text-sm", room.isCurrent ? "text-slate-200" : "text-slate-500")}>
+                    <p className={cn("mt-2 text-sm", room.isCurrent ? "text-slate-700" : "text-slate-500")}>
                       {room.description}
                     </p>
-                    <p className={cn("mt-4 text-xs uppercase tracking-[0.18em]", room.isCurrent ? "text-slate-300" : "text-slate-400")}>
+                    <p className={cn("mt-4 text-xs uppercase tracking-[0.18em]", room.isCurrent ? "text-slate-500" : "text-slate-400")}>
                       {room.occupancyLabel}
                     </p>
-                    <p className={cn("mt-2 text-sm leading-6", room.isCurrent ? "text-slate-100" : "text-slate-600")}>
+                    <p className={cn("mt-2 text-sm leading-6", room.isCurrent ? "text-slate-700" : "text-slate-600")}>
                       {room.hint}
                     </p>
                   </Link>
@@ -174,7 +181,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
                             "inline-flex h-11 items-center justify-center rounded-2xl px-4 text-sm font-medium transition",
                             isSelected
                               ? "border border-slate-200 bg-slate-100 text-slate-900 hover:bg-slate-200"
-                              : "bg-slate-950 text-white hover:bg-slate-800",
+                              : "bg-[var(--accent)] text-white shadow-lg shadow-orange-200/50 hover:bg-[var(--accent-strong)]",
                           )}
                           href={href}
                         >

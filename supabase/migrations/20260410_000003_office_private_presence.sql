@@ -6,8 +6,8 @@ create policy "authenticated can listen to office presence"
   for select
   to authenticated
   using (
-    realtime.topic() = 'office:soloshift-commons:presence'
-    and realtime.messages.extension = 'presence'
+    (select realtime.topic()) = 'office:soloshift-commons:presence'
+    and realtime.messages.extension in ('presence', 'broadcast')
   );
 
 create policy "authenticated can track office presence"
@@ -15,6 +15,6 @@ create policy "authenticated can track office presence"
   for insert
   to authenticated
   with check (
-    realtime.topic() = 'office:soloshift-commons:presence'
-    and realtime.messages.extension = 'presence'
+    (select realtime.topic()) = 'office:soloshift-commons:presence'
+    and realtime.messages.extension in ('presence', 'broadcast')
   );

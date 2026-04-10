@@ -19,6 +19,7 @@ The current office presence implementation now uses:
 - a dedicated topic: `office:soloshift-commons:presence`
 - a private Realtime channel on the client
 - authenticated-only `realtime.messages` policies for Presence reads and writes
+- authenticated-only `realtime.messages` policies scoped to the office topic and compatible with Presence/Broadcast authorization checks
 
 This gives SoloShift a safer default without introducing office membership tables yet.
 

@@ -17,18 +17,28 @@ Last updated: 2026-04-10
 - [x] Add clearer loading feedback for major submit actions so QA can tell when a request is in progress.
 - [x] Polish the new loading-state copy and fix QA issues around modal closing behavior.
 
+## Completed In The Phase 2 Foundation Pass
+
+- [x] Add a task board for the current workday.
+- [x] Add task creation and task status updates from the dashboard.
+- [x] Add an activity feed that records check-in, status, focus, task, and checkout events.
+- [x] Extend history entries so tasks and activity events can be reviewed later.
+- [x] Add the second Supabase migration for `tasks` and `activity_feed`.
+- [x] Re-run `npx tsc --noEmit`, `npm run lint`, `npm test`, and `npm run build` after the foundation pass.
+
 ## External Verification Still Recommended
 
+- [ ] Apply `20260410_000002_tasks_activity_feed.sql` to the connected Supabase project if it has not been applied yet.
 - [ ] Run a full manual smoke test from signup to checkout in the deployed environment.
-- [ ] Verify `/history` reflects same-day actions correctly after a real workday pass.
+- [ ] Verify `/history` reflects same-day tasks and activity events correctly after a real workday pass.
 - [ ] Test with email confirmation enabled in Supabase.
 - [ ] Test with email confirmation disabled in Supabase.
 - [ ] Run E2E login and core flow tests against a real Supabase project.
 
 ## Post-MVP Product And Architecture
 
-- [ ] Define the office/room/NPC/conversation data model for the next expansion phase.
-- [ ] Design how world events or activity-feed style interactions should be stored.
+- [ ] Define the office, room, NPC, and conversation data model for the next expansion phase.
+- [ ] Decide how office events should connect to the existing activity feed.
 - [ ] Decide whether future character interactions stay rule-based or move to AI-assisted generation.
 - [ ] Plan the first post-MVP release scope beyond the day-flow baseline.
 

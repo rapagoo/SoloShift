@@ -1,5 +1,5 @@
 ﻿import { EmptyState } from "@/components/empty-state";
-import { getStatusLabel } from "@/lib/constants";
+import { getStatusLabel, getTaskStatusLabel } from "@/lib/constants";
 import { getPointEventLabel } from "@/lib/domain/dialogue";
 import {
   formatLocalDateLabel,
@@ -31,7 +31,7 @@ export function HistoryPanel({ profile, weeklySummary, entries }: HistoryPanelPr
               이번 주 출근 {weeklySummary.days_checked_in}일, 연속 기록 {weeklySummary.streak_days}일
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 text-center md:grid-cols-4">
             <Metric label="평균 출근" value={weeklySummary.average_check_in ?? "-"} />
             <Metric label="평균 퇴근" value={weeklySummary.average_check_out ?? "-"} />
             <Metric label="근무 시간" value={formatMinutes(weeklySummary.total_work_minutes)} />
@@ -83,6 +83,29 @@ export function HistoryPanel({ profile, weeklySummary, entries }: HistoryPanelPr
                     <Block title="오늘 첫 작업" value={entry.workday.today_first_task} />
                     <Block title="퇴근 회고" value={entry.workday.daily_review ?? "기록 없음"} />
                     <Block title="내일 첫 작업" value={entry.workday.tomorrow_first_task ?? "미정"} />
+                    <Panel title="작업 보드" count={entry.tasks.length}>
+                      {entry.tasks.length === 0 ? (
+                        <li>기록 없음</li>
+                      ) : (
+                        entry.tasks.map((task) => (
+                          <li className="rounded-2xl bg-slate-900/5 px-3 py-3" key={task.id}>
+                            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                              <span className="font-medium text-slate-900">{task.title}</span>
+                              <span className="text-slate-500">{getTaskStatusLabel(task.status)}</span>
+                            </div>
+                            {task.detail ? (
+                              <p className="mt-2 text-slate-500">{task.detail}</p>
+                            ) : null}
+                            <p className="mt-2 text-xs text-slate-400">
+                              생성 {formatTimestamp(task.created_at, profile.timezone)}
+                              {task.completed_at
+                                ? ` · 완료 ${formatTimestamp(task.completed_at, profile.timezone)}`
+                                : ""}
+                            </p>
+                          </li>
+                        ))
+                      )}
+                    </Panel>
                   </div>
                   <div className="space-y-4">
                     <Panel title="상태 로그" count={entry.status_logs.length}>
@@ -151,6 +174,25 @@ export function HistoryPanel({ profile, weeklySummary, entries }: HistoryPanelPr
                             <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-900">
                               {event.points}P
                             </span>
+                          </li>
+                        ))
+                      )}
+                    </Panel>
+                    <Panel title="활동 피드" count={entry.activity_feed.length}>
+                      {entry.activity_feed.length === 0 ? (
+                        <li>기록 없음</li>
+                      ) : (
+                        entry.activity_feed.map((item) => (
+                          <li className="rounded-2xl bg-slate-900/5 px-3 py-3" key={item.id}>
+                            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                              <span className="font-medium text-slate-900">{item.title}</span>
+                              <span className="text-slate-500">
+                                {formatTimestamp(item.created_at, profile.timezone)}
+                              </span>
+                            </div>
+                            {item.description ? (
+                              <p className="mt-2 text-slate-500">{item.description}</p>
+                            ) : null}
                           </li>
                         ))
                       )}

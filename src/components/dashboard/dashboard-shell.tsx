@@ -10,10 +10,13 @@ import {
   finishFocusSessionAction,
   startFocusSessionAction,
 } from "@/app/actions/workday";
+import { ActivityFeedPanel } from "@/components/dashboard/activity-feed-panel";
 import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
+import { TaskBoard } from "@/components/dashboard/task-board";
 import { EmptyState } from "@/components/empty-state";
 import { ProfileForm } from "@/components/onboarding/profile-form";
+import { createTaskAction, updateTaskStatusAction } from "@/app/actions/tasks";
 import { Button } from "@/components/ui/button";
 import { FormPendingNotice } from "@/components/ui/form-pending-notice";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
@@ -30,7 +33,7 @@ const statusLabelMap = Object.fromEntries(
   STATUS_OPTIONS.map((option) => [option.value, option.label]),
 );
 
-type ModalKey = "checkin" | "status" | "focus" | "finish" | "checkout" | "profile" | null;
+type ModalKey = "checkin" | "status" | "focus" | "finish" | "checkout" | "profile" | "task" | null;
 
 interface DashboardShellProps {
   profile: Profile;
@@ -46,6 +49,8 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
   const [focusState, focusFormAction] = useActionState(startFocusSessionAction, initialState);
   const [finishState, finishFormAction] = useActionState(finishFocusSessionAction, initialState);
   const [checkoutState, checkoutFormAction] = useActionState(checkOutAction, initialState);
+  const [createTaskState, createTaskFormAction] = useActionState(createTaskAction, initialState);
+  const [taskStatusState, taskStatusFormAction] = useActionState(updateTaskStatusAction, initialState);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
@@ -58,7 +63,8 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
       (openModal === "status" && statusState.ok) ||
       (openModal === "focus" && focusState.ok) ||
       (openModal === "finish" && finishState.ok) ||
-      (openModal === "checkout" && checkoutState.ok);
+      (openModal === "checkout" && checkoutState.ok) ||
+      (openModal === "task" && createTaskState.ok);
 
     if (!shouldCloseActiveModal) {
       return undefined;
@@ -69,6 +75,7 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
   }, [
     checkInState.ok,
     checkoutState.ok,
+    createTaskState.ok,
     finishState.ok,
     focusState.ok,
     openModal,
@@ -95,13 +102,17 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
     statusState.error ||
     focusState.error ||
     finishState.error ||
-    checkoutState.error;
+    checkoutState.error ||
+    createTaskState.error ||
+    taskStatusState.error;
   const latestMessage =
     checkInState.message ||
     statusState.message ||
     focusState.message ||
     finishState.message ||
     checkoutState.message ||
+    createTaskState.message ||
+    taskStatusState.message ||
     notice;
 
   const statusOptions = useMemo(
@@ -187,6 +198,9 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
                     <Button onClick={() => setOpenModal("focus")} type="button" variant="secondary">
                       집중 세션 시작
                     </Button>
+                    <Button onClick={() => setOpenModal("task")} type="button" variant="secondary">
+                      작업 추가
+                    </Button>
                     {activeSession ? (
                       <Button onClick={() => setOpenModal("finish")} type="button">
                         세션 종료
@@ -240,6 +254,17 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
               </div>
             </div>
           ) : null}
+
+          <div className="grid gap-6 lg:grid-cols-[1fr_0.92fr]">
+            <TaskBoard
+              isLocked={Boolean(workday?.check_out_at)}
+              profileTimezone={profile.timezone}
+              statusState={taskStatusState}
+              taskStatusAction={taskStatusFormAction}
+              tasks={dashboard.tasks}
+            />
+            <ActivityFeedPanel entries={dashboard.activity_feed} timezone={profile.timezone} />
+          </div>
 
           <div className="grid gap-6 lg:grid-cols-[1fr_0.92fr]">
             <section className="rounded-[2rem] border border-[var(--line)] bg-white/75 p-5 shadow-sm">
@@ -460,6 +485,32 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
       </Modal>
 
       <Modal
+        description="해야 할 일을 짧게라도 적어두면 하루 흐름과 회고가 더 선명해집니다."
+        onClose={() => setOpenModal(null)}
+        open={openModal === "task"}
+        title="작업 추가"
+      >
+        <form action={createTaskFormAction} className="space-y-4">
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-700">작업 제목</span>
+            <Input name="title" placeholder="예: 포트폴리오 소개 문구 정리" required />
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-700">세부 메모</span>
+            <Textarea name="detail" placeholder="선택 입력" />
+          </label>
+          {createTaskState.error ? <p className="text-sm text-rose-600">{createTaskState.error}</p> : null}
+          <FormPendingNotice message="작업을 추가하는 중입니다." />
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => setOpenModal(null)} type="button" variant="ghost">
+              취소
+            </Button>
+            <FormSubmitButton idleLabel="작업 저장" pendingLabel="저장 중..." />
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
         description="하루를 닫고, 내일의 시작 장벽을 낮춰두세요."
         onClose={() => setOpenModal(null)}
         open={openModal === "checkout"}
@@ -556,6 +607,7 @@ function MiniRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
 
 
 

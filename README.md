@@ -1,12 +1,15 @@
 ﻿# SoloShift
 
 SoloShift is a web MVP for running a solo study or job-search day like a structured workday.
-It focuses on a simple loop:
+It now covers the full day loop plus a first post-MVP foundation layer for tasks and activity tracking.
+
+## Core Loop
 
 - Check in
 - Set today's goal and first task
 - Change current status
 - Run focus sessions
+- Add and update tasks
 - Check out with a short review
 - Review daily and weekly history
 
@@ -18,7 +21,7 @@ It focuses on a simple loop:
 - Supabase Auth + Postgres
 - Vercel-ready deployment setup
 
-## MVP Status
+## Current Product Status
 
 The core MVP day flow is implemented and usable:
 
@@ -30,6 +33,8 @@ The core MVP day flow is implemented and usable:
 - Dashboard profile editing for nickname, timezone, and default check-in time
 - Light gamification with point events and short company-style feedback
 - Korean-labeled timezone picker and Korean auth messaging
+- Task board for the current workday
+- Activity feed for check-in, status, focus, task, and checkout events
 - Improved dashboard guidance and history readability
 
 ## Local Setup
@@ -54,7 +59,12 @@ cp .env.example .env.local
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SECRET_KEY`
 
-4. Apply the SQL migration in your Supabase project.
+4. Apply the SQL migrations in `supabase/migrations` in filename order.
+
+At minimum, a fresh project should apply:
+
+- `20260409_000001_soloshift_mvp.sql`
+- `20260410_000002_tasks_activity_feed.sql`
 
 5. Run the app.
 
@@ -65,6 +75,7 @@ npm run dev
 ## Verification
 
 ```bash
+npx tsc --noEmit
 npm run lint
 npm test
 npm run build
@@ -82,4 +93,4 @@ npm run build
 - The app renders a setup card instead of crashing when required Supabase env vars are missing.
 - Playwright smoke tests are included, but they only run meaningfully when `E2E_EMAIL` and `E2E_PASSWORD` are provided.
 - Server writes use the Supabase secret key on the server only. Never expose `SUPABASE_SECRET_KEY` in the browser.
-
+- If you already created a Supabase project before the task/activity pass, apply the second migration before testing the new dashboard sections.

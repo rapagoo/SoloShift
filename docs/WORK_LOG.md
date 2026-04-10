@@ -74,11 +74,22 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Updated modal auto-close logic so status-change and focus-session dialogs close reliably after a successful submit.
 - Center-aligned weekly summary metrics in the history view for better visual balance.
 
+### Phase 2 Foundation Pass
+
+- Added `tasks` and `activity_feed` types to the shared app model.
+- Added `src/app/actions/tasks.ts` for task creation and task status updates.
+- Added `src/lib/server/activity-feed.ts` to centralize activity-feed writes.
+- Added `supabase/migrations/20260410_000002_tasks_activity_feed.sql` for the new schema and RLS policies.
+- Extended dashboard data loading so today’s task board and activity feed render from Supabase.
+- Extended history data loading so older workdays include tasks and activity events.
+- Added the dashboard task board and activity feed panels.
+- Added a dashboard task-creation modal and linked task state changes into the live UI.
+- Recorded activity-feed events for check-in, status changes, focus sessions, task updates, and checkout.
+- Cleaned up Korean copy again in shared constants and form components so the new UI surfaces do not show mojibake.
+
 ### Verification
 
 - `npx tsc --noEmit`
 - `npm run lint`
 - `npm test`
 - `npm run build`
-
-

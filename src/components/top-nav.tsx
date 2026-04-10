@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import { signOutAction } from "@/app/actions/auth";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
@@ -14,9 +14,10 @@ const baseNavItems = [
 ] as const;
 
 export function TopNav({ nickname, current }: TopNavProps) {
-  const navItems = current === "onboarding"
-    ? [{ href: "/onboarding", label: "초기 설정", key: "onboarding" }, ...baseNavItems]
-    : baseNavItems;
+  const navItems =
+    current === "onboarding"
+      ? [{ href: "/onboarding", label: "초기 설정", key: "onboarding" }, ...baseNavItems]
+      : baseNavItems;
 
   return (
     <header className="mb-8 flex flex-col gap-4 rounded-[2rem] border border-[var(--line)] bg-white/70 px-5 py-4 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
@@ -48,8 +49,8 @@ export function TopNav({ nickname, current }: TopNavProps) {
         <form action={signOutAction}>
           <FormSubmitButton
             className="rounded-full"
-            idleLabel={"로그아웃"}
-            pendingLabel={"로그아웃 중..."}
+            idleLabel="로그아웃"
+            pendingLabel="로그아웃 중..."
             size="sm"
             variant="danger"
           />

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useFormStatus } from "react-dom";
 
@@ -7,7 +7,7 @@ interface FormPendingNoticeProps {
 }
 
 export function FormPendingNotice({
-  message = "처리 중입니다. 잠시만 기다려 주세요.",
+  message = "처리 중입니다. 잠시만 기다려주세요.",
 }: FormPendingNoticeProps) {
   const { pending } = useFormStatus();
 

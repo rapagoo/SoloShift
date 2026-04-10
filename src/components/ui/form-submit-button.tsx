@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useFormStatus } from "react-dom";
 
@@ -13,7 +13,7 @@ interface FormSubmitButtonProps extends ButtonProps {
 export function FormSubmitButton({
   className,
   idleLabel,
-  pendingLabel = "저장 중...",
+  pendingLabel = "처리 중...",
   ...props
 }: FormSubmitButtonProps) {
   const { pending } = useFormStatus();

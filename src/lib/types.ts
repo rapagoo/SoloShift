@@ -1,10 +1,12 @@
-﻿export type StatusType =
+export type StatusType =
   | "study_algorithm"
   | "portfolio"
   | "resume"
   | "break"
   | "meal"
   | "away";
+
+export type TaskStatus = "todo" | "doing" | "done";
 
 export type TopLevelState =
   | "before_check_in"
@@ -21,6 +23,18 @@ export type PointEventType =
   | "goal_completed"
   | "daily_review_submitted"
   | "five_day_streak_bonus";
+
+export type ActivityEventType =
+  | "check_in"
+  | "status_changed"
+  | "focus_session_started"
+  | "focus_session_completed"
+  | "focus_session_interrupted"
+  | "check_out"
+  | "task_created"
+  | "task_started"
+  | "task_completed"
+  | "task_reopened";
 
 export interface Profile {
   id: string;
@@ -76,6 +90,28 @@ export interface PointEvent {
   created_at: string;
 }
 
+export interface Task {
+  id: string;
+  workday_id: string;
+  title: string;
+  detail: string | null;
+  status: TaskStatus;
+  sort_order: number;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ActivityFeedEntry {
+  id: string;
+  workday_id: string;
+  event_type: ActivityEventType;
+  title: string;
+  description: string | null;
+  meta: Record<string, unknown>;
+  created_at: string;
+}
+
 export interface WeeklySummary {
   range_label: string;
   days_checked_in: number;
@@ -94,6 +130,8 @@ export interface DashboardData {
   status_logs: StatusLog[];
   focus_sessions: FocusSession[];
   point_events: PointEvent[];
+  tasks: Task[];
+  activity_feed: ActivityFeedEntry[];
   top_level_state: TopLevelState;
   work_minutes_live: number;
   focus_minutes_live: number;
@@ -107,6 +145,8 @@ export interface HistoryEntry {
   status_logs: StatusLog[];
   focus_sessions: FocusSession[];
   point_events: PointEvent[];
+  tasks: Task[];
+  activity_feed: ActivityFeedEntry[];
 }
 
 export interface ActionState {

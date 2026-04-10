@@ -1,4 +1,4 @@
-﻿import { format, parseISO, startOfWeek } from "date-fns";
+import { format, parseISO, startOfWeek } from "date-fns";
 
 import { getCheckoutStreak } from "@/lib/data/dashboard";
 import {
@@ -8,11 +8,13 @@ import {
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentLocalDate, getWeekRangeLabel, minutesToClockLabel } from "@/lib/time";
 import {
+  ActivityFeedEntry,
   FocusSession,
   HistoryEntry,
   PointEvent,
   Profile,
   StatusLog,
+  Task,
   WeeklySummary,
   Workday,
 } from "@/lib/types";
@@ -102,10 +104,12 @@ export async function getHistoryEntries(userId: string): Promise<HistoryEntry[]>
     return [];
   }
 
-  const [statusLogsResult, focusSessionsResult, pointEventsResult] = await Promise.all([
+  const [statusLogsResult, focusSessionsResult, pointEventsResult, tasksResult, activityFeedResult] = await Promise.all([
     supabase.from("status_logs").select("*").in("workday_id", workdayIds),
     supabase.from("focus_sessions").select("*").in("workday_id", workdayIds),
     supabase.from("point_events").select("*").in("workday_id", workdayIds),
+    supabase.from("tasks").select("*").in("workday_id", workdayIds),
+    supabase.from("activity_feed").select("*").in("workday_id", workdayIds),
   ]);
 
   const statusByWorkday = groupByWorkday(
@@ -117,6 +121,12 @@ export async function getHistoryEntries(userId: string): Promise<HistoryEntry[]>
   const pointByWorkday = groupByWorkday(
     (pointEventsResult.data as PointEvent[] | null) ?? [],
   );
+  const tasksByWorkday = groupByWorkday(
+    (tasksResult.data as Task[] | null) ?? [],
+  );
+  const activityByWorkday = groupByWorkday(
+    (activityFeedResult.data as ActivityFeedEntry[] | null) ?? [],
+  );
 
   return typedWorkdays.map((workday) => ({
     workday,
@@ -127,6 +137,16 @@ export async function getHistoryEntries(userId: string): Promise<HistoryEntry[]>
       a.start_at < b.start_at ? 1 : -1,
     ),
     point_events: (pointByWorkday[workday.id] ?? []).sort((a, b) =>
+      a.created_at < b.created_at ? 1 : -1,
+    ),
+    tasks: (tasksByWorkday[workday.id] ?? []).sort((a, b) => {
+      if (a.sort_order === b.sort_order) {
+        return a.created_at > b.created_at ? 1 : -1;
+      }
+
+      return a.sort_order - b.sort_order;
+    }),
+    activity_feed: (activityByWorkday[workday.id] ?? []).sort((a, b) =>
       a.created_at < b.created_at ? 1 : -1,
     ),
   }));

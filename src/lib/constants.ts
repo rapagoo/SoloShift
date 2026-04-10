@@ -1,4 +1,4 @@
-﻿import type { StatusType } from "@/lib/types";
+﻿import type { StatusType, TaskStatus } from "@/lib/types";
 
 export const STATUS_OPTIONS = [
   { value: "study_algorithm", label: "알고리즘 공부", category: "work" },
@@ -7,6 +7,12 @@ export const STATUS_OPTIONS = [
   { value: "break", label: "휴식", category: "rest" },
   { value: "meal", label: "식사", category: "rest" },
   { value: "away", label: "자리 비움", category: "away" },
+] as const;
+
+export const TASK_STATUS_OPTIONS = [
+  { value: "todo", label: "대기 중" },
+  { value: "doing", label: "진행 중" },
+  { value: "done", label: "완료" },
 ] as const;
 
 export const PRODUCTIVE_STATUS_VALUES = STATUS_OPTIONS.filter(
@@ -45,12 +51,22 @@ export const STATUS_LABEL_MAP: Record<StatusType, string> = {
   away: "자리 비움",
 };
 
+export const TASK_STATUS_LABEL_MAP: Record<TaskStatus, string> = {
+  todo: "대기 중",
+  doing: "진행 중",
+  done: "완료",
+};
+
 const timezoneLabelMap = Object.fromEntries(
   TIMEZONE_OPTIONS.map((option) => [option.value, option.label]),
 ) as Record<string, string>;
 
 export function getStatusLabel(status: StatusType) {
   return STATUS_LABEL_MAP[status] ?? status;
+}
+
+export function getTaskStatusLabel(status: TaskStatus) {
+  return TASK_STATUS_LABEL_MAP[status] ?? status;
 }
 
 export function getTimezoneLabel(timezone: string) {

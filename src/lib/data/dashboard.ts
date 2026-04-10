@@ -1,4 +1,4 @@
-﻿import { getCharacterDialogue } from "@/lib/domain/dialogue";
+import { getCharacterDialogue } from "@/lib/domain/dialogue";
 import {
   computeFocusMinutes,
   computeStatusWorkMinutes,
@@ -8,11 +8,13 @@ import { calculateLateMinutes } from "@/lib/domain/points";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentLocalDate, getLocalClockParts } from "@/lib/time";
 import {
+  ActivityFeedEntry,
   DashboardData,
   FocusSession,
   PointEvent,
   Profile,
   StatusLog,
+  Task,
   Workday,
 } from "@/lib/types";
 
@@ -39,6 +41,8 @@ export async function getTodayDashboard(
       status_logs: [],
       focus_sessions: [],
       point_events: [],
+      tasks: [],
+      activity_feed: [],
       top_level_state: "before_check_in",
       work_minutes_live: 0,
       focus_minutes_live: 0,
@@ -48,28 +52,47 @@ export async function getTodayDashboard(
     };
   }
 
-  const [{ data: statusLogs }, { data: focusSessions }, { data: pointEvents }] =
-    await Promise.all([
-      supabase
-        .from("status_logs")
-        .select("*")
-        .eq("workday_id", typedWorkday.id)
-        .order("start_at", { ascending: false }),
-      supabase
-        .from("focus_sessions")
-        .select("*")
-        .eq("workday_id", typedWorkday.id)
-        .order("start_at", { ascending: false }),
-      supabase
-        .from("point_events")
-        .select("*")
-        .eq("workday_id", typedWorkday.id)
-        .order("created_at", { ascending: false }),
-    ]);
+  const [
+    { data: statusLogs },
+    { data: focusSessions },
+    { data: pointEvents },
+    { data: tasks },
+    { data: activityFeed },
+  ] = await Promise.all([
+    supabase
+      .from("status_logs")
+      .select("*")
+      .eq("workday_id", typedWorkday.id)
+      .order("start_at", { ascending: false }),
+    supabase
+      .from("focus_sessions")
+      .select("*")
+      .eq("workday_id", typedWorkday.id)
+      .order("start_at", { ascending: false }),
+    supabase
+      .from("point_events")
+      .select("*")
+      .eq("workday_id", typedWorkday.id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("tasks")
+      .select("*")
+      .eq("workday_id", typedWorkday.id)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("activity_feed")
+      .select("*")
+      .eq("workday_id", typedWorkday.id)
+      .order("created_at", { ascending: false })
+      .limit(12),
+  ]);
 
   const typedStatusLogs = (statusLogs as StatusLog[] | null) ?? [];
   const typedFocusSessions = (focusSessions as FocusSession[] | null) ?? [];
   const typedPointEvents = (pointEvents as PointEvent[] | null) ?? [];
+  const typedTasks = (tasks as Task[] | null) ?? [];
+  const typedActivityFeed = (activityFeed as ActivityFeedEntry[] | null) ?? [];
 
   const activeStatus = typedStatusLogs.find((log) => !log.end_at) ?? null;
   const activeFocusSession =
@@ -108,6 +131,8 @@ export async function getTodayDashboard(
     status_logs: typedStatusLogs,
     focus_sessions: typedFocusSessions,
     point_events: typedPointEvents,
+    tasks: typedTasks,
+    activity_feed: typedActivityFeed,
     top_level_state: topLevelState,
     work_minutes_live: workMinutesLive,
     focus_minutes_live: focusMinutesLive,

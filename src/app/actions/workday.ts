@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { requireUser } from "@/lib/auth";
 import { getCheckoutStreak } from "@/lib/data/dashboard";
+import { getStatusLabel } from "@/lib/constants";
 import { getProfileByUserId } from "@/lib/data/profile";
 import {
   closeCurrentStatus,
@@ -24,6 +25,7 @@ import {
 } from "@/lib/domain/points";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { recordActivityEvent } from "@/lib/server/activity-feed";
 import { getCurrentLocalDate, getLocalClockParts } from "@/lib/time";
 import { ActionState, FocusSession, PointEventType, StatusLog, Workday } from "@/lib/types";
 
@@ -118,6 +120,13 @@ export async function checkInAction(
       points: pointOutcome.points,
       meta: { lateMinutes },
     });
+    await recordActivityEvent({
+      workdayId: (createdWorkday as Workday).id,
+      eventType: "check_in",
+      title: "출근 기록",
+      description: `오늘 목표: ${parsed.data.today_goal} · 첫 작업: ${parsed.data.today_first_task}`,
+      meta: { lateMinutes },
+    });
     await refreshWorkdayTotals((createdWorkday as Workday).id);
 
     revalidateAll();
@@ -199,6 +208,14 @@ export async function changeStatusAction(
       throw new Error("상태 저장에 실패했습니다.");
     }
 
+    await recordActivityEvent({
+      workdayId: workdayBundle.workday.id,
+      eventType: "status_changed",
+      title: "상태 변경",
+      description: `${getStatusLabel(parsed.data.status_type)} 상태로 전환했습니다.${parsed.data.memo ? ` 메모: ${parsed.data.memo}` : ""}`,
+      meta: { statusType: parsed.data.status_type },
+    });
+
     revalidateAll();
     return { ok: true, message: "현재 상태를 변경했습니다." };
   } catch (error) {
@@ -255,6 +272,17 @@ export async function startFocusSessionAction(
     if (!createdSession) {
       throw new Error("집중 세션 시작에 실패했습니다.");
     }
+
+    await recordActivityEvent({
+      workdayId: workdayBundle.workday.id,
+      eventType: "focus_session_started",
+      title: "집중 세션 시작",
+      description: `${parsed.data.duration_minutes}분 집중 세션을 시작했습니다.`,
+      meta: {
+        durationMinutes: parsed.data.duration_minutes,
+        statusLogId: workdayBundle.active_status.id,
+      },
+    });
 
     revalidateAll();
     return { ok: true, message: "집중 세션을 시작했습니다." };
@@ -328,6 +356,14 @@ export async function finishFocusSessionAction(
         meta: { duration: sessionPatch.duration_minutes },
       });
     }
+
+    await recordActivityEvent({
+      workdayId: workdayBundle.workday.id,
+      eventType: isCompleted ? "focus_session_completed" : "focus_session_interrupted",
+      title: isCompleted ? "집중 세션 완료" : "집중 세션 중단",
+      description: `${sessionPatch.duration_minutes}분 동안 ${isCompleted ? "집중을 완료했습니다." : "세션을 중단했습니다."}${parsed.data.memo ? ` 메모: ${parsed.data.memo}` : ""}`,
+      meta: { durationMinutes: sessionPatch.duration_minutes, isCompleted },
+    });
 
     await refreshWorkdayTotals(workdayBundle.workday.id);
     revalidateAll();
@@ -461,6 +497,14 @@ export async function checkOutAction(
     if (!checkedOutWorkday) {
       throw new Error("퇴근 저장에 실패했습니다.");
     }
+
+    await recordActivityEvent({
+      workdayId: workdayBundle.workday.id,
+      eventType: "check_out",
+      title: goalCompleted ? "목표 달성 퇴근" : "퇴근 기록",
+      description: `회고를 저장하고 ${goalCompleted ? "목표 달성으로" : "일반"} 퇴근을 완료했습니다.`,
+      meta: { goalCompleted },
+    });
 
     await refreshWorkdayTotals(workdayBundle.workday.id);
     revalidateAll();
@@ -631,4 +675,5 @@ function revalidateAll() {
   revalidatePath("/");
   revalidatePath("/history");
 }
+
 

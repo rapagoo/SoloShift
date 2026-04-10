@@ -85,7 +85,9 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
                       <span
                         className={cn(
                           "rounded-full px-3 py-1 text-xs font-medium",
-                          room.isCurrent ? "bg-slate-950 text-white" : "bg-slate-900/5 text-slate-600",
+                          room.isCurrent
+                            ? "bg-[var(--accent)] text-white"
+                            : "bg-slate-900/5 text-slate-600",
                         )}
                       >
                         {room.isCurrent ? "현재 방" : "이동"}
@@ -212,11 +214,11 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
           >
             {selectedConversation ? (
               <div className="space-y-3">
-                <div className="rounded-[1.5rem] bg-slate-950 px-4 py-4 text-white">
+                <div className="rounded-[1.5rem] bg-[var(--accent)] px-4 py-4 text-white shadow-lg shadow-orange-200/50">
                   <p className="font-['Space_Grotesk'] text-xl font-semibold">
                     {selectedConversation.title}
                   </p>
-                  <p className="mt-2 text-sm text-slate-300">{selectedConversation.subtitle}</p>
+                  <p className="mt-2 text-sm text-orange-50">{selectedConversation.subtitle}</p>
                 </div>
                 {selectedConversation.messages.map((message, index) => (
                   <div
@@ -224,11 +226,16 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
                       "rounded-[1.5rem] px-4 py-4 text-sm leading-7 shadow-sm",
                       message.speaker === "npc"
                         ? "bg-white text-slate-700"
-                        : "ml-6 bg-slate-950 text-slate-100",
+                        : "ml-6 border border-orange-200 bg-orange-100 text-slate-900",
                     )}
                     key={`${message.speaker}-${index}`}
                   >
-                    <p className="mb-2 text-xs uppercase tracking-[0.18em] text-slate-400">
+                    <p
+                      className={cn(
+                        "mb-2 text-xs uppercase tracking-[0.18em]",
+                        message.speaker === "npc" ? "text-slate-400" : "text-orange-700",
+                      )}
+                    >
                       {message.speaker === "npc" ? "NPC" : "You"}
                     </p>
                     <p>{message.body}</p>
@@ -323,7 +330,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <Link
-                className="inline-flex h-12 items-center justify-center rounded-2xl bg-slate-950 px-5 text-sm font-medium text-white transition hover:bg-slate-800"
+                className="inline-flex h-12 items-center justify-center rounded-2xl bg-[var(--accent)] px-5 text-sm font-medium text-white shadow-lg shadow-orange-200/50 transition hover:bg-[var(--accent-strong)]"
                 href="/"
               >
                 대시보드에서 작업 이어가기
@@ -407,7 +414,7 @@ function Badge({ label, tone = "default" }: { label: string; tone?: "default" | 
     <span
       className={cn(
         "rounded-full px-3 py-1.5 text-sm",
-        tone === "strong" ? "bg-slate-950 text-white" : "bg-white/80 text-slate-700",
+        tone === "strong" ? "bg-[var(--accent)] text-white" : "bg-white/80 text-slate-700",
       )}
     >
       {label}

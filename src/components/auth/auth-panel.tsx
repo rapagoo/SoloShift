@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 
 import { useActionState, useMemo, useState } from "react";
 
 import { signInAction, signUpAction } from "@/app/actions/auth";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { Input } from "@/components/ui/input";
+import { MIN_PASSWORD_LENGTH, PASSWORD_HELPER_TEXT } from "@/lib/auth/password-policy";
 import { ActionState } from "@/lib/types";
 
 const initialState: ActionState = { ok: false };
@@ -28,7 +29,7 @@ export function AuthPanel() {
       return <p className="text-sm text-emerald-700">{state.message}</p>;
     }
 
-    return <p className="text-sm text-slate-500">이메일과 비밀번호로 바로 시작할 수 있습니다.</p>;
+    return <p className="text-sm text-slate-500">{PASSWORD_HELPER_TEXT}</p>;
   }, [state.error, state.message]);
 
   return (
@@ -61,7 +62,13 @@ export function AuthPanel() {
         </label>
         <label className="block space-y-2">
           <span className="text-sm font-medium text-slate-700">비밀번호</span>
-          <Input minLength={6} name="password" placeholder="6자 이상" required type="password" />
+          <Input
+            minLength={MIN_PASSWORD_LENGTH}
+            name="password"
+            placeholder={`${MIN_PASSWORD_LENGTH}자 이상`}
+            required
+            type="password"
+          />
         </label>
 
         {helper}

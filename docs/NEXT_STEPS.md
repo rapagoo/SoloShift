@@ -37,8 +37,9 @@ Last updated: 2026-04-10
 
 ## Post-MVP Product And Architecture
 
-- [ ] Define the office, room, NPC, and conversation data model for the next expansion phase.
-- [ ] Decide how office events should connect to the existing activity feed.
+- [x] Write the shared office vision and architecture baseline document.
+- [ ] Turn `docs/SHARED_OFFICE_VISION.md` into the first implementation slice for `/office`.
+- [ ] Finalize how office events should connect to the existing activity feed.
 - [ ] Decide whether future character interactions stay rule-based or move to AI-assisted generation.
 - [ ] Plan the first post-MVP release scope beyond the day-flow baseline.
 
@@ -49,3 +50,5 @@ Whenever a meaningful implementation change is shipped, update these files in th
 - `docs/STATUS.md`
 - `docs/NEXT_STEPS.md`
 - `docs/WORK_LOG.md`
+
+

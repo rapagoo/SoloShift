@@ -106,7 +106,7 @@ The main remaining work is now:
 - verify `/history` reflects task and activity-feed updates correctly after a real workday pass
 - test both email-confirmation-on and email-confirmation-off auth flows
 - run real-account E2E verification against the connected Supabase project
-- define the next architecture step for office, room, NPC, and conversation expansion
+- use the shared office vision doc as the baseline for office, room, NPC, and conversation expansion
 
 ## Documentation Process
 
@@ -121,7 +121,10 @@ After each meaningful development pass, update these files together:
 - `README.md`: local setup and run instructions
 - `docs/PLAN.md`: cleaned MVP scope and delivery order
 - `docs/NEXT_STEPS.md`: current QA and post-MVP checklist
+- `docs/SHARED_OFFICE_VISION.md`: shared office product and architecture direction
 - `docs/WORK_LOG.md`: dated implementation history
 - `docs/solo_shift_planning_v1.md`: original product planning document
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`: MVP schema and RLS setup
 - `supabase/migrations/20260410_000002_tasks_activity_feed.sql`: tasks and activity feed schema
+
+

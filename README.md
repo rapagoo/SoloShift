@@ -87,6 +87,7 @@ npm run build
 - `docs/NEXT_STEPS.md`: remaining QA and post-MVP backlog
 - `docs/WORK_LOG.md`: dated implementation history
 - `docs/PLAN.md`: cleaned MVP plan reference
+- `docs/SHARED_OFFICE_VISION.md`: next-phase office and multiplayer direction
 
 ## Notes
 
@@ -94,3 +95,5 @@ npm run build
 - Playwright smoke tests are included, but they only run meaningfully when `E2E_EMAIL` and `E2E_PASSWORD` are provided.
 - Server writes use the Supabase secret key on the server only. Never expose `SUPABASE_SECRET_KEY` in the browser.
 - If you already created a Supabase project before the task/activity pass, apply the second migration before testing the new dashboard sections.
+
+

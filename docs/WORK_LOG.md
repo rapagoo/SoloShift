@@ -87,9 +87,20 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Recorded activity-feed events for check-in, status changes, focus sessions, task updates, and checkout.
 - Cleaned up Korean copy again in shared constants and form components so the new UI surfaces do not show mojibake.
 
+### Shared Office Vision Pass
+
+- Added `docs/SHARED_OFFICE_VISION.md` as the product and architecture baseline for the next major phase.
+- Defined the recommended screen strategy as `dashboard 유지 + /office 추가` before any home-screen replacement.
+- Split the office roadmap into NPC-first, presence-first, and real shared-office phases.
+- Drafted the next-step data model for offices, rooms, memberships, NPCs, conversations, and office activity events.
+- Documented the recommended branching strategy for the shared-office implementation phase.
+
 ### Verification
 
 - `npx tsc --noEmit`
 - `npm run lint`
 - `npm test`
 - `npm run build`
+
+
+

@@ -37,11 +37,10 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
     topLevelState: dashboard.top_level_state,
     topic: OFFICE_REALTIME_TOPIC,
   });
-  const currentRoomCount = roomCounts[currentRoom.id];
-  const currentRoomOccupancyLabel =
-    connectionState === "live"
-      ? `${currentRoomCount}명 온라인`
-      : rooms.find((room) => room.id === currentRoom.id)?.occupancyLabel ?? "1명 감지";
+  const currentRoomOccupancyLabel = getRealtimeOccupancyLabel(
+    connectionState,
+    roomCounts[currentRoom.id],
+  );
 
   return (
     <div className="space-y-6">
@@ -84,10 +83,10 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
             <div className="grid gap-4 md:grid-cols-3">
               {rooms.map((room) => {
                 const href = buildOfficeHref(room.id);
-                const liveOccupancyLabel =
-                  connectionState === "live"
-                    ? `${roomCounts[room.id]}명 온라인`
-                    : room.occupancyLabel;
+                const liveOccupancyLabel = getRealtimeOccupancyLabel(
+                  connectionState,
+                  roomCounts[room.id],
+                );
 
                 return (
                   <Link
@@ -412,6 +411,21 @@ function getTopLevelStateLabel(value: OfficeExperience["dashboard"]["top_level_s
     case "checked_out":
       return "마감 완료";
   }
+}
+
+function getRealtimeOccupancyLabel(
+  connectionState: "connecting" | "live" | "error",
+  count: number,
+) {
+  if (connectionState === "live") {
+    return `${count}명 온라인`;
+  }
+
+  if (connectionState === "error") {
+    return "실시간 연결 확인 필요";
+  }
+
+  return "실시간 연결 중";
 }
 
 function SectionPanel({

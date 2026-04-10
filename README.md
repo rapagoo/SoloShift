@@ -65,13 +65,19 @@ cp .env.example .env.local
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SECRET_KEY`
 
-4. Apply the SQL migrations in `supabase/migrations` in filename order.
+4. Apply the SQL migrations in the recommended order below.
 
 At minimum, a fresh project should apply:
 
 - `20260409_000001_soloshift_mvp.sql`
+- `20260410_000002_security_hardening.sql`
 - `20260410_000002_tasks_activity_feed.sql`
 - `20260410_000003_office_private_presence.sql`
+
+Note:
+
+- There are currently two files with the `20260410_000002_*` prefix.
+- Apply them in the order listed above, not by a naive filename sort.
 
 5. Run the app.
 
@@ -102,7 +108,7 @@ npm run build
 - The app renders a setup card instead of crashing when required Supabase env vars are missing.
 - Playwright smoke tests are included, but they only run meaningfully when `E2E_EMAIL` and `E2E_PASSWORD` are provided.
 - Server writes use the Supabase secret key on the server only. Never expose `SUPABASE_SECRET_KEY` in the browser.
-- If you already created a Supabase project before the task/activity pass, apply the second migration before testing the new dashboard sections.
+- If you already created a Supabase project before the task/activity pass, apply both `20260410_000002_security_hardening.sql` and `20260410_000002_tasks_activity_feed.sql` before testing the newer dashboard sections.
 - If you already created a Supabase project before the private office-presence pass, apply the third migration before testing `/office`.
 - `/office` now uses a private Presence topic. If the live panel shows an authorization warning, check the Realtime policies from `20260410_000003_office_private_presence.sql` and confirm the user is signed in.
 

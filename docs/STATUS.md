@@ -101,6 +101,7 @@ The current product baseline now supports:
 - Private-channel client config with authenticated-only `realtime.messages` policies
 - Graceful error copy when the realtime channel cannot be joined because of missing auth or missing Realtime authorization
 - Shared presence state now drives both the room-switch cards and the right-side live panel so occupancy counts stay consistent
+- Room-switch cards and the top occupancy badge now show realtime connection state instead of falling back to misleading static counts when presence is unavailable
 
 ## Verified
 
@@ -124,8 +125,18 @@ Required local environment variables:
 Current database setup files:
 
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`
+- `supabase/migrations/20260410_000002_security_hardening.sql`
 - `supabase/migrations/20260410_000002_tasks_activity_feed.sql`
 - `supabase/migrations/20260410_000003_office_private_presence.sql`
+
+Recommended apply order:
+
+1. `20260409_000001_soloshift_mvp.sql`
+2. `20260410_000002_security_hardening.sql`
+3. `20260410_000002_tasks_activity_feed.sql`
+4. `20260410_000003_office_private_presence.sql`
+
+There are two `20260410_000002_*` files, so follow the order above instead of relying on filename sorting alone.
 
 ## Remaining Gaps
 
@@ -138,6 +149,7 @@ The main remaining work is now:
 - verify `/history` reflects task and activity-feed updates correctly after a real workday pass
 - verify `/office` across before-check-in, active-focus, and checked-out states in the deployed environment
 - verify realtime presence with two or more real sessions in the deployed environment
+- apply the security-hardening migration to any Supabase project that was created before that pass
 - apply the private-presence migration to any Supabase project that was created before this pass
 - test both email-confirmation-on and email-confirmation-off auth flows
 - run real-account E2E verification against the connected Supabase project

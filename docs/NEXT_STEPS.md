@@ -28,6 +28,7 @@ Last updated: 2026-04-10
 
 ## External Verification Still Recommended
 
+- [ ] Apply `20260410_000002_security_hardening.sql` to the connected Supabase project if it has not been applied yet.
 - [ ] Apply `20260410_000002_tasks_activity_feed.sql` to the connected Supabase project if it has not been applied yet.
 - [ ] Run a full manual smoke test from signup to checkout in the deployed environment.
 - [ ] Verify `/history` reflects same-day tasks and activity events correctly after a real workday pass.

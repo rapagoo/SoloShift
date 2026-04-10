@@ -138,6 +138,8 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Added `supabase/migrations/20260410_000003_office_private_presence.sql` with authenticated-only `realtime.messages` select/insert policies for Presence on the office topic.
 - Updated status, next-step, README, and office security docs so the repo now treats private authenticated-only presence as the current baseline.
 - Clarified that `office_memberships` should be introduced when SoloShift gains multiple offices, invite-only spaces, or membership-scoped visibility.
+- Corrected the docs to explicitly include `20260410_000002_security_hardening.sql` in the recommended migration order.
+- Updated the office room-switch and top occupancy labels so failed realtime joins show connection-state messaging instead of stale static headcounts.
 
 ### Verification
 

@@ -43,6 +43,7 @@ Last updated: 2026-04-10
 - [x] Add a light realtime presence preview to `/office` so online users and room occupancy are visible.
 - [ ] QA `/office` in the deployed environment across before-check-in, active-focus, and checked-out states.
 - [ ] QA realtime presence with two or more real browser sessions in the deployed environment.
+- [x] Write the private-channel transition plan for office presence.
 - [ ] Decide whether the next office pass should stay config-driven or introduce persistent office tables.
 - [ ] Add office-side event storage so room reactions can outgrow the personal activity feed.
 - [ ] Decide whether the realtime preview should stay on public channels or move to private channels with authorization policies.

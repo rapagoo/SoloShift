@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { EmptyState } from "@/components/empty-state";
 import { OfficePresencePanel } from "@/components/office/office-presence-panel";
+import { useOfficePresence } from "@/components/office/use-office-presence";
 import { getStatusLabel } from "@/lib/constants";
 import { OFFICE_REALTIME_TOPIC } from "@/lib/office/config";
 import { OfficeExperience, OfficeNpcId, OfficeRoomId } from "@/lib/office/types";
@@ -21,6 +24,24 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
   const workday = dashboard.workday;
   const activeFocus = dashboard.active_focus_session;
   const activeStatus = dashboard.active_status;
+  const roomOptions = rooms.map((room) => ({
+    id: room.id,
+    name: room.name,
+    shortLabel: room.shortLabel,
+  }));
+  const { members, roomCounts, connectionState } = useOfficePresence({
+    currentRoomId: currentRoom.id,
+    profile: { id: profile.id, nickname: profile.nickname },
+    roomOptions,
+    statusLabel: activeStatus ? getStatusLabel(activeStatus.status_type) : null,
+    topLevelState: dashboard.top_level_state,
+    topic: OFFICE_REALTIME_TOPIC,
+  });
+  const currentRoomCount = roomCounts[currentRoom.id];
+  const currentRoomOccupancyLabel =
+    connectionState === "live"
+      ? `${currentRoomCount}명 온라인`
+      : rooms.find((room) => room.id === currentRoom.id)?.occupancyLabel ?? "1명 감지";
 
   return (
     <div className="space-y-6">
@@ -42,7 +63,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
             <div className="mt-5 flex flex-wrap gap-2 text-sm text-slate-700">
               <Badge label={`현재 방 · ${currentRoom.name}`} tone="strong" />
               <Badge label={`분위기 · ${getTopLevelStateLabel(dashboard.top_level_state)}`} />
-              <Badge label={`현재 인원 · ${rooms.find((room) => room.id === currentRoom.id)?.occupancyLabel ?? "1명 감지"}`} />
+              <Badge label={`현재 인원 · ${currentRoomOccupancyLabel}`} />
             </div>
           </div>
           <div className="grid w-full gap-3 sm:grid-cols-3 lg:max-w-xl">
@@ -63,6 +84,10 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
             <div className="grid gap-4 md:grid-cols-3">
               {rooms.map((room) => {
                 const href = buildOfficeHref(room.id);
+                const liveOccupancyLabel =
+                  connectionState === "live"
+                    ? `${roomCounts[room.id]}명 온라인`
+                    : room.occupancyLabel;
 
                 return (
                   <Link
@@ -99,7 +124,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
                       {room.description}
                     </p>
                     <p className={cn("mt-4 text-xs uppercase tracking-[0.18em]", room.isCurrent ? "text-slate-500" : "text-slate-400")}>
-                      {room.occupancyLabel}
+                      {liveOccupancyLabel}
                     </p>
                     <p className={cn("mt-2 text-sm leading-6", room.isCurrent ? "text-slate-700" : "text-slate-600")}>
                       {room.hint}
@@ -203,15 +228,10 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
         <div className="space-y-6">
           <OfficePresencePanel
             currentRoomId={currentRoom.id}
-            profile={{ id: profile.id, nickname: profile.nickname }}
-            roomOptions={rooms.map((room) => ({
-              id: room.id,
-              name: room.name,
-              shortLabel: room.shortLabel,
-            }))}
-            statusLabel={activeStatus ? getStatusLabel(activeStatus.status_type) : null}
-            topLevelState={dashboard.top_level_state}
-            topic={OFFICE_REALTIME_TOPIC}
+            connectionState={connectionState}
+            members={members}
+            roomCounts={roomCounts}
+            roomOptions={roomOptions}
           />
 
           <SectionPanel

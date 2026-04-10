@@ -390,6 +390,8 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 
 현재 코드베이스는 4번과 5번의 첫 미니 슬라이스까지 완료한 상태다. 다음 결정 지점은 `public presence preview를 유지할지` 혹은 `private channel + authorization policy`로 올릴지다.
 
+private channel 전환을 위한 상세 계획은 `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`를 기준으로 본다.
+
 ## 성공 기준
 
 이 단계의 성공 기준은 아래다.

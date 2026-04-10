@@ -97,6 +97,7 @@ The current product baseline now supports:
 - Online user list with current room and current work state
 - Same-room coworker panel for the currently selected office room
 - Graceful error copy when the realtime channel cannot be joined
+- Shared presence state now drives both the room-switch cards and the right-side live panel so occupancy counts stay consistent
 
 ## Verified
 
@@ -154,6 +155,7 @@ After each meaningful development pass, update these files together:
 - `docs/PLAN.md`: cleaned MVP scope and delivery order
 - `docs/NEXT_STEPS.md`: current QA and post-MVP checklist
 - `docs/SHARED_OFFICE_VISION.md`: shared office product and architecture direction
+- `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`: next security step for office presence
 - `docs/WORK_LOG.md`: dated implementation history
 - `docs/solo_shift_planning_v1.md`: original product planning document
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`: MVP schema and RLS setup

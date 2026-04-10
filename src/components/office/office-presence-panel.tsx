@@ -1,111 +1,29 @@
 "use client";
 
-import { useEffect, useEffectEvent, useMemo, useState } from "react";
-
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import {
-  countOfficePresenceByRoom,
-  listOfficePresenceMembers,
-} from "@/lib/office/presence";
 import {
   OfficePresenceMember,
-  OfficePresencePayload,
   OfficeRealtimeConnectionState,
   OfficeRoomId,
   OfficeRoomSummary,
 } from "@/lib/office/types";
-import { Profile, TopLevelState } from "@/lib/types";
+import { TopLevelState } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface OfficePresencePanelProps {
   currentRoomId: OfficeRoomId;
-  profile: Pick<Profile, "id" | "nickname">;
   roomOptions: Pick<OfficeRoomSummary, "id" | "name" | "shortLabel">[];
-  statusLabel: string | null;
-  topLevelState: TopLevelState;
-  topic: string;
+  members: OfficePresenceMember[];
+  roomCounts: Record<OfficeRoomId, number>;
+  connectionState: OfficeRealtimeConnectionState;
 }
 
 export function OfficePresencePanel({
   currentRoomId,
-  profile,
   roomOptions,
-  statusLabel,
-  topLevelState,
-  topic,
+  members,
+  roomCounts,
+  connectionState,
 }: OfficePresencePanelProps) {
-  const [supabase] = useState(() => createSupabaseBrowserClient());
-  const [members, setMembers] = useState<OfficePresenceMember[]>([]);
-  const [connectionState, setConnectionState] =
-    useState<OfficeRealtimeConnectionState>("connecting");
-
-  const syncPresence = useEffectEvent((state: Record<string, OfficePresencePayload[]>) => {
-    setMembers(listOfficePresenceMembers(state, profile.id));
-  });
-
-  useEffect(() => {
-    const channel = supabase.channel(topic, {
-      config: {
-        presence: {
-          key: profile.id,
-        },
-      },
-    });
-
-    const handleSync = () => {
-      syncPresence(channel.presenceState<OfficePresencePayload>());
-    };
-
-    channel
-      .on("presence", { event: "sync" }, handleSync)
-      .on("presence", { event: "join" }, handleSync)
-      .on("presence", { event: "leave" }, handleSync)
-      .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          setConnectionState("live");
-          await channel.track({
-            userId: profile.id,
-            nickname: profile.nickname,
-            roomId: currentRoomId,
-            topLevelState,
-            statusLabel,
-            onlineAt: new Date().toISOString(),
-          });
-          handleSync();
-          return;
-        }
-
-        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          setConnectionState("error");
-          return;
-        }
-
-        if (status === "CLOSED") {
-          setConnectionState("connecting");
-        }
-      });
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [
-    currentRoomId,
-    profile.id,
-    profile.nickname,
-    statusLabel,
-    supabase,
-    topLevelState,
-    topic,
-  ]);
-
-  const roomCounts = useMemo(
-    () =>
-      countOfficePresenceByRoom(
-        roomOptions.map((room) => room.id),
-        members,
-      ),
-    [members, roomOptions],
-  );
   const others = members.filter((member) => !member.self);
   const currentRoomOthers = others.filter((member) => member.roomId === currentRoomId);
 

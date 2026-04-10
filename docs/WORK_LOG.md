@@ -119,6 +119,16 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Wired `/office` to publish the current user’s nickname, room, and top-level work state into a Supabase Realtime Presence channel.
 - Added live room occupancy counts, a same-room coworker list, and an overall online-user panel to the office screen.
 - Added fallback copy for cases where the realtime channel fails, so the preview degrades more clearly in environments where public realtime access is restricted.
+- Refactored presence subscription logic into a shared hook so the room-switch cards, top occupancy badge, and live panel all render from the same realtime counts.
+
+### Office Security Planning Pass
+
+- Added `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md` to explain what private channels and Realtime authorization mean for SoloShift.
+- Documented the recommended transition path:
+  - public preview
+  - private authenticated-only channels
+  - membership-based office authorization
+- Recorded recommended topic naming and the minimal policy scope needed for a future private-channel rollout.
 
 ### Verification
 

@@ -3,10 +3,15 @@
 import { submitProfileAction } from "@/app/actions/profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { SetupCard } from "@/components/setup-card";
 import { TopNav } from "@/components/top-nav";
 import { getOptionalSession, isProfileComplete } from "@/lib/auth";
-import { DEFAULT_CHECK_IN_TIME, DEFAULT_TIMEZONE } from "@/lib/constants";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_TIMEZONE,
+  TIMEZONE_OPTIONS,
+} from "@/lib/constants";
 import { hasSupabaseEnv } from "@/lib/env";
 import { getProfileByUserId } from "@/lib/data/profile";
 
@@ -49,12 +54,13 @@ export default async function OnboardingPage() {
           <div className="grid gap-5 md:grid-cols-2">
             <label className="block space-y-2">
               <span className="text-sm font-medium text-slate-700">시간대</span>
-              <Input
-                defaultValue={profile?.timezone ?? DEFAULT_TIMEZONE}
-                name="timezone"
-                placeholder="예: Asia/Seoul"
-                required
-              />
+              <Select defaultValue={profile?.timezone ?? DEFAULT_TIMEZONE} name="timezone" required>
+                {TIMEZONE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Select>
             </label>
             <label className="block space-y-2">
               <span className="text-sm font-medium text-slate-700">기본 출근 시각</span>

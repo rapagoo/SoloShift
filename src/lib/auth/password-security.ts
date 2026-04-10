@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+﻿import { createHash } from "node:crypto";
 
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/password-policy";
 

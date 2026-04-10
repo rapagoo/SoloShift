@@ -1,7 +1,7 @@
 ﻿# SoloShift
 
 SoloShift is a web MVP for running a solo study or job-search day like a structured workday.
-It now covers the full day loop, a task/activity foundation layer, a shared-office preview, and a light realtime presence layer.
+It now covers the full day loop, a task/activity foundation layer, a shared-office preview, and a private authenticated realtime presence layer.
 
 ## Core Loop
 
@@ -41,7 +41,7 @@ The core MVP day flow is implemented and usable:
 - Activity feed for check-in, status, focus, task, and checkout events
 - Improved dashboard guidance and history readability
 - Office preview with room switching, NPC summaries, and short conversation threads
-- Light realtime presence on `/office` using Supabase Realtime Presence
+- Private authenticated office presence on `/office` using Supabase Realtime Presence
 
 ## Local Setup
 
@@ -71,8 +71,7 @@ At minimum, a fresh project should apply:
 
 - `20260409_000001_soloshift_mvp.sql`
 - `20260410_000002_tasks_activity_feed.sql`
-
-The current `/office` and presence previews do not require an extra migration yet.
+- `20260410_000003_office_private_presence.sql`
 
 5. Run the app.
 
@@ -96,6 +95,7 @@ npm run build
 - `docs/WORK_LOG.md`: dated implementation history
 - `docs/PLAN.md`: cleaned MVP plan reference
 - `docs/SHARED_OFFICE_VISION.md`: next-phase office and multiplayer direction
+- `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`: current office presence security baseline and membership trigger
 
 ## Notes
 
@@ -103,6 +103,7 @@ npm run build
 - Playwright smoke tests are included, but they only run meaningfully when `E2E_EMAIL` and `E2E_PASSWORD` are provided.
 - Server writes use the Supabase secret key on the server only. Never expose `SUPABASE_SECRET_KEY` in the browser.
 - If you already created a Supabase project before the task/activity pass, apply the second migration before testing the new dashboard sections.
-- The current presence preview assumes your project can join a Supabase Realtime channel from authenticated clients. If your project disables public Realtime channel access, the `/office` live panel will show a connection warning until private-channel authorization is added.
+- If you already created a Supabase project before the private office-presence pass, apply the third migration before testing `/office`.
+- `/office` now uses a private Presence topic. If the live panel shows an authorization warning, check the Realtime policies from `20260410_000003_office_private_presence.sql` and confirm the user is signed in.
 
 

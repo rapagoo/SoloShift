@@ -45,6 +45,7 @@ export function useOfficePresence({
   useEffect(() => {
     const channel = supabase.channel(topic, {
       config: {
+        private: true,
         presence: {
           key: profile.id,
         },
@@ -75,11 +76,13 @@ export function useOfficePresence({
         }
 
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          setMembers([]);
           setConnectionState("error");
           return;
         }
 
         if (status === "CLOSED") {
+          setMembers([]);
           setConnectionState("connecting");
         }
       });

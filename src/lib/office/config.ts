@@ -2,7 +2,7 @@
 
 export const OFFICE_NAME = "SoloShift Commons";
 export const OFFICE_TAGLINE = "혼자 일해도, 공간은 함께 쓰는 감각으로.";
-export const OFFICE_REALTIME_TOPIC = "office:soloshift-commons";
+export const OFFICE_REALTIME_TOPIC = "office:soloshift-commons:presence";
 
 export const OFFICE_ROOMS: OfficeRoomConfig[] = [
   {

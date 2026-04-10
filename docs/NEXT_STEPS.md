@@ -41,15 +41,18 @@ Last updated: 2026-04-10
 - [x] Turn `docs/SHARED_OFFICE_VISION.md` into the first implementation slice for `/office`.
 - [x] Reuse existing workday, task, focus, and activity-feed data as the first office preview data source.
 - [x] Add a light realtime presence preview to `/office` so online users and room occupancy are visible.
+- [x] Move `/office` Presence onto private authenticated-only Realtime channels.
 - [ ] QA `/office` in the deployed environment across before-check-in, active-focus, and checked-out states.
 - [ ] QA realtime presence with two or more real browser sessions in the deployed environment.
 - [x] Write the private-channel transition plan for office presence.
+- [ ] Apply `20260410_000003_office_private_presence.sql` to the connected Supabase project if it has not been applied yet.
 - [ ] Decide whether the next office pass should stay config-driven or introduce persistent office tables.
 - [ ] Add office-side event storage so room reactions can outgrow the personal activity feed.
-- [ ] Decide whether the realtime preview should stay on public channels or move to private channels with authorization policies.
+- [x] Decide whether the realtime preview should stay on public channels or move to private channels with authorization policies.
 - [ ] Decide whether future character interactions stay rule-based or move to AI-assisted generation.
 - [ ] Plan the first post-MVP release scope beyond the day-flow baseline.
-- [ ] Define the smallest safe presence slice for showing other online users by room.
+- [x] Define the smallest safe presence slice for showing other online users by room.
+- [ ] Add `office_memberships` when SoloShift introduces a second office, invite-only access, or team-scoped presence visibility.
 
 ## Logging Rule
 

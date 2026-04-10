@@ -4,7 +4,7 @@ Last updated: 2026-04-10
 
 ## Snapshot
 
-SoloShift is now beyond the MVP-only baseline. The full day-flow MVP is complete, the task/activity foundation layer is in place, and the shared-office branch now includes both the first `/office` slice and a light realtime presence preview.
+SoloShift is now beyond the MVP-only baseline. The full day-flow MVP is complete, the task/activity foundation layer is in place, and the shared-office branch now includes the first `/office` slice plus a private authenticated realtime presence layer.
 
 The current product baseline now supports:
 
@@ -19,6 +19,7 @@ The current product baseline now supports:
 - daily and weekly history review
 - office room switching and rule-based NPC conversations at `/office`
 - realtime office presence showing who is online and which room they are in
+- private authenticated-only office presence channels for signed-in users
 
 ## Implemented
 
@@ -93,10 +94,12 @@ The current product baseline now supports:
 ### Shared office realtime preview
 
 - Supabase Realtime Presence channel for the shared office preview
+- Dedicated presence topic at `office:soloshift-commons:presence`
 - Live room counts by lobby, focus room, and lounge
 - Online user list with current room and current work state
 - Same-room coworker panel for the currently selected office room
-- Graceful error copy when the realtime channel cannot be joined
+- Private-channel client config with authenticated-only `realtime.messages` policies
+- Graceful error copy when the realtime channel cannot be joined because of missing auth or missing Realtime authorization
 - Shared presence state now drives both the room-switch cards and the right-side live panel so occupancy counts stay consistent
 
 ## Verified
@@ -122,8 +125,7 @@ Current database setup files:
 
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`
 - `supabase/migrations/20260410_000002_tasks_activity_feed.sql`
-
-No additional Supabase migration is required for the current `/office` or realtime presence preview slices.
+- `supabase/migrations/20260410_000003_office_private_presence.sql`
 
 ## Remaining Gaps
 
@@ -136,10 +138,11 @@ The main remaining work is now:
 - verify `/history` reflects task and activity-feed updates correctly after a real workday pass
 - verify `/office` across before-check-in, active-focus, and checked-out states in the deployed environment
 - verify realtime presence with two or more real sessions in the deployed environment
+- apply the private-presence migration to any Supabase project that was created before this pass
 - test both email-confirmation-on and email-confirmation-off auth flows
 - run real-account E2E verification against the connected Supabase project
 - add persistent office-side data when the preview slice is ready to move beyond config-driven rooms and NPCs
-- decide how far the next pass should go between office event storage, richer NPC dialogue, and private-channel presence authorization
+- decide how far the next pass should go between office event storage, richer NPC dialogue, and `office_memberships`
 
 ## Documentation Process
 
@@ -160,5 +163,6 @@ After each meaningful development pass, update these files together:
 - `docs/solo_shift_planning_v1.md`: original product planning document
 - `supabase/migrations/20260409_000001_soloshift_mvp.sql`: MVP schema and RLS setup
 - `supabase/migrations/20260410_000002_tasks_activity_feed.sql`: tasks and activity feed schema
+- `supabase/migrations/20260410_000003_office_private_presence.sql`: authenticated-only private Realtime Presence policies for `/office`
 
 

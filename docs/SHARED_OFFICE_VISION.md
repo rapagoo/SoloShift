@@ -386,11 +386,13 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 2. 오피스/룸/NPC 최소 스키마 초안 작성
 3. `/office` 페이지 와이어프레임 구현
 4. NPC 반응 시스템 연결
-5. 그 다음에 Realtime presence 도입 여부 결정
+5. Realtime presence 미니 슬라이스 도입
+6. private authenticated-only Presence로 보안 기준선 올리기
+7. 그 다음에 `office_memberships`가 필요한 시점을 판단하기
 
-현재 코드베이스는 4번과 5번의 첫 미니 슬라이스까지 완료한 상태다. 다음 결정 지점은 `public presence preview를 유지할지` 혹은 `private channel + authorization policy`로 올릴지다.
+현재 코드베이스는 6번까지 완료한 상태다. 다음 결정 지점은 `office_memberships`를 바로 붙일지, 아니면 먼저 office-side event storage와 더 깊은 NPC 반응부터 갈지 정하는 것이다.
 
-private channel 전환을 위한 상세 계획은 `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`를 기준으로 본다.
+`office_memberships`는 두 번째 오피스, 초대형 오피스, 팀 단위 visibility 분리가 필요해지는 시점에 도입하는 것이 가장 적절하다. private channel 전환의 상세 계획과 현재 기준선은 `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`를 기준으로 본다.
 
 ## 성공 기준
 

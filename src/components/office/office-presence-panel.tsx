@@ -38,7 +38,7 @@ export function OfficePresencePanel({
             지금 오피스에 접속 중인 사람들
           </h2>
           <p className="mt-3 text-sm leading-7 text-slate-500">
-            현재는 같은 오피스 채널 안에서 누가 어느 방에 있는지 실시간으로 보여주는 단계입니다.
+            같은 오피스 채널 안에서 누가 어느 방에 있는지 실시간으로 보여주는 단계입니다.
           </p>
         </div>
         <PresenceStatusBadge state={connectionState} />
@@ -78,11 +78,16 @@ export function OfficePresencePanel({
           </div>
           {connectionState === "error" ? (
             <p className="mt-3 text-sm leading-6 text-rose-600">
-              실시간 채널에 연결하지 못했습니다. Supabase Realtime 공개 채널 설정을 확인해주세요.
+              실시간 오피스 채널에 연결하지 못했습니다. 로그인 상태와 Supabase Realtime
+              authorization 정책을 확인해주세요.
             </p>
           ) : currentRoomOthers.length === 0 ? (
             <p className="mt-3 text-sm leading-6 text-slate-500">
-              아직 같은 방에 다른 사용자가 없습니다. 다른 브라우저나 계정으로 `/office`를 열면 바로 반영됩니다.
+              아직 같은 방에 다른 사용자가 없습니다. 다른 브라우저나 다른 계정으로
+              <span className="mx-1 rounded bg-slate-900/5 px-2 py-0.5 font-medium text-slate-700">
+                /office
+              </span>
+              를 열면 바로 반영됩니다.
             </p>
           ) : (
             <ul className="mt-3 space-y-3">
@@ -152,7 +157,7 @@ function PresenceStatusBadge({ state }: { state: OfficeRealtimeConnectionState }
     state === "live"
       ? { label: "실시간 연결됨", className: "bg-emerald-100 text-emerald-700" }
       : state === "error"
-        ? { label: "연결 확인 필요", className: "bg-rose-100 text-rose-700" }
+        ? { label: "권한/연결 확인 필요", className: "bg-rose-100 text-rose-700" }
         : { label: "연결 중", className: "bg-amber-100 text-amber-700" };
 
   return (

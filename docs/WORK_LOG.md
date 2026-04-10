@@ -130,6 +130,15 @@ For each meaningful development pass, add a dated entry here and sync the summar
   - membership-based office authorization
 - Recorded recommended topic naming and the minimal policy scope needed for a future private-channel rollout.
 
+### Phase 3B Private Channel Pass
+
+- Renamed the shared office Presence topic to `office:soloshift-commons:presence` so it matches the long-term topic naming plan.
+- Switched the `/office` Presence client to `private: true` and reset stale member state whenever a channel reconnect begins or fails.
+- Rewrote the office presence panel copy so connection failures now point to auth and Realtime authorization issues instead of public-channel settings.
+- Added `supabase/migrations/20260410_000003_office_private_presence.sql` with authenticated-only `realtime.messages` select/insert policies for Presence on the office topic.
+- Updated status, next-step, README, and office security docs so the repo now treats private authenticated-only presence as the current baseline.
+- Clarified that `office_memberships` should be introduced when SoloShift gains multiple offices, invite-only spaces, or membership-scoped visibility.
+
 ### Verification
 
 - `npx tsc --noEmit`

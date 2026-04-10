@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { saveProfileAction } from "@/app/actions/profile";
+import { FormPendingNotice } from "@/components/ui/form-pending-notice";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -66,12 +67,12 @@ export function ProfileForm({
   return (
     <form action={formAction} className="mt-8 space-y-5">
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-slate-700">닉네임</span>
+        <span className="text-sm font-medium text-slate-700">{"닉네임"}</span>
         <Input defaultValue={profile?.nickname ?? ""} name="nickname" placeholder="예: Rapagoo" required />
       </label>
       <div className="grid gap-5 md:grid-cols-2">
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-slate-700">시간대</span>
+          <span className="text-sm font-medium text-slate-700">{"시간대"}</span>
           <Select defaultValue={profile?.timezone ?? DEFAULT_TIMEZONE} name="timezone" required>
             {TIMEZONE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -81,7 +82,7 @@ export function ProfileForm({
           </Select>
         </label>
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-slate-700">기본 출근 시각</span>
+          <span className="text-sm font-medium text-slate-700">{"기본 출근 시각"}</span>
           <Input
             defaultValue={profile?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME}
             name="default_check_in_time"
@@ -97,6 +98,7 @@ export function ProfileForm({
       {state.message && !successRedirectTo ? (
         <p className="text-sm text-emerald-700">{state.message}</p>
       ) : null}
+      <FormPendingNotice message="프로필 설정을 저장하는 중입니다." />
       <div className="flex justify-end">
         <FormSubmitButton idleLabel={submitLabel} pendingLabel={pendingLabel} size="lg" />
       </div>

@@ -62,6 +62,12 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Updated runtime env validation, the admin Supabase client, setup guidance, and project docs to match the current Supabase publishable/secret key model.
 - Dropped legacy server key compatibility because the project has not been configured with `service_role` yet.
 
+### QA Feedback Pass
+
+- Added spinner-based loading feedback to the shared submit button so button presses feel immediate.
+- Added inline progress messages to login, onboarding/profile save, check-in, status change, focus session start/finish, and checkout flows.
+- Updated logout to use the same pending-state button treatment for consistency.
+
 ### Verification
 
 - `npx tsc --noEmit`

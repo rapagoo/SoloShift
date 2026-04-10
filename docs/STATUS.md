@@ -36,6 +36,7 @@ The current MVP loop supports:
 - Dashboard “flow snapshot” guidance for the next action
 - Sidebar states for before check-in, in-progress workdays, and checked-out workdays
 - More readable history cards with labeled status logs, focus sessions, and point events
+- Loading feedback for major form submissions with spinner buttons and inline progress messaging
 
 ### Data and backend
 

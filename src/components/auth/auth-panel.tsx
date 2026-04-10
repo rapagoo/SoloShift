@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useActionState, useMemo, useState } from "react";
 
 import { signInAction, signUpAction } from "@/app/actions/auth";
+import { FormPendingNotice } from "@/components/ui/form-pending-notice";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { Input } from "@/components/ui/input";
 import { MIN_PASSWORD_LENGTH, PASSWORD_HELPER_TEXT } from "@/lib/auth/password-policy";
@@ -42,7 +43,7 @@ export function AuthPanel() {
           onClick={() => setMode("signin")}
           type="button"
         >
-          로그인
+          {"로그인"}
         </button>
         <button
           className={`flex-1 rounded-full px-4 py-2 text-sm font-medium transition ${
@@ -51,17 +52,17 @@ export function AuthPanel() {
           onClick={() => setMode("signup")}
           type="button"
         >
-          회원가입
+          {"회원가입"}
         </button>
       </div>
 
       <form action={action} className="space-y-4">
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-slate-700">이메일</span>
+          <span className="text-sm font-medium text-slate-700">{"이메일"}</span>
           <Input name="email" placeholder="you@example.com" required type="email" />
         </label>
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-slate-700">비밀번호</span>
+          <span className="text-sm font-medium text-slate-700">{"비밀번호"}</span>
           <Input
             minLength={MIN_PASSWORD_LENGTH}
             name="password"
@@ -72,6 +73,13 @@ export function AuthPanel() {
         </label>
 
         {helper}
+        <FormPendingNotice
+          message={
+            mode === "signin"
+              ? "로그인 정보를 확인하는 중입니다."
+              : "계정을 만드는 중입니다."
+          }
+        />
 
         <FormSubmitButton className="w-full" idleLabel={ctaLabel} pendingLabel={pendingLabel} />
       </form>

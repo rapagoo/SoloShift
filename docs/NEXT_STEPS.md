@@ -14,6 +14,7 @@ Last updated: 2026-04-10
 - [x] Review modal flows so users always understand the next action.
 - [x] Re-check timezone-sensitive weekly summary calculations.
 - [x] Re-run `npm run lint`, `npm test`, and `npm run build` after the MVP polish pass.
+- [x] Add clearer loading feedback for major submit actions so QA can tell when a request is in progress.
 
 ## External Verification Still Recommended
 

@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useFormStatus } from "react-dom";
 
 import { Button, ButtonProps } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface FormSubmitButtonProps extends ButtonProps {
   idleLabel: string;
@@ -10,6 +11,7 @@ interface FormSubmitButtonProps extends ButtonProps {
 }
 
 export function FormSubmitButton({
+  className,
   idleLabel,
   pendingLabel = "저장 중...",
   ...props
@@ -17,8 +19,23 @@ export function FormSubmitButton({
   const { pending } = useFormStatus();
 
   return (
-    <Button disabled={pending || props.disabled} {...props}>
-      {pending ? pendingLabel : idleLabel}
+    <Button
+      aria-busy={pending}
+      className={cn("min-w-[8.5rem] gap-2", className)}
+      disabled={pending || props.disabled}
+      {...props}
+    >
+      {pending ? (
+        <>
+          <span
+            aria-hidden="true"
+            className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+          />
+          <span>{pendingLabel}</span>
+        </>
+      ) : (
+        idleLabel
+      )}
     </Button>
   );
 }

@@ -1,6 +1,7 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import { signOutAction } from "@/app/actions/auth";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
 interface TopNavProps {
   nickname: string;
@@ -23,7 +24,7 @@ export function TopNav({ nickname, current }: TopNavProps) {
         <p className="font-['Space_Grotesk'] text-lg font-semibold text-slate-950">
           SoloShift
         </p>
-        <p className="text-sm text-slate-500">{nickname}님의 오늘 근무 흐름</p>
+        <p className="text-sm text-slate-500">{`${nickname}님의 오늘 근무 흐름`}</p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {navItems.map((item) => {
@@ -45,12 +46,13 @@ export function TopNav({ nickname, current }: TopNavProps) {
           );
         })}
         <form action={signOutAction}>
-          <button
-            className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-700"
-            type="submit"
-          >
-            로그아웃
-          </button>
+          <FormSubmitButton
+            className="rounded-full"
+            idleLabel="로그아웃"
+            pendingLabel="로그아웃 중..."
+            size="sm"
+            variant="danger"
+          />
         </form>
       </div>
     </header>

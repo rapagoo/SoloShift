@@ -48,8 +48,8 @@ export function TopNav({ nickname, current }: TopNavProps) {
         <form action={signOutAction}>
           <FormSubmitButton
             className="rounded-full"
-            idleLabel="로그아웃"
-            pendingLabel="로그아웃 중..."
+            idleLabel={"로그아웃"}
+            pendingLabel={"로그아웃 중..."}
             size="sm"
             variant="danger"
           />

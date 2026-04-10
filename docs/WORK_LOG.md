@@ -68,6 +68,12 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Added inline progress messages to login, onboarding/profile save, check-in, status change, focus session start/finish, and checkout flows.
 - Updated logout to use the same pending-state button treatment for consistency.
 
+### QA Follow-Up Fixes
+
+- Fixed pending-state messages so they render as real Korean copy instead of escaped unicode text.
+- Updated modal auto-close logic so status-change and focus-session dialogs close reliably after a successful submit.
+- Center-aligned weekly summary metrics in the history view for better visual balance.
+
 ### Verification
 
 - `npx tsc --noEmit`

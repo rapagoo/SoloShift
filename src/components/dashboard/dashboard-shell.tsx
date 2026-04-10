@@ -52,21 +52,28 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
     return () => window.clearInterval(timer);
   }, []);
 
-  const shouldCloseModal =
-    checkInState.ok ||
-    statusState.ok ||
-    focusState.ok ||
-    finishState.ok ||
-    checkoutState.ok;
-
   useEffect(() => {
-    if (!shouldCloseModal) {
+    const shouldCloseActiveModal =
+      (openModal === "checkin" && checkInState.ok) ||
+      (openModal === "status" && statusState.ok) ||
+      (openModal === "focus" && focusState.ok) ||
+      (openModal === "finish" && finishState.ok) ||
+      (openModal === "checkout" && checkoutState.ok);
+
+    if (!shouldCloseActiveModal) {
       return undefined;
     }
 
     const timer = window.setTimeout(() => setOpenModal(null), 0);
     return () => window.clearTimeout(timer);
-  }, [shouldCloseModal]);
+  }, [
+    checkInState.ok,
+    checkoutState.ok,
+    finishState.ok,
+    focusState.ok,
+    openModal,
+    statusState.ok,
+  ]);
 
   const activeSession = dashboard.active_focus_session;
   const sessionElapsedMinutes = activeSession
@@ -350,7 +357,7 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
             <Input name="today_first_task" placeholder="예: BFS 복습" required />
           </label>
           {checkInState.error ? <p className="text-sm text-rose-600">{checkInState.error}</p> : null}
-          <FormPendingNotice message="\uCD9C\uADFC \uAE30\uB85D\uC744 \uC800\uC7A5\uD558\uB294 \uC911\uC785\uB2C8\uB2E4." />
+          <FormPendingNotice message={"\uCD9C\uADFC \uAE30\uB85D\uC744 \uC800\uC7A5\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."} />
           <div className="flex justify-end gap-2">
             <Button onClick={() => setOpenModal(null)} type="button" variant="ghost">
               취소
@@ -383,7 +390,7 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
             <Input name="memo" placeholder="선택 입력" />
           </label>
           {statusState.error ? <p className="text-sm text-rose-600">{statusState.error}</p> : null}
-          <FormPendingNotice message="\uD604\uC7AC \uC0C1\uD0DC\uB97C \uC800\uC7A5\uD558\uB294 \uC911\uC785\uB2C8\uB2E4." />
+          <FormPendingNotice message={"\uD604\uC7AC \uC0C1\uD0DC\uB97C \uC800\uC7A5\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."} />
           <div className="flex justify-end gap-2">
             <Button onClick={() => setOpenModal(null)} type="button" variant="ghost">
               취소
@@ -412,7 +419,7 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
             </Select>
           </label>
           {focusState.error ? <p className="text-sm text-rose-600">{focusState.error}</p> : null}
-          <FormPendingNotice message="\uC9D1\uC911 \uC138\uC158\uC744 \uC2DC\uC791\uD558\uB294 \uC911\uC785\uB2C8\uB2E4." />
+          <FormPendingNotice message={"\uC9D1\uC911 \uC138\uC158\uC744 \uC2DC\uC791\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."} />
           <div className="flex justify-end gap-2">
             <Button onClick={() => setOpenModal(null)} type="button" variant="ghost">
               취소
@@ -442,7 +449,7 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
             <Textarea name="memo" placeholder="예: 2문제 풀이 완료, 한 문제는 다시 봐야 함" />
           </label>
           {finishState.error ? <p className="text-sm text-rose-600">{finishState.error}</p> : null}
-          <FormPendingNotice message="\uC138\uC158 \uACB0\uACFC\uB97C \uC800\uC7A5\uD558\uB294 \uC911\uC785\uB2C8\uB2E4." />
+          <FormPendingNotice message={"\uC138\uC158 \uACB0\uACFC\uB97C \uC800\uC7A5\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."} />
           <div className="flex justify-end gap-2">
             <Button onClick={() => setOpenModal(null)} type="button" variant="ghost">
               취소
@@ -476,7 +483,7 @@ export function DashboardShell({ profile, dashboard }: DashboardShellProps) {
             오늘 목표를 달성했습니다.
           </label>
           {checkoutState.error ? <p className="text-sm text-rose-600">{checkoutState.error}</p> : null}
-          <FormPendingNotice message="\uD1F4\uADFC \uAE30\uB85D\uC744 \uC815\uB9AC\uD558\uB294 \uC911\uC785\uB2C8\uB2E4." />
+          <FormPendingNotice message={"\uD1F4\uADFC \uAE30\uB85D\uC744 \uC815\uB9AC\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."} />
           <div className="flex justify-end gap-2">
             <Button onClick={() => setOpenModal(null)} type="button" variant="ghost">
               취소
@@ -549,6 +556,7 @@ function MiniRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
 
 
 

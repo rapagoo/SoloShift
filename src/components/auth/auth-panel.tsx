@@ -10,6 +10,10 @@ import { MIN_PASSWORD_LENGTH, PASSWORD_HELPER_TEXT } from "@/lib/auth/password-p
 import { ActionState } from "@/lib/types";
 
 const initialState: ActionState = { ok: false };
+const SIGN_IN_LABEL = "로그인";
+const SIGN_UP_LABEL = "계정 만들기";
+const EMAIL_LABEL = "이메일";
+const PASSWORD_LABEL = "비밀번호";
 
 export function AuthPanel() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -18,7 +22,7 @@ export function AuthPanel() {
 
   const state = mode === "signin" ? signInState : signUpState;
   const action = mode === "signin" ? signInFormAction : signUpFormAction;
-  const ctaLabel = mode === "signin" ? "로그인" : "계정 만들기";
+  const ctaLabel = mode === "signin" ? SIGN_IN_LABEL : SIGN_UP_LABEL;
   const pendingLabel = mode === "signin" ? "로그인 중..." : "가입 중...";
 
   const helper = useMemo(() => {
@@ -43,7 +47,7 @@ export function AuthPanel() {
           onClick={() => setMode("signin")}
           type="button"
         >
-          {"로그인"}
+          {SIGN_IN_LABEL}
         </button>
         <button
           className={`flex-1 rounded-full px-4 py-2 text-sm font-medium transition ${
@@ -58,11 +62,11 @@ export function AuthPanel() {
 
       <form action={action} className="space-y-4">
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-slate-700">{"이메일"}</span>
+          <span className="text-sm font-medium text-slate-700">{EMAIL_LABEL}</span>
           <Input name="email" placeholder="you@example.com" required type="email" />
         </label>
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-slate-700">{"비밀번호"}</span>
+          <span className="text-sm font-medium text-slate-700">{PASSWORD_LABEL}</span>
           <Input
             minLength={MIN_PASSWORD_LENGTH}
             name="password"

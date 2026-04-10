@@ -168,7 +168,7 @@ export function HistoryPanel({ profile, weeklySummary, entries }: HistoryPanelPr
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-3xl bg-white/75 px-4 py-3 text-right">
+    <div className="rounded-3xl bg-white/75 px-4 py-3 text-center">
       <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{label}</p>
       <p className="mt-1 text-lg font-semibold text-slate-900">{value}</p>
     </div>

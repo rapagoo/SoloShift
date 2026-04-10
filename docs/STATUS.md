@@ -37,6 +37,7 @@ The current MVP loop supports:
 - Sidebar states for before check-in, in-progress workdays, and checked-out workdays
 - More readable history cards with labeled status logs, focus sessions, and point events
 - Loading feedback for major form submissions with spinner buttons and inline progress messaging
+- QA fixes for pending-state messaging, modal auto-close on successful actions, and centered weekly summary metrics
 
 ### Data and backend
 

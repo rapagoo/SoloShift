@@ -28,9 +28,11 @@ The current build supports:
 - a large office-first layout where the floor owns most of the screen
 - a right sidebar that now handles quick task entry, office chat, and office-feed reading
 - a wide office map with click-to-move movement
+- arrow-key movement support for longer office navigation
 - asset-ready sprite slots for background, desks, props, and avatars
 - live online presence in the office through Supabase Realtime
 - speech bubbles above avatars when users chat
+- Enter-to-send office chat with a larger scrollable chat log
 - privacy-safe shared office activity summaries
 
 ## Implemented
@@ -60,6 +62,7 @@ The current build supports:
 - Office screen now favors one large office scene instead of multiple equal-weight cards
 - Office canvas now uses a fixed map layout with desks and decor anchors for future sprite replacement
 - Users move by clicking the floor, with local avatar coordinates synced through Supabase Presence
+- Users can also move with arrow keys, making long navigation practical without repeated clicking
 - Empty desks remain visible so the office still reads as a small shared space
 - Avatar labels and speech bubbles now surface who is present and what they just said
 - Office sidebar now includes:
@@ -151,8 +154,9 @@ The main remaining work is now:
 
 - run a full manual smoke test from signup to checkout in the deployed environment
 - verify `/office` with two or more real sessions using the new four-desk layout
-- verify that click-to-move feels natural enough during longer shared sessions
+- verify that click-to-move and arrow-key movement both feel natural during longer shared sessions
 - verify that chat bubbles stay readable when two users talk at the same time
+- verify that Enter-to-send chat does not interfere with other inputs
 - verify that the asset-ready layout still feels balanced after replacing placeholders with real sprites
 - decide whether desk assignment should remain deterministic-in-memory or move to persistent stored assignments
 - decide whether NPCs still matter in the new office-first product or should be reduced further

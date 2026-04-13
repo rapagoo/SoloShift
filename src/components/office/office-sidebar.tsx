@@ -49,9 +49,7 @@ export function OfficeSidebar({
   const [chatError, setChatError] = useState<string | null>(null);
   const [isSendingChat, startChatTransition] = useTransition();
 
-  const submitChat = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const sendCurrentChat = () => {
     const trimmed = chatDraft.trim();
     if (!trimmed) {
       setChatError("메시지를 입력해주세요.");
@@ -67,6 +65,11 @@ export function OfficeSidebar({
         setChatError("채팅을 보내는 중 문제가 생겼습니다.");
       }
     });
+  };
+
+  const submitChat = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    sendCurrentChat();
   };
 
   return (
@@ -97,9 +100,16 @@ export function OfficeSidebar({
       <SidebarCard eyebrow="Office Chat" title="옆자리처럼 짧게 말하기">
         <form className="space-y-3" onSubmit={submitChat}>
           <Textarea
+            className="min-h-[88px] resize-none"
             onChange={(event) => setChatDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                sendCurrentChat();
+              }
+            }}
             placeholder="예: 25분 집중 들어갈게요"
-            rows={2}
+            rows={3}
             value={chatDraft}
           />
           {chatError ? <p className="text-sm text-rose-700">{chatError}</p> : null}
@@ -117,11 +127,11 @@ export function OfficeSidebar({
           </div>
         </form>
 
-        <div className="mt-4 space-y-3">
+        <div className="mt-4 max-h-[24rem] space-y-3 overflow-y-auto pr-1">
           {chatMessages.length === 0 ? (
             <p className="text-sm leading-6 text-[#7a6656]">아직 짧은 오피스 채팅이 없습니다.</p>
           ) : (
-            chatMessages.slice(0, 8).map((message) => (
+            chatMessages.map((message) => (
               <div
                 className={`rounded-[1.2rem] border p-3 ${
                   message.self

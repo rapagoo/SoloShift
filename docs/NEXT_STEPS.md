@@ -24,9 +24,11 @@ Last updated: 2026-04-13
 - [ ] Verify `/history` reflects same-day tasks and activity events correctly after a real workday pass.
 - [ ] Verify `/office` with at least two real browser sessions using the new four-desk layout.
 - [ ] Check that both users keep understandable movement and placement during a longer shared session.
+- [ ] Verify that arrow-key movement feels good on real keyboards and does not conflict with text inputs.
 - [ ] Verify the new office sidebar flow feels natural enough that `/dashboard` can stay secondary.
 - [ ] Verify that the wide office layout still feels balanced on smaller laptop screens.
 - [ ] Verify that chat bubbles stay readable with two or more live users.
+- [ ] Verify that Enter-to-send chat feels natural and Shift+Enter is still available for multiline drafts if needed later.
 - [ ] Verify that placeholder props can be swapped for real assets without layout surprises.
 - [ ] Test with email confirmation enabled in Supabase.
 - [ ] Test with email confirmation disabled in Supabase.

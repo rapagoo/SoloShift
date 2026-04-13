@@ -312,11 +312,11 @@ function AvatarMarker({
 
 function SpeechBubble({ bubble }: { bubble: OfficeChatBubble }) {
   return (
-    <div className="absolute -top-16 left-1/2 max-w-[220px] -translate-x-1/2">
-      <div className="rounded-[1rem] border-4 border-[#5a4635] bg-white px-3 py-2 text-center text-xs font-medium leading-5 text-[#2a1f17] shadow-[6px_6px_0_rgba(90,70,53,0.12)]">
+    <div className="absolute -top-20 left-1/2 flex -translate-x-1/2 justify-center">
+      <div className="min-w-[112px] max-w-[320px] rounded-[1rem] border-4 border-[#5a4635] bg-white px-4 py-2 text-center text-xs font-medium leading-5 text-[#2a1f17] shadow-[6px_6px_0_rgba(90,70,53,0.12)] break-keep whitespace-pre-wrap">
         {bubble.message}
       </div>
-      <div className="mx-auto h-4 w-4 rotate-45 border-b-4 border-r-4 border-[#5a4635] bg-white -translate-y-2" />
+      <div className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 border-b-4 border-r-4 border-[#5a4635] bg-white" />
     </div>
   );
 }

@@ -242,6 +242,15 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Added an office chat card to the right sidebar so quick coworking-style messages can be sent without leaving the main office.
 - Added a movement helper test so avatar interpolation can be changed later without losing the current behavior.
 
+### Movement + Chat Usability Pass
+
+- Fixed the movement loop so click-to-move no longer advances only a tiny amount per click.
+- Added arrow-key movement for longer office navigation without repeated clicking.
+- Expanded the office sidebar width so chat can behave more like a readable coworking log.
+- Made office chat send on `Enter` from the chat textarea while preserving the rest of the form behavior.
+- Enlarged speech bubbles and added a minimum width so very short Korean messages no longer wrap awkwardly one character per line.
+- Turned the sidebar chat history into a taller scrollable panel so recent conversation is easier to review.
+
 ### Verification
 
 - `npx tsc --noEmit`

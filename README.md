@@ -28,7 +28,8 @@ The current baseline includes:
 - Large office canvas as the primary visual surface
 - Right sidebar for quick tasks, chat, and office-feed reading
 - Asset-ready office renderer with sprite slots in `src/lib/office/assets.ts`
-- Click-to-move office movement and speech-bubble chat on `/office`
+- Click-to-move and arrow-key office movement on `/office`
+- Speech-bubble chat with Enter-to-send support
 - Check-in, status change, focus session, and check-out flows
 - Dashboard profile editing for nickname, timezone, and default check-in time
 - Task board for the current workday

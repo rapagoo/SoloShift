@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { OfficeFloor } from "@/components/office/office-floor";
 import { OfficeSidebar } from "@/components/office/office-sidebar";
@@ -12,9 +12,13 @@ import {
   OFFICE_REALTIME_TOPIC,
   OFFICE_TAGLINE,
 } from "@/lib/office/config";
-import { moveOfficeAvatarTowards } from "@/lib/office/spatial";
+import { clampOfficeAvatarPosition, moveOfficeAvatarTowards } from "@/lib/office/spatial";
 import { OfficeAvatarPosition, OfficeExperience } from "@/lib/office/types";
 import { Profile } from "@/lib/types";
+
+const KEYBOARD_SPEED = 0.02;
+const CLICK_MOVE_STEP = 0.018;
+const KEYBOARD_MOVE_STEP = 0.024;
 
 interface OfficeShellProps {
   experience: OfficeExperience;
@@ -31,7 +35,8 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
   }));
   const spawnPosition = OFFICE_DESKS[0].position;
   const [position, setPosition] = useState<OfficeAvatarPosition>(spawnPosition);
-  const [targetPosition, setTargetPosition] = useState<OfficeAvatarPosition>(spawnPosition);
+  const targetPositionRef = useRef<OfficeAvatarPosition>(spawnPosition);
+  const pressedKeysRef = useRef<Set<string>>(new Set());
 
   const {
     members,
@@ -49,27 +54,90 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
     topic: OFFICE_REALTIME_TOPIC,
   });
 
+  const setTargetPosition = useCallback((next: OfficeAvatarPosition) => {
+    targetPositionRef.current = next;
+  }, []);
+
+  useEffect(() => {
+    const shouldIgnoreKeyboard = (target: EventTarget | null) => {
+      if (!(target instanceof HTMLElement)) {
+        return false;
+      }
+
+      const tagName = target.tagName.toLowerCase();
+      return tagName === "input" || tagName === "textarea" || target.isContentEditable;
+    };
+
+    const relevantKeys = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"]);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (shouldIgnoreKeyboard(event.target) || !relevantKeys.has(event.key)) {
+        return;
+      }
+
+      event.preventDefault();
+      pressedKeysRef.current.add(event.key);
+    };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (!relevantKeys.has(event.key)) {
+        return;
+      }
+
+      pressedKeysRef.current.delete(event.key);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
   useEffect(() => {
     let frameId = 0;
 
     const animate = () => {
-      let shouldContinue = false;
-
       setPosition((current) => {
-        const next = moveOfficeAvatarTowards(current, targetPosition, 0.01);
-        shouldContinue = next.x !== targetPosition.x || next.y !== targetPosition.y;
+        const pressedKeys = pressedKeysRef.current;
+
+        if (pressedKeys.size > 0) {
+          const horizontal =
+            (pressedKeys.has("ArrowRight") ? 1 : 0) - (pressedKeys.has("ArrowLeft") ? 1 : 0);
+          const vertical =
+            (pressedKeys.has("ArrowDown") ? 1 : 0) - (pressedKeys.has("ArrowUp") ? 1 : 0);
+
+          if (horizontal !== 0 || vertical !== 0) {
+            const magnitude = Math.hypot(horizontal, vertical) || 1;
+            targetPositionRef.current = clampOfficeAvatarPosition({
+              x: targetPositionRef.current.x + (horizontal / magnitude) * KEYBOARD_SPEED,
+              y: targetPositionRef.current.y + (vertical / magnitude) * KEYBOARD_SPEED,
+            });
+          }
+        }
+
+        const next = moveOfficeAvatarTowards(
+          current,
+          targetPositionRef.current,
+          pressedKeys.size > 0 ? KEYBOARD_MOVE_STEP : CLICK_MOVE_STEP,
+        );
+
+        if (Math.abs(next.x - current.x) < 0.0001 && Math.abs(next.y - current.y) < 0.0001) {
+          return current;
+        }
+
         return next;
       });
 
-      if (shouldContinue) {
-        frameId = window.requestAnimationFrame(animate);
-      }
+      frameId = window.requestAnimationFrame(animate);
     };
 
     frameId = window.requestAnimationFrame(animate);
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [targetPosition]);
+  }, []);
 
   const displayedMembers = useMemo(() => {
     const nextMembers = members.map((member) =>
@@ -123,7 +191,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
         </div>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_31rem]">
         <OfficeFloor
           chatBubbles={chatBubbles}
           connectionState={connectionState}

@@ -1,28 +1,29 @@
-﻿# SoloShift Status
+# SoloShift Status
 
 Last updated: 2026-04-13
 
 ## Snapshot
 
-SoloShift is now beyond the MVP-only baseline. The full day-flow MVP is complete, the task/activity foundation layer is in place, and the shared-office branch now includes a spatial `/office` prototype with private authenticated realtime presence and a persistent office-side event timeline.
+SoloShift is no longer just a dashboard-first productivity MVP. The product baseline is now:
 
-The current product baseline now supports:
+- office-first entry flow
+- one shared 2D office
+- four desks
+- private authenticated realtime presence
+- shared office activity timeline
+- dashboard and history as supporting views
+
+The current build supports:
 
 - email signup and login
 - onboarding and profile editing
-- check-in
-- current status changes
-- focus session start and finish
-- task creation and task status updates
-- check-out with daily review
-- dashboard activity feed for the current day
-- daily and weekly history review
-- office room switching and rule-based NPC conversations at `/office`
-- realtime office presence showing who is online and which room they are in
-- private authenticated-only office presence channels for signed-in users
-- shared office activity events that power the office pulse independently from the personal dashboard feed
-- shared office activity events now use privacy-safe summary copy instead of exposing exact task titles, goals, or review text from other users
-- a spatial office floor with one main office, three mapped rooms, click-to-move avatar placement, and live online-user markers
+- check-in, status change, focus session, task updates, and check-out
+- office-first landing at `/office`
+- a dedicated dashboard at `/dashboard`
+- daily and weekly history at `/history`
+- one shared main office with four visible desks
+- live online presence in the office through Supabase Realtime
+- privacy-safe shared office activity summaries
 
 ## Implemented
 
@@ -30,39 +31,41 @@ The current product baseline now supports:
 
 - Login page at `/login`
 - Onboarding page at `/onboarding`
-- Dashboard page at `/`
-- Office page at `/office`
+- Office-first landing flow:
+  - `/` redirects signed-in users to `/office`
+  - `/dashboard` now holds the detailed personal work controls
 - History page at `/history`
 - Modal-based workday actions from the dashboard
 - Dashboard profile edit modal for nickname, timezone, and default check-in time
 - Task creation modal from the dashboard
 - Task status updates directly from the task board
-- Query-driven office room switching and NPC conversation panels
-- Live office presence panel powered by Supabase Realtime Presence
 
-### UX polish
+### Shared office baseline
 
-- Korean timezone dropdown with readable labels
-- Korean auth error messages for common login/signup failures
-- Top navigation that keeps the current page visible
-- Dashboard flow guidance for the next action
-- Sidebar states for before check-in, in-progress workdays, and checked-out workdays
-- More readable history cards with labeled status logs, focus sessions, point events, tasks, and activity feed
-- Loading feedback for major form submissions with spinner buttons and inline progress messaging
-- QA fixes for pending-state messaging, modal auto-close on successful actions, and centered weekly summary metrics
+- One main shared office
+- Four desks:
+  - `Desk A`
+  - `Desk B`
+  - `Desk C`
+  - `Desk D`
+- Office floor rendered as a compact 2D/pixel-style shared workspace
+- Desk occupancy derived from realtime online users
+- Empty desks remain visible so the office always reads as a small shared space
+- Seat roster and online list beside the floor map
+- Office pulse still connected to the shared office event timeline
+- Today snapshot and dashboard link kept as supporting panels instead of the main view
 
-### Data and backend
+### Realtime and backend
 
-- Supabase public and server environment handling
 - Supabase Auth email/password flow
 - Postgres schema and RLS policies
 - Server actions for auth, profile, workday flow, and tasks
 - UTC timestamp storage with profile timezone-based local date grouping
-- Weekly summary date-range calculation updated to use local-date-safe formatting
 - Task and activity-feed schema with dedicated migration and RLS policies
-- Office preview still keeps rooms and NPCs config-driven, while shared office pulse data now has a dedicated event schema
-- Dedicated `office_activity_events` storage for the main shared office, with authenticated read access and server-side writes
-- Office activity writes now sanitize shared descriptions and metadata before they are inserted into the office timeline
+- Dedicated `office_activity_events` storage for the main shared office
+- Private authenticated-only Presence channel at `office:soloshift-commons:presence`
+- Realtime client calls `supabase.realtime.setAuth()` before joining the private channel
+- Shared office activity writes sanitize descriptions and metadata before insert
 
 ### Workday logic
 
@@ -83,40 +86,6 @@ The current product baseline now supports:
 - Five-day streak bonus
 - Rule-based character feedback
 
-### Shared office preview
-
-- Static office configuration with three rooms:
-  - lobby
-  - focus room
-  - lounge
-- One main office layout rendered as a 2D floor board instead of room cards alone
-- Click-to-move avatar placement inside the current room
-- Room-to-room movement from the shared floor board
-- Rule-based room selection driven by current workday state
-- Three NPC personas with room-based summaries and short conversation threads
-- Office pulse panel that reframes task, focus, point, and activity-feed data as room ambience
-- Office pulse now reads from `office_activity_events` first, so recent room reactions are shared across signed-in users instead of being limited to the current user's dashboard feed
-- Office snapshot panel that links the new space view back to the current dashboard flow
-- QA follow-up contrast fix for office room cards and conversation CTA buttons
-- QA follow-up contrast sweep for office strong badges, conversation headers, user bubbles, and dashboard-return CTA
-- Office pulse cards now show actor nickname and room label for each shared office event
-
-### Shared office realtime preview
-
-- Supabase Realtime Presence channel for the shared office preview
-- Dedicated presence topic at `office:soloshift-commons:presence`
-- Live room counts by lobby, focus room, and lounge
-- Online user list with current room and current work state
-- Presence payload now carries room-local avatar coordinates so users can be drawn on the floor map
-- The floor map renders other online users directly inside each room using live Presence state
-- Same-room coworker panel for the currently selected office room
-- Private-channel client config with authenticated-only `realtime.messages` policies on the office topic, aligned with Supabase Realtime authorization checks
-- Realtime client now calls `supabase.realtime.setAuth()` before joining the private office Presence channel
-- Graceful error copy when the realtime channel cannot be joined because of missing auth or missing Realtime authorization
-- Shared presence state now drives both the room-switch cards and the right-side live panel so occupancy counts stay consistent
-- Room-switch cards and the top occupancy badge now show realtime connection state instead of falling back to misleading static counts when presence is unavailable
-- The live panel now surfaces more specific private-channel error detail so auth/session problems are easier to distinguish from policy problems
-
 ## Verified
 
 The following checks passed on the current codebase:
@@ -126,8 +95,11 @@ The following checks passed on the current codebase:
 - `npm test`
 - `npm run build`
 
-User-driven smoke testing has also been started in a real Supabase/Vercel setup.
-The connected Supabase project now also has the private office-presence policies, the `office_activity_events` table, and the privacy-redaction update applied.
+The connected Supabase project also already has:
+
+- private office-presence policies
+- `office_activity_events`
+- office-activity privacy redaction
 
 ## Current Setup
 
@@ -155,24 +127,24 @@ Recommended apply order:
 5. `20260410_000004_office_activity_events.sql`
 6. `20260410_000005_office_activity_privacy_redaction.sql`
 
-There are two `20260410_000002_*` files, so follow the order above instead of relying on filename sorting alone.
+No new SQL migration was added in the four-desk office-first pass.
 
 ## Remaining Gaps
 
-There are no known blockers in the MVP day-flow itself.
-
 The main remaining work is now:
 
-- run a full manual smoke test from a fresh account in the deployed environment
-- verify `/history` reflects task and activity-feed updates correctly after a real workday pass
-- verify `/office` across before-check-in, active-focus, and checked-out states in the deployed environment
-- verify realtime presence with two or more real sessions in the deployed environment
-- verify the new spatial office floor with two or more real sessions so avatar markers and room switching stay in sync
-- verify that office pulse cards show shared events from more than one signed-in user after the new office-activity migration is applied
-- verify that shared office pulse cards no longer leak exact task titles or goal text from other users
+- run a full manual smoke test from signup to checkout in the deployed environment
+- verify `/office` with two or more real sessions using the new four-desk layout
+- verify that desk occupancy feels stable enough for a two-person household use case
+- decide whether desk assignment should remain deterministic-in-memory or move to persistent stored assignments
+- decide whether NPCs still matter in the new office-first product or should be reduced further
+- add seat-level visual signals:
+  - focus timer
+  - away indicator
+  - checked-out indicator
+- add lightweight social reactions or ambient signals without turning the product into chat-first UX
 - test both email-confirmation-on and email-confirmation-off auth flows
 - run real-account E2E verification against the connected Supabase project
-- decide how far the next pass should go between richer NPC dialogue, room-level broadcast interactions, spatial movement persistence, and `office_memberships`
 
 ## Documentation Process
 
@@ -185,16 +157,8 @@ After each meaningful development pass, update these files together:
 ## Useful Files
 
 - `README.md`: local setup and run instructions
-- `docs/PLAN.md`: cleaned MVP scope and delivery order
-- `docs/NEXT_STEPS.md`: current QA and post-MVP checklist
-- `docs/SHARED_OFFICE_VISION.md`: shared office product and architecture direction
-- `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`: next security step for office presence
+- `docs/PLAN.md`: original cleaned MVP scope
+- `docs/NEXT_STEPS.md`: current QA and product backlog
+- `docs/SHARED_OFFICE_VISION.md`: current office-first product direction
+- `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`: office realtime security baseline
 - `docs/WORK_LOG.md`: dated implementation history
-- `docs/solo_shift_planning_v1.md`: original product planning document
-- `supabase/migrations/20260409_000001_soloshift_mvp.sql`: MVP schema and RLS setup
-- `supabase/migrations/20260410_000002_tasks_activity_feed.sql`: tasks and activity feed schema
-- `supabase/migrations/20260410_000003_office_private_presence.sql`: authenticated-only private Realtime Presence policies for `/office`
-- `supabase/migrations/20260410_000004_office_activity_events.sql`: shared office event timeline for the single main office
-- `supabase/migrations/20260410_000005_office_activity_privacy_redaction.sql`: privacy cleanup for previously stored office events
-
-

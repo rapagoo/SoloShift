@@ -9,8 +9,8 @@ interface TopNavProps {
 }
 
 const baseNavItems = [
-  { href: "/", label: "대시보드", key: "home" },
   { href: "/office", label: "오피스", key: "office" },
+  { href: "/dashboard", label: "대시보드", key: "home" },
   { href: "/history", label: "기록 보기", key: "history" },
 ] as const;
 

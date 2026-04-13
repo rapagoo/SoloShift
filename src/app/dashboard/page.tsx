@@ -1,11 +1,14 @@
 import { redirect } from "next/navigation";
 
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { SetupCard } from "@/components/setup-card";
+import { TopNav } from "@/components/top-nav";
 import { getOptionalSession, isProfileComplete } from "@/lib/auth";
+import { getTodayDashboard } from "@/lib/data/dashboard";
 import { getProfileByUserId } from "@/lib/data/profile";
 import { hasServerSupabaseEnv } from "@/lib/server-env";
 
-export default async function HomePage() {
+export default async function DashboardPage() {
   if (!hasServerSupabaseEnv()) {
     return <SetupCard />;
   }
@@ -22,5 +25,12 @@ export default async function HomePage() {
     redirect("/onboarding");
   }
 
-  redirect("/office");
+  const dashboard = await getTodayDashboard(user.id, profile);
+
+  return (
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-6 md:px-6 md:py-8">
+      <TopNav current="home" nickname={profile.nickname} />
+      <DashboardShell dashboard={dashboard} profile={profile} />
+    </main>
+  );
 }

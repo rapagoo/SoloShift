@@ -1,5 +1,8 @@
 import {
   OfficeAvatarPosition,
+  OfficeDeskConfig,
+  OfficeDeskId,
+  OfficePresenceMember,
   OfficeRoomConfig,
   OfficeRoomId,
   OfficeRoomMapRect,
@@ -58,10 +61,64 @@ export function buildDefaultRoomPositions(
   );
 }
 
+export function assignOfficeDesk(memberUserIds: string[], userId: string, desks: OfficeDeskConfig[]) {
+  const sortedUserIds = [...new Set(memberUserIds)].sort((left, right) => left.localeCompare(right));
+  const assignments = new Map<string, OfficeDeskId>();
+  const occupied = new Set<OfficeDeskId>();
+
+  for (const currentUserId of sortedUserIds) {
+    const startIndex = hashStringToIndex(currentUserId, desks.length);
+
+    for (let offset = 0; offset < desks.length; offset += 1) {
+      const desk = desks[(startIndex + offset) % desks.length];
+
+      if (!desk || occupied.has(desk.id)) {
+        continue;
+      }
+
+      assignments.set(currentUserId, desk.id);
+      occupied.add(desk.id);
+      break;
+    }
+  }
+
+  return assignments.get(userId) ?? desks[0]?.id ?? "desk-a";
+}
+
+export function getPreferredOfficeDesk(userId: string, desks: OfficeDeskConfig[]) {
+  return desks[hashStringToIndex(userId, desks.length)] ?? desks[0];
+}
+
+export function buildDeskOccupancy(
+  members: OfficePresenceMember[],
+  desks: OfficeDeskConfig[],
+) {
+  return desks.map((desk) => {
+    const occupant = members.find(
+      (member) => assignOfficeDesk(members.map((item) => item.userId), member.userId, desks) === desk.id,
+    );
+
+    return {
+      desk,
+      occupant: occupant ?? null,
+    };
+  });
+}
+
 export function clampNumber(value: number, min: number, max: number) {
   if (!Number.isFinite(value)) {
     return min;
   }
 
   return Math.min(max, Math.max(min, value));
+}
+
+function hashStringToIndex(value: string, size: number) {
+  let hash = 0;
+
+  for (const character of value) {
+    hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  }
+
+  return size === 0 ? 0 : hash % size;
 }

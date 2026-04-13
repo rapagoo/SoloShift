@@ -1,20 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { startTransition, useMemo, useState, type ReactNode } from "react";
 
-import { EmptyState } from "@/components/empty-state";
 import { OfficeFloor } from "@/components/office/office-floor";
 import { OfficePresencePanel } from "@/components/office/office-presence-panel";
-import { useOfficePresence } from "@/components/office/use-office-presence";
 import { getStatusLabel } from "@/lib/constants";
-import { OFFICE_REALTIME_TOPIC } from "@/lib/office/config";
-import { buildDefaultRoomPositions } from "@/lib/office/spatial";
-import { OfficeExperience, OfficeNpcId, OfficeRoomId } from "@/lib/office/types";
-import { formatTimeOnly, formatTimestamp } from "@/lib/time";
+import { OFFICE_DESKS, OFFICE_NAME, OFFICE_REALTIME_TOPIC, OFFICE_TAGLINE } from "@/lib/office/config";
+import { assignOfficeDesk, getPreferredOfficeDesk } from "@/lib/office/spatial";
+import { OfficeExperience } from "@/lib/office/types";
+import { formatMinutes, formatTimeOnly, formatTimestamp } from "@/lib/time";
 import { Profile } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useOfficePresence } from "@/components/office/use-office-presence";
 
 interface OfficeShellProps {
   experience: OfficeExperience;
@@ -22,305 +19,74 @@ interface OfficeShellProps {
 }
 
 export function OfficeShell({ experience, profile }: OfficeShellProps) {
-  const router = useRouter();
-  const { dashboard, currentRoom, officeName, officePulse, officeTagline, npcsInRoom, rooms, selectedConversation } =
-    experience;
-  const workday = dashboard.workday;
-  const activeFocus = dashboard.active_focus_session;
-  const activeStatus = dashboard.active_status;
-  const defaultRoomPositions = useMemo(() => buildDefaultRoomPositions(rooms), [rooms]);
-  const [roomPositionOverrides, setRoomPositionOverrides] = useState<
-    Partial<Record<OfficeRoomId, (typeof defaultRoomPositions)[OfficeRoomId]>>
-  >({});
-  const roomOptions = rooms.map((room) => ({
+  const { dashboard, officePulse } = experience;
+  const statusLabel = dashboard.active_status ? getStatusLabel(dashboard.active_status.status_type) : null;
+  const fallbackDesk = getPreferredOfficeDesk(profile.id, OFFICE_DESKS) ?? OFFICE_DESKS[0];
+  const provisionalPosition = fallbackDesk?.position ?? { x: 0.24, y: 0.34 };
+  const roomOptions = experience.rooms.map((room) => ({
     id: room.id,
     name: room.name,
     shortLabel: room.shortLabel,
   }));
-  const currentUserPosition =
-    roomPositionOverrides[currentRoom.id] ?? defaultRoomPositions[currentRoom.id];
-  const { members, roomCounts, connectionState, errorDetail } = useOfficePresence({
-    currentRoomId: currentRoom.id,
-    position: currentUserPosition,
+
+  const { members, connectionState, errorDetail } = useOfficePresence({
+    currentRoomId: "lobby",
+    position: provisionalPosition,
     profile: { id: profile.id, nickname: profile.nickname },
     roomOptions,
-    statusLabel: activeStatus ? getStatusLabel(activeStatus.status_type) : null,
+    statusLabel,
     topLevelState: dashboard.top_level_state,
     topic: OFFICE_REALTIME_TOPIC,
   });
-  const currentRoomOccupancyLabel = getRealtimeOccupancyLabel(
-    connectionState,
-    roomCounts[currentRoom.id],
-  );
+
+  const allKnownUserIds = Array.from(new Set([profile.id, ...members.map((member) => member.userId)]));
+  const myDeskId = assignOfficeDesk(allKnownUserIds, profile.id, OFFICE_DESKS);
+  const myDesk = OFFICE_DESKS.find((desk) => desk.id === myDeskId) ?? fallbackDesk;
 
   return (
     <div className="space-y-6">
-      <section
-        className={cn(
-          "grain overflow-hidden rounded-[2rem] border border-[var(--line)] bg-gradient-to-br p-6 shadow-[var(--shadow-lg)]",
-          currentRoom.themeClassName,
-        )}
-      >
+      <section className="overflow-hidden rounded-[2rem] border border-[var(--line)] bg-gradient-to-br from-[#fff2db] via-white to-[#ffe8d5] p-6 shadow-[var(--shadow-lg)]">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <p className="font-['Space_Grotesk'] text-sm font-semibold uppercase tracking-[0.28em] text-[var(--accent)]">
-              Office Preview
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.28em] text-[#8b5e34]">
+              Shared Office First
             </p>
             <h1 className="mt-3 font-['Space_Grotesk'] text-4xl font-bold leading-tight text-slate-950">
-              {officeName}
+              {OFFICE_NAME}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">{officeTagline}</p>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">{OFFICE_TAGLINE}</p>
             <div className="mt-5 flex flex-wrap gap-2 text-sm text-slate-700">
-              <Badge label={`현재 방 · ${currentRoom.name}`} tone="strong" />
-              <Badge label={`분위기 · ${getTopLevelStateLabel(dashboard.top_level_state)}`} />
-              <Badge label={`현재 인원 · ${currentRoomOccupancyLabel}`} />
+              <Badge label={`내 자리 · ${myDesk.label}`} tone="strong" />
+              <Badge label={`현재 상태 · ${statusLabel ?? "출근 전"}`} />
+              <Badge label={`온라인 · ${members.length}명`} />
             </div>
           </div>
           <div className="grid w-full gap-3 sm:grid-cols-3 lg:max-w-xl">
-            {officePulse.stats.map((stat) => (
-              <MetricCard key={stat.label} label={stat.label} value={stat.value} />
-            ))}
+            <MetricCard label="오늘 포인트" value={`${dashboard.workday?.total_points ?? 0}P`} />
+            <MetricCard label="집중 시간" value={formatMinutes(dashboard.focus_minutes_live)} />
+            <MetricCard
+              label="완료 작업"
+              value={`${dashboard.tasks.filter((task) => task.status === "done").length}/${dashboard.tasks.length}`}
+            />
           </div>
         </div>
       </section>
 
       <OfficeFloor
         connectionState={connectionState}
-        currentRoomId={currentRoom.id}
         members={members}
-        npcDirectory={experience.npcDirectory}
-        onMove={(position) => {
-          setRoomPositionOverrides((current) => ({
-            ...current,
-            [currentRoom.id]: position,
-          }));
-        }}
-        onRoomChange={(roomId) => {
-          if (roomId === currentRoom.id) {
-            return;
-          }
-
-          startTransition(() => {
-            router.push(buildOfficeHref(roomId));
-          });
-        }}
-        roomCounts={roomCounts}
-        rooms={rooms}
-        userPosition={currentUserPosition}
+        profileId={profile.id}
+        profileNickname={profile.nickname}
       />
 
-      <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-        <div className="space-y-6">
-          <SectionPanel
-            eyebrow="Room Switch"
-            title="방을 옮기며 오늘 흐름을 다른 시각으로 봅니다."
-            description="대시보드의 작업과 활동 피드를 그대로 가져오되, 오피스에서는 공간과 동료 반응 중심으로 다시 보여줍니다."
-          >
-            <div className="grid gap-4 md:grid-cols-3">
-              {rooms.map((room) => {
-                const href = buildOfficeHref(room.id);
-                const liveOccupancyLabel = getRealtimeOccupancyLabel(
-                  connectionState,
-                  roomCounts[room.id],
-                );
-
-                return (
-                  <Link
-                    className={cn(
-                      "rounded-[1.75rem] border p-4 transition",
-                      room.isCurrent
-                        ? "border-slate-950 bg-amber-50 text-slate-950 shadow-lg shadow-amber-200/50"
-                        : "border-[var(--line)] bg-white/80 text-slate-900 hover:-translate-y-0.5 hover:bg-white",
-                    )}
-                    href={href}
-                    key={room.id}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p
-                        className={cn(
-                          "font-['Space_Grotesk'] text-xl font-semibold",
-                          room.isCurrent ? "text-slate-950" : "text-slate-950",
-                        )}
-                      >
-                        {room.shortLabel}
-                      </p>
-                      <span
-                        className={cn(
-                          "rounded-full px-3 py-1 text-xs font-medium",
-                          room.isCurrent
-                            ? "bg-[var(--accent)] text-white"
-                            : "bg-slate-900/5 text-slate-600",
-                        )}
-                      >
-                        {room.isCurrent ? "현재 방" : "이동"}
-                      </span>
-                    </div>
-                    <p className={cn("mt-2 text-sm", room.isCurrent ? "text-slate-700" : "text-slate-500")}>
-                      {room.description}
-                    </p>
-                    <p className={cn("mt-4 text-xs uppercase tracking-[0.18em]", room.isCurrent ? "text-slate-500" : "text-slate-400")}>
-                      {liveOccupancyLabel}
-                    </p>
-                    <p className={cn("mt-2 text-sm leading-6", room.isCurrent ? "text-slate-700" : "text-slate-600")}>
-                      {room.hint}
-                    </p>
-                  </Link>
-                );
-              })}
-            </div>
-          </SectionPanel>
-
-          <section
-            className={cn(
-              "overflow-hidden rounded-[2rem] border border-[var(--line)] bg-gradient-to-br p-6 shadow-sm",
-              currentRoom.themeClassName,
-            )}
-          >
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-              <div className="max-w-xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Current Room
-                </p>
-                <h2 className="mt-3 font-['Space_Grotesk'] text-3xl font-semibold text-slate-950">
-                  {currentRoom.name}
-                </h2>
-                <p className="mt-3 text-sm leading-7 text-slate-600">{currentRoom.description}</p>
-                <p className="mt-4 rounded-[1.5rem] bg-white/75 px-4 py-4 text-sm leading-6 text-slate-600 shadow-sm">
-                  {rooms.find((room) => room.id === currentRoom.id)?.hint}
-                </p>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-3 lg:max-w-sm">
-                {currentRoom.layoutLabels.map((label) => (
-                  <div className="rounded-[1.5rem] border border-white/60 bg-white/70 px-4 py-4 text-sm font-medium text-slate-700 shadow-sm" key={label}>
-                    {label}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <SectionPanel
-            eyebrow="NPC Cast"
-            title={`${currentRoom.shortLabel}에 머무는 동료들`}
-            description="지금 단계에서는 NPC가 오늘의 작업, 상태, 집중 세션, 퇴근 기록을 읽고 규칙형으로 반응합니다."
-          >
-            {npcsInRoom.length === 0 ? (
-              <EmptyState
-                description="이 방에는 아직 배치된 동료가 없습니다."
-                title="NPC 준비 중"
-              />
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                {npcsInRoom.map((npc) => {
-                  const isSelected = selectedConversation?.npcId === npc.id;
-                  const href = isSelected
-                    ? buildOfficeHref(currentRoom.id)
-                    : buildOfficeHref(currentRoom.id, npc.id);
-
-                  return (
-                    <article className="rounded-[1.75rem] border border-[var(--line)] bg-white/80 p-5 shadow-sm" key={npc.id}>
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-['Space_Grotesk'] text-2xl font-semibold text-slate-950">
-                              {npc.name}
-                            </h3>
-                            <span className={cn("rounded-full px-3 py-1 text-xs font-medium", npc.accentClassName)}>
-                              {npc.role}
-                            </span>
-                          </div>
-                          <p className="mt-2 text-sm leading-6 text-slate-500">{npc.intro}</p>
-                        </div>
-                        <span className="rounded-full bg-slate-900/5 px-3 py-1 text-xs font-medium text-slate-600">
-                          {npc.moodLabel}
-                        </span>
-                      </div>
-                      <p className="mt-4 rounded-[1.25rem] bg-slate-900/5 px-4 py-4 text-sm leading-6 text-slate-600">
-                        {npc.reactionSummary}
-                      </p>
-                      <div className="mt-4 flex items-center justify-between gap-3">
-                        <p className="text-sm text-slate-500">{npc.actionLabel}</p>
-                        <Link
-                          className={cn(
-                            "inline-flex h-11 items-center justify-center rounded-2xl px-4 text-sm font-medium transition",
-                            isSelected
-                              ? "border border-slate-200 bg-slate-100 text-slate-900 hover:bg-slate-200"
-                              : "bg-[var(--accent)] text-white shadow-lg shadow-orange-200/50 hover:bg-[var(--accent-strong)]",
-                          )}
-                          href={href}
-                        >
-                          {isSelected ? "대화 닫기" : "대화 열기"}
-                        </Link>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
-          </SectionPanel>
-        </div>
+      <section className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
+        <OfficePresencePanel
+          connectionState={connectionState}
+          errorDetail={errorDetail}
+          members={members}
+        />
 
         <div className="space-y-6">
-          <OfficePresencePanel
-            currentRoomId={currentRoom.id}
-            connectionState={connectionState}
-            errorDetail={errorDetail}
-            members={members}
-            roomCounts={roomCounts}
-            roomOptions={roomOptions}
-          />
-
-          <SectionPanel
-            eyebrow="Conversation"
-            title={
-              selectedConversation
-                ? `${npcsInRoom.find((npc) => npc.id === selectedConversation.npcId)?.name ?? "동료"}와의 짧은 대화`
-                : "동료를 선택하면 대화를 열 수 있습니다."
-            }
-            description={
-              selectedConversation
-                ? selectedConversation.subtitle
-                : "같은 방의 NPC를 고르면 오늘 활동에 맞춘 규칙형 대화가 오른쪽 패널에 열립니다."
-            }
-          >
-            {selectedConversation ? (
-              <div className="space-y-3">
-                <div className="rounded-[1.5rem] bg-[var(--accent)] px-4 py-4 text-white shadow-lg shadow-orange-200/50">
-                  <p className="font-['Space_Grotesk'] text-xl font-semibold">
-                    {selectedConversation.title}
-                  </p>
-                  <p className="mt-2 text-sm text-orange-50">{selectedConversation.subtitle}</p>
-                </div>
-                {selectedConversation.messages.map((message, index) => (
-                  <div
-                    className={cn(
-                      "rounded-[1.5rem] px-4 py-4 text-sm leading-7 shadow-sm",
-                      message.speaker === "npc"
-                        ? "bg-white text-slate-700"
-                        : "ml-6 border border-orange-200 bg-orange-100 text-slate-900",
-                    )}
-                    key={`${message.speaker}-${index}`}
-                  >
-                    <p
-                      className={cn(
-                        "mb-2 text-xs uppercase tracking-[0.18em]",
-                        message.speaker === "npc" ? "text-slate-400" : "text-orange-700",
-                      )}
-                    >
-                      {message.speaker === "npc" ? "NPC" : "You"}
-                    </p>
-                    <p>{message.body}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <EmptyState
-                description="예를 들어 로비의 미나는 출근과 진행 상황에, 포커스 룸의 지호는 세션 텐션에, 라운지의 소라는 회고와 문장 톤에 반응합니다."
-                title="아직 열린 대화가 없습니다."
-              />
-            )}
-          </SectionPanel>
-
           <SectionPanel
             eyebrow="Office Pulse"
             title={officePulse.headline}
@@ -331,29 +97,31 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
                 <MetricCard key={stat.label} label={stat.label} value={stat.value} />
               ))}
             </div>
-            <div className="mt-5 rounded-[1.5rem] border border-[var(--line)] bg-white/80 p-4">
+            <div className="mt-5 border-4 border-[#5a4635] bg-[#fff5e8] p-4 shadow-[4px_4px_0_rgba(90,70,53,0.12)]">
               <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-slate-700">최근 오피스 반응</p>
+                <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-[#8b5e34]">
+                  Recent Office Feed
+                </p>
                 <span className="text-xs uppercase tracking-[0.18em] text-slate-400">
                   {officePulse.recentActivity.length}건
                 </span>
               </div>
               {officePulse.recentActivity.length === 0 ? (
                 <p className="mt-3 text-sm leading-6 text-slate-500">
-                  출근하거나 작업을 시작하면 이 공간도 바로 반응합니다.
+                  출근하거나 작업을 시작하면 이 오피스도 바로 살아납니다.
                 </p>
               ) : (
                 <ul className="mt-3 space-y-3 text-sm text-slate-600">
                   {officePulse.recentActivity.map((item) => (
-                    <li className="rounded-[1.25rem] bg-slate-900/5 px-4 py-3" key={item.id}>
+                    <li className="border-2 border-[#d9c2a4] bg-white/80 px-4 py-3" key={item.id}>
                       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-medium text-slate-900">{item.title}</span>
-                          <span className="rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-slate-600">
+                          <span className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-700">
                             {item.actor_nickname}
                           </span>
-                          <span className="rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-slate-500">
-                            {getRoomShortLabel(item.room_id, roomOptions)}
+                          <span className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-500">
+                            {getPreferredOfficeDesk(item.user_id, OFFICE_DESKS)?.label ?? "Desk A"}
                           </span>
                         </div>
                         <span className="text-slate-500">
@@ -372,47 +140,47 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
 
           <SectionPanel
             eyebrow="Today Snapshot"
-            title="현재 근무 흐름과 오피스 연결"
-            description="오피스는 별도 데이터를 새로 만들지 않고, 지금까지 쌓인 개인 workday 데이터를 공간 관점으로 다시 묶어 보여줍니다."
+            title="지금 오피스에서 이어지는 오늘의 흐름"
+            description="자리 위 존재감은 메인 화면에 두고, 세부 업무 조작과 기록은 보조 화면으로 남겨둡니다."
           >
             <div className="space-y-3">
-              <SnapshotRow
-                label="현재 상태"
-                value={activeStatus ? getStatusLabel(activeStatus.status_type) : "아직 설정 안 됨"}
-              />
+              <SnapshotRow label="현재 상태" value={statusLabel ?? "아직 설정 안 됨"} />
               <SnapshotRow
                 label="오늘 목표"
-                value={workday?.today_goal ?? "출근 후 목표를 적으면 이곳에 연결됩니다."}
+                value={dashboard.workday?.today_goal ?? "출근 후 목표를 적으면 자리에 흐름이 생깁니다."}
               />
               <SnapshotRow
                 label="첫 작업"
-                value={workday?.today_first_task ?? "아직 없음"}
+                value={dashboard.workday?.today_first_task ?? "아직 없음"}
               />
               <SnapshotRow
                 label="집중 세션"
                 value={
-                  activeFocus
-                    ? `${activeFocus.duration_minutes}분 세션 진행 중`
+                  dashboard.active_focus_session
+                    ? `${dashboard.active_focus_session.duration_minutes}분 세션 진행 중`
                     : dashboard.focus_sessions.length > 0
                       ? `${dashboard.focus_sessions.length}회 기록`
-                      : "아직 시작 안 함"
+                      : "아직 시작 전"
                 }
               />
               <SnapshotRow
                 label="출근/퇴근"
                 value={
-                  workday
-                    ? `${formatTimeOnly(workday.check_in_at, profile.timezone) ?? "-"} / ${formatTimeOnly(workday.check_out_at, profile.timezone) ?? "진행 중"}`
+                  dashboard.workday
+                    ? `${formatTimeOnly(dashboard.workday.check_in_at, profile.timezone) ?? "-"} / ${
+                        formatTimeOnly(dashboard.workday.check_out_at, profile.timezone) ?? "진행 중"
+                      }`
                     : "출근 전"
                 }
               />
             </div>
+
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <Link
                 className="inline-flex h-12 items-center justify-center rounded-2xl bg-[var(--accent)] px-5 text-sm font-medium text-white shadow-lg shadow-orange-200/50 transition hover:bg-[var(--accent-strong)]"
-                href="/"
+                href="/dashboard"
               >
-                대시보드에서 작업 이어가기
+                세부 업무 패널 열기
               </Link>
               <Link
                 className="inline-flex h-12 items-center justify-center rounded-2xl border border-[var(--line)] bg-white/80 px-5 text-sm font-medium text-slate-900 transition hover:bg-white"
@@ -422,62 +190,15 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
               </Link>
             </div>
             <div className="mt-4 rounded-[1.5rem] bg-slate-900/5 px-4 py-4 text-sm leading-6 text-slate-600">
-              {workday?.check_out_at
-                ? "퇴근 뒤에는 라운지와 회고 톤이 더 강해집니다. 다음 단계에서는 이 흐름이 실제 NPC 관계와 공간 이벤트로 이어집니다."
-                : "지금 단계의 오피스는 메인 오피스 이벤트를 쌓기 시작한 읽기 중심 공간입니다. 다음 패스에서는 룸 이벤트와 더 깊은 NPC 상호작용을 붙일 예정입니다."}
+              이 오피스의 핵심은 많이 걷는 것이 아니라, 같은 공간에 함께 앉아 있다는 감각입니다.
+              다음 패스에서는 자리 위에 작은 타이머, 작업 상태, 간단한 반응을 더 올려서 감시받는 듯한
+              집중감을 더 강하게 만들 수 있습니다.
             </div>
           </SectionPanel>
         </div>
       </section>
     </div>
   );
-}
-
-function buildOfficeHref(room: OfficeRoomId, talk?: OfficeNpcId | null) {
-  const search = new URLSearchParams({ room });
-
-  if (talk) {
-    search.set("talk", talk);
-  }
-
-  return `/office?${search.toString()}`;
-}
-
-function getTopLevelStateLabel(value: OfficeExperience["dashboard"]["top_level_state"]) {
-  switch (value) {
-    case "before_check_in":
-      return "오피스 대기";
-    case "working":
-      return "근무 진행";
-    case "resting":
-      return "호흡 조절";
-    case "away":
-      return "자리 비움";
-    case "checked_out":
-      return "마감 완료";
-  }
-}
-
-function getRealtimeOccupancyLabel(
-  connectionState: "connecting" | "live" | "error",
-  count: number,
-) {
-  if (connectionState === "live") {
-    return `${count}명 온라인`;
-  }
-
-  if (connectionState === "error") {
-    return "실시간 연결 확인 필요";
-  }
-
-  return "실시간 연결 중";
-}
-
-function getRoomShortLabel(
-  roomId: OfficeRoomId,
-  roomOptions: { id: OfficeRoomId; name: string; shortLabel: string }[],
-) {
-  return roomOptions.find((room) => room.id === roomId)?.shortLabel ?? roomId;
 }
 
 function SectionPanel({
@@ -489,7 +210,7 @@ function SectionPanel({
   eyebrow: string;
   title: string;
   description: string;
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <section className="rounded-[2rem] border border-[var(--line)] bg-white/75 p-6 shadow-sm">

@@ -1,416 +1,164 @@
-﻿# SoloShift Shared Office Vision
+# SoloShift Shared Office Vision
 
 Last updated: 2026-04-13
 
-## 목적
+## 핵심 정의
 
-SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스에 출근해서 일하는 경험"으로 확장한다.
+SoloShift는 더 이상 "혼자 하루를 운영하는 대시보드"가 아니다.
 
-핵심 변화는 다음과 같다.
+현재 방향은 다음 문장으로 정리한다.
 
-- 기존 MVP는 `혼자 하루를 운영하는 도구`였다.
-- 다음 단계는 `공간`, `존재감`, `대화`, `상호작용`을 추가해서 실제 사무실처럼 느껴지게 만드는 것이다.
-- 장기적으로는 다른 실제 유저가 같은 오피스 안에서 함께 움직이고 반응하는 구조를 목표로 한다.
+**같은 책상 줄에서 서로가 일하고 있는지 느끼게 해주는 작은 온라인 오피스**
 
-## 제품 방향
+즉, 생산성 기능은 여전히 중요하지만, 이제 메인 경험은:
 
-### 유지할 것
+- 출근해서
+- 자리에 앉고
+- 같은 오피스를 공유하는 사람들을 보고
+- 그 존재감 덕분에 집중을 유지하는 것
 
-- 현재의 출근, 상태 변경, 집중 세션, 작업 보드, 퇴근 회고 흐름
-- 일간/주간 기록과 활동 피드
-- 시간대 기반 하루 묶음과 개인 기록 축
+이다.
 
-### 새로 추가할 것
+## 현재 제품 결정
 
-- 오피스라는 공유 공간 개념
-- 방(room) 단위 구조
-- NPC 동료 / 상사 / 팀원
-- 다른 실제 유저의 접속 상태와 위치감
-- 대화 스레드와 반응
-- 활동 피드를 공간 경험과 연결하는 구조
+### 메인 화면
 
-## 화면 전략
+- `/office`가 메인 진입 화면
+- `/dashboard`는 세부 업무 조작 화면
+- `/history`는 기록 화면
 
-### 추천 1안: 대시보드 유지 + 오피스 추가
+### 오피스 구조
 
-초기에는 현재 홈 대시보드를 유지한다.
-
-- `/` : 생산성 대시보드
-- `/office` : 오피스 화면
-- `/history` : 기록 화면
-
-이 방식의 장점:
-
-- 이미 안정화된 MVP 흐름을 깨지 않는다.
-- 오피스 레이어를 점진적으로 붙일 수 있다.
-- QA와 롤백이 쉽다.
-
-### 장기 방향
-
-오피스 경험이 충분히 좋아지면, 나중에는 `/office`가 실제 메인 홈이 되고 현재 대시보드는 오른쪽 패널 또는 보조 화면으로 내려갈 수 있다.
-
-## 단계별 확장 전략
-
-### Phase 3A: 싱글 플레이 오피스 + NPC
-
-목표:
-
-- 사용자는 `/office`로 들어간다.
-- 오피스에는 방이 2~3개 있다.
-- NPC 2~3명이 배치된다.
-- 오늘의 활동(task / focus / check-out)에 따라 NPC 반응이 달라진다.
-
-범위:
-
-- 실시간 멀티플레이 없음
-- 이동은 룸 전환 수준으로 단순화
-- 대화는 규칙형 또는 템플릿형
-
-현재 진행 상태:
-
-- `/office` 첫 화면 구현 완료
-- 룸 전환, NPC 카드, 규칙형 대화, 오피스 펄스 패널 구현 완료
-- 메인 오피스 기준 `office_activity_events` 영속 저장 추가
-- 아직 다중 오피스, 유저 간 상호작용, 관계도 저장은 없음
-
-### Phase 3B: 실시간 존재감 추가
-
-목표:
-
-- 실제 유저가 접속 중인지 보인다.
-- 누가 어느 방에 있는지 보인다.
-- 간단한 상태 표시가 실시간으로 바뀐다.
-
-범위:
-
-- 아직 자유 이동까지는 아님
-- 우선 room-level presence만 지원
-- 채팅은 최소화하거나 읽기 전용 반응 위주
-
-현재 진행 상태:
-
-- `/office`에 Presence 기반 온라인 패널 구현 완료
-- 같은 오피스 내 온라인 유저 수, 방별 인원 수, 현재 방 동료 목록 표시
-- private authenticated-only Presence 전환 완료
-- 아직 채팅, room-level broadcast 상호작용, membership 기반 권한 분리는 없음
-
-### Phase 3C: 실시간 상호작용
-
-목표:
-
-- 방 이동이 실시간으로 보인다.
-- 간단한 대화/반응이 가능하다.
-- 같은 공간을 공유하는 감각이 생긴다.
-
-범위:
-
-- 가벼운 메시지
-- 짧은 상호작용
-- 단순한 아바타/아이콘 수준의 표현
-
-현재 진행 상태:
-
-- 메인 오피스 1개 기준의 첫 spatial prototype 구현 완료
-- `/office`에 2D floor board 추가
-- 로비 / 포커스 룸 / 라운지의 실제 배치 추가
-- 현재 방 안에서 클릭으로 아바타 위치 이동 가능
-- 온라인 유저를 Presence 좌표 기반 점/마커로 표시
-- 아직 room-level broadcast 메시지, 자유 채팅, 이동 애니메이션은 없음
-
-### Phase 3D: 진짜 공유 오피스
-
-목표:
-
-- 여러 사람이 동시에 같은 오피스에서 활동한다.
-- 공간 중심 UX가 대시보드보다 앞에 온다.
-- NPC와 실제 유저가 같은 세계 안에서 동작한다.
-
-## Supabase 중심 기술 방향
-
-현재 구조는 계속 `Next.js + Supabase`를 유지한다.
-
-실시간 계층은 Supabase Realtime 기준으로 설계한다.
-
-- `Presence`: 누가 온라인인지, 어느 방에 있는지 같은 실시간 상태 표현
-- `Broadcast`: 이동, 반응, 가벼운 이벤트, 즉시성 있는 메시지 전달
-- `Postgres`: 영속 데이터 저장
-  - 오피스 구조
-  - 대화 이력
-  - 활동 이력
-  - 관계 수치
-
-검증 기준으로 참고한 문서:
-
-- Presence: connected client state 공유
-- Broadcast: 저지연 메시지 전달
-- Realtime overview: Presence / Broadcast / Postgres changes 구분
-
-## Realtime 보안 메모
-
-실제 멀티플레이 단계에서는 private channel을 기본값으로 잡는 것이 좋다.
-
-- Presence와 Broadcast는 같은 오피스/방 topic 안에서 동작하게 한다.
-- 인증된 사용자만 참여해야 하는 topic은 Realtime Authorization과 RLS 정책으로 제한한다.
-- 공개 테스트 전에는 `realtime.messages` 기준의 권한 모델을 따로 점검한다.
-
-즉, 초기 데모는 단순하게 시작하더라도 정식 공유 오피스 단계에서는 "아무나 모든 방에 들어가는 구조"를 기본값으로 두지 않는다.
-
-## 데이터 모델 초안
-
-### 기존 테이블 유지
-
-- `profiles`
-- `workdays`
-- `status_logs`
-- `focus_sessions`
-- `point_events`
-- `tasks`
-- `activity_feed`
-
-### 새 테이블 제안
-
-#### `offices`
-
-- `id`
-- `slug`
-- `name`
-- `description`
-- `theme`
-- `created_at`
-
-용도:
-
-- 하나의 공유 사무실 단위
-
-#### `office_rooms`
-
-- `id`
-- `office_id`
-- `slug`
-- `name`
-- `room_type`
-- `sort_order`
-- `created_at`
-
-예시:
-
-- lobby
-- focus-room
-- lounge
-- meeting-room
-
-#### `office_memberships`
-
-- `office_id`
-- `user_id`
-- `role`
-- `home_room_id`
-- `joined_at`
-
-용도:
-
-- 어떤 유저가 어떤 오피스 소속인지 관리
-
-#### `npc_profiles`
-
-- `id`
-- `office_id`
-- `code`
-- `name`
-- `archetype`
-- `home_room_id`
-- `persona_seed`
-- `created_at`
-
-예시 archetype:
-
-- manager
-- teammate
-- quiet-designer
-- overworked-dev
-
-#### `npc_relationships`
-
-- `npc_id`
-- `user_id`
-- `affinity`
-- `trust_score`
-- `last_interaction_at`
-
-용도:
-
-- NPC와 유저의 관계 진척도 저장
-
-#### `conversation_threads`
-
-- `id`
-- `office_id`
-- `room_id`
-- `started_by_user_id`
-- `counterpart_type`
-- `counterpart_user_id`
-- `counterpart_npc_id`
-- `created_at`
-
-용도:
-
-- NPC 또는 실제 유저와의 대화 스레드
-
-#### `conversation_messages`
-
-- `id`
-- `thread_id`
-- `sender_type`
-- `sender_user_id`
-- `sender_npc_id`
-- `message_kind`
-- `body`
-- `meta`
-- `created_at`
-
-용도:
-
-- 대화 메시지 저장
-
-#### `office_activity_events`
-
-- `id`
-- `office_id`
-- `room_id`
-- `actor_type`
-- `actor_user_id`
-- `actor_npc_id`
-- `event_type`
-- `payload`
-- `created_at`
-
-용도:
-
-- 공간 안에서 일어난 이벤트 저장
-- 기존 `activity_feed`는 개인 workday 중심 로그
-- `office_activity_events`는 공간/관계 중심 로그
-- 공유 오피스 타임라인에는 개인 작업 문장 전체를 그대로 복사하지 않고, 공간 분위기용 요약 이벤트만 저장한다
-
-## Presence / Broadcast 역할 분리
-
-이 단계에서 중요한 건 "무엇을 DB에 저장하고, 무엇을 실시간 메모리 상태로만 다룰지"를 분리하는 것이다.
-
-### DB에 저장할 것
-
-- 대화 메시지
-- 방 구조
-- 오피스 소속
-- 관계 수치
-- 중요한 공간 이벤트
-- 개인 activity feed와 연결되는 영속 이벤트
-
-### Realtime Presence로만 다룰 것
-
-- 누가 온라인인지
-- 누가 어느 방에 있는지
-- 현재 어떤 상태인지의 가벼운 표현
-
-### Broadcast로만 다룰 것
-
-- 이동 애니메이션
-- 빠른 반응
-- 단기 이벤트
-- 즉시성 중심의 UI 반영
-
-초기에는 좌표 기반 자유 이동보다, `현재 room` 단위로만 표현하는 것이 훨씬 안전하다.
-
-## 현재 MVP와의 연결 방식
-
-현재 SoloShift의 중심 데이터는 그대로 유지한다.
-
-연결 규칙:
-
-- `workdays`, `tasks`, `focus_sessions`, `activity_feed`는 개인 업무 레이어
-- `offices`, `office_rooms`, `npc_profiles`, `conversation_*`는 공간/관계 레이어
-
-예시 연결:
-
-- 사용자가 작업을 완료하면 `activity_feed`에 기록된다.
-- 같은 이벤트를 보고 NPC가 반응 대사를 만든다.
-- 그 반응이 `conversation_messages` 또는 `office_activity_events`로 이어질 수 있다.
-
-즉, 기존 MVP를 버리지 않고 그 위에 오피스 세계를 얹는다.
-
-## 첫 구현 추천 범위
-
-가장 좋은 첫 세로 슬라이스는 아래다.
-
-1. `/office` 페이지 추가
-2. 오피스 1개, 방 3개
-3. NPC 2명 이상
-4. 오늘 활동을 기반으로 한 NPC 반응
-5. 유저는 방을 전환할 수 있음
-6. 현재 방에 있는 NPC 목록을 볼 수 있음
-7. NPC와 짧은 규칙형 대화를 시작할 수 있음
-
-이 범위면:
-
-- 화면이 실제로 달라지고
-- 세계관 감각이 생기고
-- 아직 멀티플레이를 안 넣어도 충분히 의미가 있다.
-
-현재 코드베이스는 이 추천 범위를 "DB 추가 없이, 기존 workday/task/activity feed를 재조합하는 방식"으로 1차 달성한 상태다.
-
-## 멀티플레이를 바로 넣지 않는 이유
-
-사용자가 상상한 최종 방향은 `실제 다른 사람들이 돌아다니는 오피스`다.
-그 방향은 맞지만, 처음부터 거기로 바로 가면 위험이 크다.
-
-리스크:
-
-- 동시성 이슈
-- UI 복잡도 급증
-- 실시간 동기화 버그
-- MVP 핵심 가치가 흐려질 가능성
-
-그래서 추천은:
-
-- 먼저 NPC 기반으로 공간 감각 완성
-- 그다음 실제 유저 presence 추가
-- 마지막에 실시간 이동/상호작용 확대
-
-## 브랜치 전략 추천
-
-이 단계부터는 별도 브랜치를 쓰는 것이 좋다.
+- 메인 오피스는 하나만 둔다
+- 공간은 작고 밀도 있게 유지한다
+- 초기 좌석은 4개만 둔다
 
 이유:
 
-- 화면 구조가 바뀔 수 있다.
-- 스키마가 늘어난다.
-- 실시간 기능은 실험과 롤백이 자주 필요하다.
-- 현재 안정화된 MVP 기준선을 보존해야 한다.
+- 사람이 적을 때도 텅 비어 보이지 않는다
+- 실제 사용 테스트를 2인 정도로 바로 해볼 수 있다
+- "같은 공간에 있다"는 감각을 가장 적은 복잡도로 검증할 수 있다
 
-추천 브랜치 이름:
+### 공간 철학
 
-- `codex/phase3-shared-office`
-- `codex/office-foundation`
+초기엔 "많이 걸어다니는 공간"보다 "같이 자리에 앉아 있는 공간"이 더 중요하다.
 
-문서 작업만 할 때는 꼭 필요하지 않지만, 실제 스키마/라우트/UI 구현에 들어갈 때는 브랜치를 따는 편이 맞다.
+즉, 이번 기준에서는:
 
-## 다음 구현 순서
+- 자유 이동보다 고정 자리
+- room switching보다 책상 점유
+- 큰 오피스보다 작은 팀 공간
 
-1. shared office 방향 문서 확정
-2. 오피스/룸/NPC 최소 스키마 초안 작성
-3. `/office` 페이지 와이어프레임 구현
-4. NPC 반응 시스템 연결
-5. Realtime presence 미니 슬라이스 도입
-6. private authenticated-only Presence로 보안 기준선 올리기
-7. 그 다음에 `office_memberships`가 필요한 시점을 판단하기
+이 더 맞다.
 
-현재 코드베이스는 6번까지 완료했고, 메인 오피스 기준 `office_activity_events`도 붙은 상태다. 다음 결정 지점은 `office_memberships`를 바로 붙일지, 아니면 먼저 더 깊은 NPC 반응과 room-level interaction부터 갈지 정하는 것이다.
+## 지금까지 만든 것
 
-`office_memberships`는 두 번째 오피스, 초대형 오피스, 팀 단위 visibility 분리가 필요해지는 시점에 도입하는 것이 가장 적절하다. private channel 전환의 상세 계획과 현재 기준선은 `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`를 기준으로 본다.
+- office-first 진입 구조
+- private authenticated realtime presence
+- shared office activity timeline
+- privacy-safe office pulse
+- one main office with four desks
 
-## 성공 기준
+## 다음 경험 원칙
 
-이 단계의 성공 기준은 아래다.
+### 1. 이동보다 자리
 
-- 사용자가 `/office`에 들어가면 "일하러 출근한 공간" 느낌을 받는다.
-- 오늘의 작업과 활동이 공간 안의 반응으로 이어진다.
-- 기존 대시보드 흐름을 깨지 않는다.
-- 나중에 실제 멀티플레이를 붙일 수 있는 구조가 된다.
+이전 프로토타입에서는 방을 옮기거나 자유 클릭 이동이 가능했지만, 사용 이유가 약했다.
+
+앞으로는:
+
+- 내 자리
+- 빈 자리
+- 다른 사람이 앉은 자리
+
+이 핵심이다.
+
+### 2. 감시는 직접이 아니라 은은하게
+
+이 제품의 힘은 "누가 나를 보고 있다"는 과한 긴장보다,
+
+- 누가 자리에 앉아 있고
+- 누가 집중 중이고
+- 누가 아직 일하는 중인지
+
+를 은은하게 느끼게 하는 데 있다.
+
+### 3. 기능은 자리 위에 올라간다
+
+업무 기능은 따로 떨어진 앱 느낌이 아니라, 오피스 안의 자리와 연결되어야 한다.
+
+예:
+
+- 자리 위 작은 상태 배지
+- 자리 위 집중 타이머
+- 자리 위 away 표시
+- 자리 위 check-out 표시
+
+## 가까운 다음 단계
+
+### Phase A: 자리 기반 가시성 강화
+
+목표:
+
+- 각 자리 위에 현재 상태를 보여준다
+- 집중 세션 중이면 타이머 또는 집중 표시를 보여준다
+- away / checked-out 상태를 시각적으로 구분한다
+
+### Phase B: 가벼운 사회적 반응
+
+목표:
+
+- 채팅 대신 짧은 반응을 넣는다
+- 예:
+  - 파이팅
+  - 수고 중
+  - 잘하고 있어요
+
+### Phase C: 자리 영속화
+
+목표:
+
+- 사용자는 항상 같은 책상을 쓴다는 감각을 갖는다
+- 지금의 deterministic assignment를 persistent assignment로 올릴지 판단한다
+
+후보:
+
+- 단순 deterministic desk rule 유지
+- `office_memberships`를 도입해 desk ownership 저장
+
+### Phase D: 더 풍부한 아바타
+
+목표:
+
+- 지금의 자리/이름 중심 표현을 더 살아있는 캐릭터 표현으로 확장한다
+- 단, 생산성 흐름을 가리는 방향은 피한다
+
+## 데이터 방향 메모
+
+당장은 private Presence + shared office activity만으로 충분하다.
+
+다음 저장 모델이 필요해지는 시점은:
+
+- 고정 자리 저장이 필요할 때
+- 초대형/비공개 오피스가 필요할 때
+- 여러 오피스를 지원할 때
+
+그때 후보는:
+
+- `office_memberships`
+- `desk_assignments`
+- `office_reactions`
+
+## 결론
+
+SoloShift의 다음 핵심 가설은 이것이다.
+
+**작은 공유 오피스 안에서 서로의 존재감을 보는 것만으로도 혼자 할 때보다 집중이 올라가는가**
+
+현재 제품은 그 가설을 검증하기 위한 가장 작은 형태로 수렴하고 있다:
+
+- 메인 오피스 1개
+- 책상 4개
+- office-first 진입
+- private realtime presence
+- privacy-safe shared office feed

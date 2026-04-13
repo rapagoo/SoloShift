@@ -1,158 +1,122 @@
 "use client";
 
-import {
-  OfficePresenceMember,
-  OfficeRealtimeConnectionState,
-  OfficeRoomId,
-  OfficeRoomSummary,
-} from "@/lib/office/types";
-import { TopLevelState } from "@/lib/types";
+import { OFFICE_DESKS } from "@/lib/office/config";
+import { buildDeskOccupancy } from "@/lib/office/spatial";
+import { OfficePresenceMember, OfficeRealtimeConnectionState } from "@/lib/office/types";
 import { cn } from "@/lib/utils";
 
 interface OfficePresencePanelProps {
-  currentRoomId: OfficeRoomId;
-  roomOptions: Pick<OfficeRoomSummary, "id" | "name" | "shortLabel">[];
-  members: OfficePresenceMember[];
-  roomCounts: Record<OfficeRoomId, number>;
   connectionState: OfficeRealtimeConnectionState;
   errorDetail?: string | null;
+  members: OfficePresenceMember[];
 }
 
 export function OfficePresencePanel({
-  currentRoomId,
-  roomOptions,
-  members,
-  roomCounts,
   connectionState,
   errorDetail,
+  members,
 }: OfficePresencePanelProps) {
+  const deskOccupancy = buildDeskOccupancy(members, OFFICE_DESKS);
+  const occupiedDeskCount = deskOccupancy.filter((entry) => entry.occupant).length;
+  const emptyDeskCount = Math.max(0, OFFICE_DESKS.length - occupiedDeskCount);
   const others = members.filter((member) => !member.self);
-  const currentRoomOthers = others.filter((member) => member.roomId === currentRoomId);
 
   return (
-    <section className="rounded-[2rem] border border-[var(--line)] bg-white/75 p-6 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-        Live Presence
+    <section className="rounded-[2rem] border-4 border-[#5a4635] bg-[#fff5e8] p-6 shadow-[6px_6px_0_rgba(90,70,53,0.12)]">
+      <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-[#8b5e34]">
+        Office Presence
       </p>
       <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="font-['Space_Grotesk'] text-3xl font-semibold text-slate-950">
-            지금 오피스에 접속 중인 사람들
+          <h2 className="font-['Space_Grotesk'] text-3xl font-semibold text-[#2a1f17]">
+            같은 오피스에 출근한 사람들
           </h2>
-          <p className="mt-3 text-sm leading-7 text-slate-500">
-            같은 오피스 채널 안에서 누가 어느 방에 있는지 실시간으로 보여주는 단계입니다.
+          <p className="mt-3 text-sm leading-7 text-[#5d4b3d]">
+            핵심은 자유 이동보다 존재감입니다. 누가 자리에 앉아 있고, 누가 일하고 있고, 몇 자리가
+            비어 있는지를 한눈에 보는 오피스 패널입니다.
           </p>
         </div>
         <PresenceStatusBadge state={connectionState} />
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        {roomOptions.map((room) => (
-          <div
-            className={cn(
-              "rounded-[1.5rem] border px-4 py-4 text-center shadow-sm",
-              room.id === currentRoomId
-                ? "border-orange-200 bg-orange-100"
-                : "border-[var(--line)] bg-white/80",
-            )}
-            key={room.id}
-          >
-            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
-              {room.shortLabel}
-            </p>
-            <p className="mt-2 text-2xl font-semibold text-slate-950">
-              {roomCounts[room.id]}명
-            </p>
-            <p className="mt-1 text-sm text-slate-500">
-              {room.id === currentRoomId ? "현재 내가 있는 방" : room.name}
-            </p>
-          </div>
-        ))}
+        <MetricTile label="온라인" value={`${members.length}명`} />
+        <MetricTile label="착석" value={`${occupiedDeskCount}/${OFFICE_DESKS.length}`} />
+        <MetricTile label="빈 자리" value={`${emptyDeskCount}개`} />
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-        <div className="rounded-[1.5rem] border border-[var(--line)] bg-white/80 p-4">
+        <div className="border-2 border-[#d9c2a4] bg-white/75 p-4">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold text-slate-700">현재 방 동료</p>
-            <span className="text-xs uppercase tracking-[0.16em] text-slate-400">
-              {currentRoomOthers.length}명
+            <p className="text-sm font-semibold text-[#4f3d31]">자리 현황</p>
+            <span className="text-xs uppercase tracking-[0.16em] text-[#8b5e34]">
+              {OFFICE_DESKS.length}석
+            </span>
+          </div>
+          <ul className="mt-3 space-y-3">
+            {deskOccupancy.map(({ desk, occupant }) => (
+              <li className="border-2 border-[#e3d3c0] bg-[#fffaf4] px-4 py-3 text-sm" key={desk.id}>
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-[#2a1f17]">{desk.label}</p>
+                    <p className="mt-1 text-xs text-[#7a6656]">{desk.neighborhood}</p>
+                  </div>
+                  <span className="font-medium text-[#4f3d31]">
+                    {occupant ? `${occupant.nickname}${occupant.self ? " (나)" : ""}` : "빈 자리"}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="border-2 border-[#d9c2a4] bg-white/75 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-[#4f3d31]">온라인 사용자</p>
+            <span className="text-xs uppercase tracking-[0.16em] text-[#8b5e34]">
+              {others.length}명 동시 접속
             </span>
           </div>
           {connectionState === "error" ? (
-            <p className="mt-3 text-sm leading-6 text-rose-600">
+            <p className="mt-3 text-sm leading-6 text-rose-700">
               실시간 오피스 채널에 연결하지 못했습니다. 로그인 상태와 Supabase Realtime
               authorization 정책을 확인해주세요.
               {errorDetail ? (
-                <span className="mt-2 block rounded-xl bg-rose-50 px-3 py-2 text-xs leading-5 text-rose-700">
+                <span className="mt-2 block border border-rose-200 bg-rose-50 px-3 py-2 text-xs leading-5 text-rose-700">
                   {errorDetail}
                 </span>
               ) : null}
             </p>
-          ) : currentRoomOthers.length === 0 ? (
-            <p className="mt-3 text-sm leading-6 text-slate-500">
-              아직 같은 방에 다른 사용자가 없습니다. 다른 브라우저나 다른 계정으로
-              <span className="mx-1 rounded bg-slate-900/5 px-2 py-0.5 font-medium text-slate-700">
-                /office
-              </span>
-              를 열면 바로 반영됩니다.
+          ) : members.length === 0 ? (
+            <p className="mt-3 text-sm leading-6 text-[#5d4b3d]">
+              아직 오피스에 연결된 사용자가 없습니다. 로그인 후 잠시 기다리면 자리가 배정됩니다.
             </p>
           ) : (
             <ul className="mt-3 space-y-3">
-              {currentRoomOthers.map((member) => (
-                <li className="rounded-[1.25rem] bg-slate-900/5 px-4 py-3" key={member.userId}>
-                  <div className="flex items-center justify-between gap-3">
+              {members.map((member) => (
+                <li className="border-2 border-[#e3d3c0] bg-[#fffaf4] px-4 py-3" key={member.presenceKey}>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="font-medium text-slate-900">{member.nickname}</p>
-                      <p className="mt-1 text-sm text-slate-500">
-                        {member.statusLabel ?? getTopLevelStateLabel(member.topLevelState)}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-medium text-[#2a1f17]">{member.nickname}</p>
+                        {member.self ? (
+                          <span className="border border-orange-300 bg-orange-100 px-2 py-0.5 text-[11px] font-semibold text-orange-800">
+                            나
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="mt-1 text-sm text-[#6f5b49]">
+                        {member.statusLabel ?? "오늘 흐름 준비 중"}
                       </p>
                     </div>
-                    <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700">
-                      같은 방
+                    <span className="font-mono text-xs text-[#8b5e34]">
+                      {member.connectionCount > 1 ? `${member.connectionCount} connections` : "single connection"}
                     </span>
                   </div>
                 </li>
               ))}
             </ul>
           )}
-        </div>
-
-        <div className="rounded-[1.5rem] border border-[var(--line)] bg-white/80 p-4">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold text-slate-700">온라인 사용자 전체</p>
-            <span className="text-xs uppercase tracking-[0.16em] text-slate-400">
-              {members.length}명
-            </span>
-          </div>
-          <ul className="mt-3 space-y-3">
-            {members.map((member) => {
-              const room = roomOptions.find((candidate) => candidate.id === member.roomId);
-
-              return (
-                <li className="rounded-[1.25rem] bg-slate-900/5 px-4 py-3" key={member.userId}>
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium text-slate-900">{member.nickname}</p>
-                        {member.self ? (
-                          <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700">
-                            나
-                          </span>
-                        ) : null}
-                      </div>
-                      <p className="mt-1 text-sm text-slate-500">
-                        {room?.shortLabel ?? member.roomId} ·{" "}
-                        {member.statusLabel ?? getTopLevelStateLabel(member.topLevelState)}
-                      </p>
-                    </div>
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-600">
-                      {member.connectionCount > 1 ? `${member.connectionCount}개 연결` : "1개 연결"}
-                    </span>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
         </div>
       </div>
     </section>
@@ -162,29 +126,19 @@ export function OfficePresencePanel({
 function PresenceStatusBadge({ state }: { state: OfficeRealtimeConnectionState }) {
   const copy =
     state === "live"
-      ? { label: "실시간 연결됨", className: "bg-emerald-100 text-emerald-700" }
+      ? { label: "실시간 연결됨", className: "border-emerald-300 bg-emerald-100 text-emerald-800" }
       : state === "error"
-        ? { label: "권한/연결 확인 필요", className: "bg-rose-100 text-rose-700" }
-        : { label: "연결 중", className: "bg-amber-100 text-amber-700" };
+        ? { label: "연결 확인 필요", className: "border-rose-300 bg-rose-100 text-rose-800" }
+        : { label: "실시간 연결 중", className: "border-amber-300 bg-amber-100 text-amber-800" };
 
-  return (
-    <span className={cn("rounded-full px-3 py-1.5 text-sm font-medium", copy.className)}>
-      {copy.label}
-    </span>
-  );
+  return <span className={cn("border px-3 py-1.5 text-sm font-medium", copy.className)}>{copy.label}</span>;
 }
 
-function getTopLevelStateLabel(value: TopLevelState) {
-  switch (value) {
-    case "before_check_in":
-      return "출근 전";
-    case "working":
-      return "근무 진행";
-    case "resting":
-      return "휴식 중";
-    case "away":
-      return "자리 비움";
-    case "checked_out":
-      return "퇴근 완료";
-  }
+function MetricTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border-2 border-[#d9c2a4] bg-white/75 px-4 py-4 text-center">
+      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#8b5e34]">{label}</p>
+      <p className="mt-2 text-xl font-semibold text-[#2a1f17]">{value}</p>
+    </div>
+  );
 }

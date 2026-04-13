@@ -30,7 +30,7 @@ export async function signInAction(
     return { ok: false, error: getAuthErrorMessage(error) };
   }
 
-  redirect("/");
+  redirect("/office");
 }
 
 export async function signUpAction(

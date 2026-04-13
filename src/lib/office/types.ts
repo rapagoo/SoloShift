@@ -2,6 +2,7 @@ import { DashboardData, OfficeActivityEvent, TopLevelState } from "@/lib/types";
 
 export type OfficeRoomId = "lobby" | "focus-room" | "lounge";
 export type OfficeNpcId = "mina" | "jiho" | "sora";
+export type OfficeDeskId = "desk-a" | "desk-b" | "desk-c" | "desk-d";
 export type OfficeRealtimeConnectionState = "connecting" | "live" | "error";
 
 export interface OfficeAvatarPosition {
@@ -14,6 +15,14 @@ export interface OfficeRoomMapRect {
   top: number;
   width: number;
   height: number;
+}
+
+export interface OfficeDeskConfig {
+  id: OfficeDeskId;
+  label: string;
+  neighborhood: string;
+  position: OfficeAvatarPosition;
+  accentClassName: string;
 }
 
 export interface OfficeRoomConfig {

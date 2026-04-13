@@ -33,6 +33,8 @@ export async function saveProfileAction(
   }
 
   revalidatePath("/");
+  revalidatePath("/office");
+  revalidatePath("/dashboard");
   revalidatePath("/history");
 
   return { ok: true, message: "프로필 설정을 저장했습니다." };

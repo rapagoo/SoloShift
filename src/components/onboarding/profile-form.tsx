@@ -33,7 +33,7 @@ export function ProfileForm({
   submitLabel = "설정 저장하고 시작하기",
   pendingLabel = "설정 저장 중...",
   helperText = DEFAULT_HELPER_TEXT,
-  successRedirectTo = "/",
+  successRedirectTo = "/office",
   onSaved,
 }: ProfileFormProps) {
   const router = useRouter();

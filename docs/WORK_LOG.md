@@ -185,6 +185,23 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Kept the previous office cards, pulse, conversation, and dashboard-linking panels intact so the new spatial layer augments the existing office slice instead of replacing it all at once.
 - No new SQL migration was required for this pass because the prototype reuses the existing private Presence channel and office event timeline.
 
+### Office-First Reframe Pass
+
+- Reframed SoloShift from a dashboard-first productivity app into an office-first shared workspace.
+- Added `/dashboard` as the detailed personal control surface.
+- Changed `/` so signed-in users now land on `/office` first.
+- Updated login and onboarding success redirects so the shared office is the first destination after entering the product.
+- Rebuilt `/office` around one small main office rather than multiple rooms.
+- Replaced room-switching and free click-movement emphasis with a four-desk layout meant for real shared use by a very small group.
+- Added desk models and deterministic desk assignment helpers.
+- Replaced the earlier floor prototype with a desk-centric pixel-style office board.
+- Rewrote the presence side panel so it now focuses on:
+  - desk occupancy
+  - online users
+  - empty seats
+- Updated the office pulse feed to show actor and desk context instead of leaning on old room labels.
+- Added tests around desk assignment and desk occupancy helpers.
+
 ### Verification
 
 - `npx tsc --noEmit`

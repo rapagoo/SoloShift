@@ -9,6 +9,8 @@ SoloShift is no longer just a dashboard-first productivity MVP. The product base
 - office-first entry flow
 - one shared 2D office
 - four desks
+- large office canvas as the primary screen
+- right sidebar for quick work actions and feed reading
 - private authenticated realtime presence
 - shared office activity timeline
 - dashboard and history as supporting views
@@ -22,6 +24,8 @@ The current build supports:
 - a dedicated dashboard at `/dashboard`
 - daily and weekly history at `/history`
 - one shared main office with four visible desks
+- a large office-first layout where the floor owns most of the screen
+- a right sidebar that now handles quick task entry and office-feed reading
 - live online presence in the office through Supabase Realtime
 - privacy-safe shared office activity summaries
 
@@ -49,11 +53,14 @@ The current build supports:
   - `Desk C`
   - `Desk D`
 - Office floor rendered as a compact 2D/pixel-style shared workspace
+- Office screen now favors one large office scene instead of multiple equal-weight cards
 - Desk occupancy derived from realtime online users
 - Empty desks remain visible so the office always reads as a small shared space
-- Seat roster and online list beside the floor map
-- Office pulse still connected to the shared office event timeline
-- Today snapshot and dashboard link kept as supporting panels instead of the main view
+- Office sidebar now includes:
+  - quick task creation
+  - lightweight task state updates
+  - chat-like office feed reading
+- Dashboard and history are still available, but no longer compete with the office for screen priority
 
 ### Realtime and backend
 

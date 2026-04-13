@@ -11,6 +11,8 @@ Last updated: 2026-04-13
 - [x] Reduce the shared office to a four-desk layout for early real-world testing.
 - [x] Keep private authenticated-only office Presence as the realtime baseline.
 - [x] Keep the shared office pulse powered by privacy-safe office activity events.
+- [x] Rebalance `/office` into a large main office canvas plus a right sidebar for quick work actions.
+- [x] Add quick task creation directly inside the office sidebar.
 
 ## External Verification Still Recommended
 
@@ -19,6 +21,7 @@ Last updated: 2026-04-13
 - [ ] Verify `/history` reflects same-day tasks and activity events correctly after a real workday pass.
 - [ ] Verify `/office` with at least two real browser sessions using the new four-desk layout.
 - [ ] Check that both users keep understandable desk assignments during a longer shared session.
+- [ ] Verify the new office sidebar flow feels natural enough that `/dashboard` can stay secondary.
 - [ ] Test with email confirmation enabled in Supabase.
 - [ ] Test with email confirmation disabled in Supabase.
 - [ ] Run E2E login and core flow tests against a real Supabase project.
@@ -29,6 +32,7 @@ Last updated: 2026-04-13
 - [ ] Decide whether `office_memberships` should be introduced now for desk ownership or saved for the first invite-only office pass.
 - [ ] Decide whether NPCs remain part of the product or should be removed from the main office experience entirely.
 - [ ] Decide whether the next pass should prioritize seat-level visual status or lightweight social reactions.
+- [ ] Decide whether the office sidebar should eventually absorb more dashboard actions or stay intentionally lightweight.
 
 ## Best Next Build Candidates
 

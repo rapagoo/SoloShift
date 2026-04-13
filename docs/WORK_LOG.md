@@ -202,6 +202,16 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Updated the office pulse feed to show actor and desk context instead of leaning on old room labels.
 - Added tests around desk assignment and desk occupancy helpers.
 
+### Office Canvas + Sidebar Pass
+
+- Restructured `/office` so the shared office floor now dominates the page visually instead of competing with many equal-weight cards.
+- Added a dedicated office sidebar that feels closer to a lightweight chat/work column than a second dashboard.
+- Moved quick task creation into that sidebar so users can stay inside the office while adding work.
+- Added lightweight task state updates in the sidebar for the first few tasks of the day.
+- Restyled the office feed into a chat-like stream inside the sidebar.
+- Expanded the office page width so the floor can breathe as the main scene.
+- Revalidated `/office` and `/dashboard` in task actions so sidebar task updates refresh the new office-first layout correctly.
+
 ### Verification
 
 - `npx tsc --noEmit`

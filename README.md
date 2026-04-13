@@ -25,6 +25,8 @@ The current baseline includes:
 - Shared office at `/office`
 - Detailed dashboard at `/dashboard`
 - History view at `/history`
+- Large office canvas as the primary visual surface
+- Right sidebar for quick tasks and office-feed reading
 - Check-in, status change, focus session, and check-out flows
 - Dashboard profile editing for nickname, timezone, and default check-in time
 - Task board for the current workday

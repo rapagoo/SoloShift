@@ -43,7 +43,7 @@ export default async function OfficePage({ searchParams }: OfficePageProps) {
   });
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-4 py-6 md:px-6 md:py-8">
+    <main className="mx-auto min-h-screen max-w-[1800px] px-4 py-6 md:px-6 md:py-8">
       <TopNav current="office" nickname={profile.nickname} />
       <OfficeShell experience={office} profile={profile} />
     </main>

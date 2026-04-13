@@ -246,5 +246,7 @@ function getErrorMessage(error: unknown) {
 
 function revalidateAll() {
   revalidatePath("/");
+  revalidatePath("/office");
+  revalidatePath("/dashboard");
   revalidatePath("/history");
 }

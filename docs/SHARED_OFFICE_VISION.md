@@ -1,6 +1,6 @@
 ﻿# SoloShift Shared Office Vision
 
-Last updated: 2026-04-10
+Last updated: 2026-04-13
 
 ## 목적
 
@@ -107,6 +107,15 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 - 가벼운 메시지
 - 짧은 상호작용
 - 단순한 아바타/아이콘 수준의 표현
+
+현재 진행 상태:
+
+- 메인 오피스 1개 기준의 첫 spatial prototype 구현 완료
+- `/office`에 2D floor board 추가
+- 로비 / 포커스 룸 / 라운지의 실제 배치 추가
+- 현재 방 안에서 클릭으로 아바타 위치 이동 가능
+- 온라인 유저를 Presence 좌표 기반 점/마커로 표시
+- 아직 room-level broadcast 메시지, 자유 채팅, 이동 애니메이션은 없음
 
 ### Phase 3D: 진짜 공유 오피스
 
@@ -280,6 +289,7 @@ SoloShift를 단순한 개인 생산성 대시보드에서, "온라인 오피스
 - 공간 안에서 일어난 이벤트 저장
 - 기존 `activity_feed`는 개인 workday 중심 로그
 - `office_activity_events`는 공간/관계 중심 로그
+- 공유 오피스 타임라인에는 개인 작업 문장 전체를 그대로 복사하지 않고, 공간 분위기용 요약 이벤트만 저장한다
 
 ## Presence / Broadcast 역할 분리
 

@@ -155,6 +155,36 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Added a domain test that verifies the office pulse prefers shared office activity over the current user's personal activity feed.
 - Applied the new office-activity migration to the connected Supabase project and verified that the table and authenticated RLS policies exist.
 
+### Office Activity Privacy Pass
+
+- Split office-event redaction into a pure helper in `src/lib/domain/office-activity.ts` so shared office copy can be tested without server-only dependencies.
+- Changed office event writes so the shared office timeline now stores summary-level descriptions rather than exact task titles, daily goals, review text, or freeform memos from personal work logs.
+- Kept only safe metadata in shared office events, such as `statusType`, `durationMinutes`, `goalCompleted`, and `lateMinutes`.
+- Added `supabase/migrations/20260410_000005_office_activity_privacy_redaction.sql` so previously stored office events are sanitized in place.
+- Applied the privacy-redaction SQL to the connected Supabase project and confirmed that existing office events now show generic shared-office copy.
+
+## 2026-04-13
+
+### Spatial Office Prototype Pass
+
+- Restored and expanded `src/lib/office/types.ts` so the office layer now has first-class room-map rectangles, avatar coordinates, NPC map positions, and a richer Presence member model.
+- Added `src/lib/office/spatial.ts` and `src/lib/office/spatial.test.ts` to keep avatar-position clamping and room-default logic testable.
+- Extended the shared office config so the single main office now has one floor layout with three mapped rooms:
+  - lobby
+  - focus room
+  - lounge
+- Added room-local default avatar positions and fixed NPC anchor positions for the first spatial pass.
+- Refactored `src/components/office/use-office-presence.ts` so the private Realtime channel stays subscribed while room, status, and avatar position updates are sent through `track()`.
+- Extended the Presence payload with room-local coordinates and normalized those coordinates into the shared member list.
+- Added `src/components/office/office-floor.tsx` as the first interactive 2D office board.
+- Wired `/office` so users can:
+  - click another room to move there
+  - click inside the current room to reposition their avatar
+  - see NPC markers in every room
+  - see other online users rendered directly on the floor map
+- Kept the previous office cards, pulse, conversation, and dashboard-linking panels intact so the new spatial layer augments the existing office slice instead of replacing it all at once.
+- No new SQL migration was required for this pass because the prototype reuses the existing private Presence channel and office event timeline.
+
 ### Verification
 
 - `npx tsc --noEmit`

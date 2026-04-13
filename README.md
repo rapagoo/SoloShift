@@ -1,7 +1,7 @@
 ﻿# SoloShift
 
 SoloShift is a web MVP for running a solo study or job-search day like a structured workday.
-It now covers the full day loop, a task/activity foundation layer, a shared-office preview, a private authenticated realtime presence layer, and a first shared office-event timeline.
+It now covers the full day loop, a task/activity foundation layer, a shared-office preview, a private authenticated realtime presence layer, a shared office-event timeline, and the first spatial office floor prototype.
 
 ## Core Loop
 
@@ -15,6 +15,7 @@ It now covers the full day loop, a task/activity foundation layer, a shared-offi
 - Enter the office preview and switch rooms
 - Open rule-based NPC conversations based on the current day state
 - See who is online in the office and which room they are currently in
+- Move your avatar around the main office floor and see other online users on the map
 
 ## Stack
 
@@ -43,6 +44,8 @@ The core MVP day flow is implemented and usable:
 - Office preview with room switching, NPC summaries, and short conversation threads
 - Private authenticated office presence on `/office` using Supabase Realtime Presence
 - Shared office activity events that power the office pulse separately from the personal dashboard feed
+- Shared office activity events are intentionally sanitized so other users do not see your exact goal text, task titles, or private review copy
+- `/office` now includes a 2D main-office floor with three mapped rooms, click-to-move avatar placement, and live user markers
 
 ## Local Setup
 
@@ -75,6 +78,7 @@ At minimum, a fresh project should apply:
 - `20260410_000002_tasks_activity_feed.sql`
 - `20260410_000003_office_private_presence.sql`
 - `20260410_000004_office_activity_events.sql`
+- `20260410_000005_office_activity_privacy_redaction.sql`
 
 Note:
 
@@ -113,6 +117,7 @@ npm run build
 - If you already created a Supabase project before the task/activity pass, apply both `20260410_000002_security_hardening.sql` and `20260410_000002_tasks_activity_feed.sql` before testing the newer dashboard sections.
 - If you already created a Supabase project before the private office-presence pass, apply the third migration before testing `/office`.
 - If you already created a Supabase project before the shared office-event pass, apply `20260410_000004_office_activity_events.sql` before expecting the office pulse to show shared event history.
+- If you already created a Supabase project before the office privacy-redaction pass, apply `20260410_000005_office_activity_privacy_redaction.sql` so old office events stop exposing exact task and goal text.
 - `/office` now uses a private Presence topic. If the live panel shows an authorization warning, check the Realtime policies from `20260410_000003_office_private_presence.sql` and confirm the user is signed in.
 - `/office` falls back to the current user's dashboard activity feed if `office_activity_events` has not been created yet, but the intended baseline is the dedicated shared office-event timeline.
 

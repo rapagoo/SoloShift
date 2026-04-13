@@ -3,6 +3,7 @@ import {
   OfficePresencePayload,
   OfficeRoomId,
 } from "@/lib/office/types";
+import { resolveOfficeAvatarPosition } from "@/lib/office/spatial";
 
 type RawPresenceState = Record<string, OfficePresencePayload[]>;
 
@@ -25,6 +26,10 @@ export function listOfficePresenceMembers(
         self: latestEntry.userId === selfUserId,
         connectionCount: entries.length,
         presenceKey,
+        position: resolveOfficeAvatarPosition(
+          { x: latestEntry.posX, y: latestEntry.posY },
+          { x: 0.5, y: 0.5 },
+        ),
       };
     })
     .filter((entry): entry is OfficePresenceMember & { presenceKey: string } => Boolean(entry))

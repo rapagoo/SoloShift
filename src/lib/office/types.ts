@@ -1,8 +1,20 @@
-import { DashboardData, OfficeActivityEvent } from "@/lib/types";
+import { DashboardData, OfficeActivityEvent, TopLevelState } from "@/lib/types";
 
 export type OfficeRoomId = "lobby" | "focus-room" | "lounge";
 export type OfficeNpcId = "mina" | "jiho" | "sora";
 export type OfficeRealtimeConnectionState = "connecting" | "live" | "error";
+
+export interface OfficeAvatarPosition {
+  x: number;
+  y: number;
+}
+
+export interface OfficeRoomMapRect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
 
 export interface OfficeRoomConfig {
   id: OfficeRoomId;
@@ -12,6 +24,8 @@ export interface OfficeRoomConfig {
   atmosphere: string;
   themeClassName: string;
   layoutLabels: string[];
+  mapRect: OfficeRoomMapRect;
+  defaultAvatarPosition: OfficeAvatarPosition;
 }
 
 export interface OfficeNpcConfig {
@@ -22,6 +36,7 @@ export interface OfficeNpcConfig {
   homeRoomId: OfficeRoomId;
   accentClassName: string;
   intro: string;
+  mapPosition: OfficeAvatarPosition;
 }
 
 export interface OfficeRoomSummary extends OfficeRoomConfig {
@@ -64,22 +79,27 @@ export interface OfficePresencePayload {
   userId: string;
   nickname: string;
   roomId: OfficeRoomId;
-  topLevelState: DashboardData["top_level_state"];
+  topLevelState: TopLevelState;
   statusLabel: string | null;
   onlineAt: string;
+  posX: number;
+  posY: number;
 }
 
 export interface OfficePresenceMember extends OfficePresencePayload {
   self: boolean;
   connectionCount: number;
+  presenceKey: string;
+  position: OfficeAvatarPosition;
 }
 
 export interface OfficeExperience {
   officeName: string;
   officeTagline: string;
-  currentRoom: OfficeRoomConfig;
+  currentRoom: OfficeRoomSummary;
   rooms: OfficeRoomSummary[];
   npcsInRoom: OfficeNpcSummary[];
+  npcDirectory: OfficeNpcSummary[];
   selectedConversation: OfficeConversation | null;
   selectedNpcId: OfficeNpcId | null;
   officePulse: OfficePulse;

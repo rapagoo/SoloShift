@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { startTransition, useMemo, useState, type ReactNode } from "react";
 
 import { EmptyState } from "@/components/empty-state";
+import { OfficeFloor } from "@/components/office/office-floor";
 import { OfficePresencePanel } from "@/components/office/office-presence-panel";
 import { useOfficePresence } from "@/components/office/use-office-presence";
 import { getStatusLabel } from "@/lib/constants";
 import { OFFICE_REALTIME_TOPIC } from "@/lib/office/config";
+import { buildDefaultRoomPositions } from "@/lib/office/spatial";
 import { OfficeExperience, OfficeNpcId, OfficeRoomId } from "@/lib/office/types";
 import { formatTimeOnly, formatTimestamp } from "@/lib/time";
 import { Profile } from "@/lib/types";
@@ -19,18 +22,26 @@ interface OfficeShellProps {
 }
 
 export function OfficeShell({ experience, profile }: OfficeShellProps) {
+  const router = useRouter();
   const { dashboard, currentRoom, officeName, officePulse, officeTagline, npcsInRoom, rooms, selectedConversation } =
     experience;
   const workday = dashboard.workday;
   const activeFocus = dashboard.active_focus_session;
   const activeStatus = dashboard.active_status;
+  const defaultRoomPositions = useMemo(() => buildDefaultRoomPositions(rooms), [rooms]);
+  const [roomPositionOverrides, setRoomPositionOverrides] = useState<
+    Partial<Record<OfficeRoomId, (typeof defaultRoomPositions)[OfficeRoomId]>>
+  >({});
   const roomOptions = rooms.map((room) => ({
     id: room.id,
     name: room.name,
     shortLabel: room.shortLabel,
   }));
+  const currentUserPosition =
+    roomPositionOverrides[currentRoom.id] ?? defaultRoomPositions[currentRoom.id];
   const { members, roomCounts, connectionState, errorDetail } = useOfficePresence({
     currentRoomId: currentRoom.id,
+    position: currentUserPosition,
     profile: { id: profile.id, nickname: profile.nickname },
     roomOptions,
     statusLabel: activeStatus ? getStatusLabel(activeStatus.status_type) : null,
@@ -72,6 +83,31 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
           </div>
         </div>
       </section>
+
+      <OfficeFloor
+        connectionState={connectionState}
+        currentRoomId={currentRoom.id}
+        members={members}
+        npcDirectory={experience.npcDirectory}
+        onMove={(position) => {
+          setRoomPositionOverrides((current) => ({
+            ...current,
+            [currentRoom.id]: position,
+          }));
+        }}
+        onRoomChange={(roomId) => {
+          if (roomId === currentRoom.id) {
+            return;
+          }
+
+          startTransition(() => {
+            router.push(buildOfficeHref(roomId));
+          });
+        }}
+        roomCounts={roomCounts}
+        rooms={rooms}
+        userPosition={currentUserPosition}
+      />
 
       <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <div className="space-y-6">

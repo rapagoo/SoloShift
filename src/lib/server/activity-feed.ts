@@ -1,5 +1,4 @@
-import { resolveOfficeRoomForActivity } from "@/lib/domain/office";
-import { OFFICE_SLUG } from "@/lib/office/config";
+import { buildOfficeActivityInsertPayload } from "@/lib/domain/office-activity";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { ActivityEventType, StatusType } from "@/lib/types";
 
@@ -57,35 +56,12 @@ export async function recordActivityEvent({
   }
 }
 
-async function recordOfficeActivityEvent({
-  workdayId,
-  userId,
-  actorNickname,
-  eventType,
-  title,
-  description,
-  meta,
-  statusType,
-}: RecordActivityEventParams) {
+async function recordOfficeActivityEvent(params: RecordActivityEventParams) {
   const admin = createSupabaseAdminClient();
-  const roomId = resolveOfficeRoomForActivity({
-    eventType,
-    statusType,
-  });
-
+  const payload = buildOfficeActivityInsertPayload(params);
   const { data, error } = await admin
     .from("office_activity_events")
-    .insert({
-      office_slug: OFFICE_SLUG,
-      user_id: userId,
-      actor_nickname: actorNickname,
-      room_id: roomId,
-      workday_id: workdayId,
-      event_type: eventType,
-      title,
-      description,
-      meta,
-    })
+    .insert(payload)
     .select("id")
     .single();
 

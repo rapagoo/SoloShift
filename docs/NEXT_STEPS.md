@@ -1,6 +1,6 @@
 ﻿# SoloShift Next Steps
 
-Last updated: 2026-04-10
+Last updated: 2026-04-13
 
 ## Completed In The MVP 100% Pass
 
@@ -45,14 +45,19 @@ Last updated: 2026-04-10
 - [x] Move `/office` Presence onto private authenticated-only Realtime channels.
 - [ ] QA `/office` in the deployed environment across before-check-in, active-focus, and checked-out states.
 - [ ] QA realtime presence with two or more real browser sessions in the deployed environment.
+- [ ] QA the new spatial office floor with two or more real browser sessions so avatar markers and room switching stay in sync.
 - [x] Write the private-channel transition plan for office presence.
 - [x] Apply `20260410_000003_office_private_presence.sql` to the connected Supabase project.
 - [x] Apply `20260410_000004_office_activity_events.sql` to the connected Supabase project.
+- [x] Apply `20260410_000005_office_activity_privacy_redaction.sql` to the connected Supabase project.
 - [ ] Decide whether the next office pass should stay config-driven or introduce persistent office tables.
 - [x] Add office-side event storage so room reactions can outgrow the personal activity feed.
 - [ ] QA `/office` after the office-activity migration with at least two real accounts so the pulse feed shows truly shared events.
+- [ ] QA `/office` after the privacy-redaction pass so shared cards only show summary-level office copy.
 - [x] Decide whether the realtime preview should stay on public channels or move to private channels with authorization policies.
 - [ ] Decide whether future character interactions stay rule-based or move to AI-assisted generation.
+- [ ] Decide whether avatar positions should stay ephemeral Presence-only state or become room-level persistent data.
+- [ ] Decide whether the next office pass should prioritize room-level broadcast interaction or deeper NPC reactions on top of the new floor map.
 - [ ] Plan the first post-MVP release scope beyond the day-flow baseline.
 - [x] Define the smallest safe presence slice for showing other online users by room.
 - [ ] Add `office_memberships` when SoloShift introduces a second office, invite-only access, or team-scoped presence visibility.

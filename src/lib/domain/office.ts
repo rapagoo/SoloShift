@@ -29,7 +29,8 @@ export function buildOfficeExperience(params: {
   requestedNpcId?: string | null;
 }): OfficeExperience {
   const currentRoomId = resolveCurrentOfficeRoomId(params.dashboard, params.requestedRoomId);
-  const currentRoom = OFFICE_ROOMS.find((room) => room.id === currentRoomId) ?? OFFICE_ROOMS[0];
+  const rooms = buildRoomSummaries(params.dashboard, currentRoomId);
+  const currentRoom = rooms.find((room) => room.id === currentRoomId) ?? rooms[0];
   const npcsInRoomConfig = OFFICE_NPCS.filter((npc) => npc.homeRoomId === currentRoom.id);
   const selectedNpcId = normalizeNpcId(params.requestedNpcId, npcsInRoomConfig);
 
@@ -37,7 +38,8 @@ export function buildOfficeExperience(params: {
     officeName: OFFICE_NAME,
     officeTagline: OFFICE_TAGLINE,
     currentRoom,
-    rooms: buildRoomSummaries(params.dashboard, currentRoomId),
+    rooms,
+    npcDirectory: OFFICE_NPCS.map((npc) => buildNpcSummary(npc, params.dashboard)),
     npcsInRoom: npcsInRoomConfig.map((npc) => buildNpcSummary(npc, params.dashboard)),
     selectedConversation: selectedNpcId
       ? buildNpcConversation({

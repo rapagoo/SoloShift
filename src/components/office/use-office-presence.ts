@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useEffectEvent, useMemo, useState } from "react";
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { countOfficePresenceByRoom, listOfficePresenceMembers } from "@/lib/office/presence";
 import {
-  countOfficePresenceByRoom,
-  listOfficePresenceMembers,
-} from "@/lib/office/presence";
-import {
+  OfficeAvatarPosition,
   OfficePresenceMember,
   OfficePresencePayload,
   OfficeRealtimeConnectionState,
@@ -18,6 +17,7 @@ import { Profile, TopLevelState } from "@/lib/types";
 
 interface UseOfficePresenceParams {
   currentRoomId: OfficeRoomId;
+  position: OfficeAvatarPosition;
   profile: Pick<Profile, "id" | "nickname">;
   roomOptions: Pick<OfficeRoomSummary, "id" | "name" | "shortLabel">[];
   statusLabel: string | null;
@@ -27,6 +27,7 @@ interface UseOfficePresenceParams {
 
 export function useOfficePresence({
   currentRoomId,
+  position,
   profile,
   roomOptions,
   statusLabel,
@@ -34,10 +35,25 @@ export function useOfficePresence({
   topic,
 }: UseOfficePresenceParams) {
   const [supabase] = useState(() => createSupabaseBrowserClient());
+  const channelRef = useRef<RealtimeChannel | null>(null);
   const [members, setMembers] = useState<OfficePresenceMember[]>([]);
   const [connectionState, setConnectionState] =
     useState<OfficeRealtimeConnectionState>("connecting");
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
+  const [presenceReady, setPresenceReady] = useState(false);
+
+  const buildPresencePayload = useEffectEvent((): OfficePresencePayload => {
+    return {
+      userId: profile.id,
+      nickname: profile.nickname,
+      roomId: currentRoomId,
+      topLevelState,
+      statusLabel,
+      onlineAt: new Date().toISOString(),
+      posX: position.x,
+      posY: position.y,
+    };
+  });
 
   const syncPresence = useEffectEvent((state: Record<string, OfficePresencePayload[]>) => {
     setMembers(listOfficePresenceMembers(state, profile.id));
@@ -45,7 +61,7 @@ export function useOfficePresence({
 
   useEffect(() => {
     let cancelled = false;
-    let channel = supabase.channel(topic, {
+    const channel = supabase.channel(topic, {
       config: {
         private: true,
         presence: {
@@ -53,6 +69,8 @@ export function useOfficePresence({
         },
       },
     });
+
+    channelRef.current = channel;
 
     const handleSync = () => {
       if (cancelled) {
@@ -75,7 +93,7 @@ export function useOfficePresence({
             setConnectionState("error");
             setErrorDetail(
               sessionError?.message ??
-                "브라우저 세션 토큰을 찾지 못했습니다. 다시 로그인한 뒤 시도해주세요.",
+                "브라우저 세션 토큰을 찾지 못했습니다. 다시 로그인한 뒤 시도해 주세요.",
             );
           }
           return;
@@ -86,8 +104,6 @@ export function useOfficePresence({
         if (cancelled) {
           return;
         }
-
-        setErrorDetail(null);
 
         channel
           .on("presence", { event: "sync" }, handleSync)
@@ -100,21 +116,16 @@ export function useOfficePresence({
 
             if (status === "SUBSCRIBED") {
               setConnectionState("live");
+              setPresenceReady(true);
               setErrorDetail(null);
-              await channel.track({
-                userId: profile.id,
-                nickname: profile.nickname,
-                roomId: currentRoomId,
-                topLevelState,
-                statusLabel,
-                onlineAt: new Date().toISOString(),
-              });
+              await channel.track(buildPresencePayload());
               handleSync();
               return;
             }
 
             if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
               setMembers([]);
+              setPresenceReady(false);
               setConnectionState("error");
               setErrorDetail(
                 error?.message ??
@@ -125,6 +136,7 @@ export function useOfficePresence({
 
             if (status === "CLOSED") {
               setMembers([]);
+              setPresenceReady(false);
               setConnectionState("connecting");
               setErrorDetail(null);
             }
@@ -132,32 +144,39 @@ export function useOfficePresence({
       } catch {
         if (!cancelled) {
           setMembers([]);
+          setPresenceReady(false);
           setConnectionState("error");
-          setErrorDetail("실시간 채널 인증 중 오류가 발생했습니다.");
+          setErrorDetail("실시간 채널 연결 중 알 수 없는 오류가 발생했습니다.");
         }
       }
     })();
 
     return () => {
       cancelled = true;
+      setPresenceReady(false);
+      channelRef.current = null;
       void supabase.removeChannel(channel);
     };
+  }, [profile.id, profile.nickname, supabase, topic]);
+
+  useEffect(() => {
+    if (!presenceReady || connectionState !== "live" || !channelRef.current) {
+      return;
+    }
+
+    void channelRef.current.track(buildPresencePayload());
   }, [
+    connectionState,
     currentRoomId,
-    profile.id,
-    profile.nickname,
+    position.x,
+    position.y,
+    presenceReady,
     statusLabel,
-    supabase,
     topLevelState,
-    topic,
   ]);
 
   const roomCounts = useMemo(
-    () =>
-      countOfficePresenceByRoom(
-        roomOptions.map((room) => room.id),
-        members,
-      ),
+    () => countOfficePresenceByRoom(roomOptions.map((room) => room.id), members),
     [members, roomOptions],
   );
 

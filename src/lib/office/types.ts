@@ -4,6 +4,16 @@ export type OfficeRoomId = "lobby" | "focus-room" | "lounge";
 export type OfficeNpcId = "mina" | "jiho" | "sora";
 export type OfficeDeskId = "desk-a" | "desk-b" | "desk-c" | "desk-d";
 export type OfficeRealtimeConnectionState = "connecting" | "live" | "error";
+export type OfficeAssetSlot =
+  | "office-background"
+  | "desk"
+  | "chair"
+  | "whiteboard"
+  | "window-strip"
+  | "plant"
+  | "locker"
+  | "coffee-bar"
+  | "avatar";
 
 export interface OfficeAvatarPosition {
   x: number;
@@ -23,6 +33,17 @@ export interface OfficeDeskConfig {
   neighborhood: string;
   position: OfficeAvatarPosition;
   accentClassName: string;
+}
+
+export interface OfficeDecorConfig {
+  id: string;
+  label: string;
+  assetSlot: OfficeAssetSlot;
+  position: OfficeAvatarPosition;
+  widthPercent: number;
+  heightPercent: number;
+  accentClassName: string;
+  zIndex?: number;
 }
 
 export interface OfficeRoomConfig {
@@ -100,6 +121,23 @@ export interface OfficePresenceMember extends OfficePresencePayload {
   connectionCount: number;
   presenceKey: string;
   position: OfficeAvatarPosition;
+}
+
+export interface OfficeChatMessage {
+  id: string;
+  userId: string;
+  nickname: string;
+  message: string;
+  createdAt: string;
+  self: boolean;
+}
+
+export interface OfficeChatBubble {
+  id: string;
+  userId: string;
+  nickname: string;
+  message: string;
+  self: boolean;
 }
 
 export interface OfficeExperience {

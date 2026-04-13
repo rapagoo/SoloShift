@@ -26,8 +26,9 @@ The current baseline includes:
 - Detailed dashboard at `/dashboard`
 - History view at `/history`
 - Large office canvas as the primary visual surface
-- Right sidebar for quick tasks and office-feed reading
-- Larger pixel-office desk pods with seat-level status badges
+- Right sidebar for quick tasks, chat, and office-feed reading
+- Asset-ready office renderer with sprite slots in `src/lib/office/assets.ts`
+- Click-to-move office movement and speech-bubble chat on `/office`
 - Check-in, status change, focus session, and check-out flows
 - Dashboard profile editing for nickname, timezone, and default check-in time
 - Task board for the current workday
@@ -105,6 +106,7 @@ npm run build
 - `docs/PLAN.md`: original cleaned MVP plan
 - `docs/SHARED_OFFICE_VISION.md`: current office-first product direction
 - `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`: current office presence security baseline
+- `docs/OFFICE_ASSET_CHECKLIST.md`: required pixel-office assets and slot naming
 
 ## Notes
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
 import { OfficeFloor } from "@/components/office/office-floor";
 import { OfficeSidebar } from "@/components/office/office-sidebar";
 import { useOfficePresence } from "@/components/office/use-office-presence";
@@ -10,7 +12,8 @@ import {
   OFFICE_REALTIME_TOPIC,
   OFFICE_TAGLINE,
 } from "@/lib/office/config";
-import { OfficeExperience } from "@/lib/office/types";
+import { moveOfficeAvatarTowards } from "@/lib/office/spatial";
+import { OfficeAvatarPosition, OfficeExperience } from "@/lib/office/types";
 import { Profile } from "@/lib/types";
 
 interface OfficeShellProps {
@@ -26,16 +29,82 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
     name: room.name,
     shortLabel: room.shortLabel,
   }));
+  const spawnPosition = OFFICE_DESKS[0].position;
+  const [position, setPosition] = useState<OfficeAvatarPosition>(spawnPosition);
+  const [targetPosition, setTargetPosition] = useState<OfficeAvatarPosition>(spawnPosition);
 
-  const { members, connectionState } = useOfficePresence({
+  const {
+    members,
+    connectionState,
+    chatMessages,
+    chatBubbles,
+    sendChatMessage,
+  } = useOfficePresence({
     currentRoomId: "lobby",
-    position: OFFICE_DESKS[0].position,
+    position,
     profile: { id: profile.id, nickname: profile.nickname },
     roomOptions,
     statusLabel,
     topLevelState: dashboard.top_level_state,
     topic: OFFICE_REALTIME_TOPIC,
   });
+
+  useEffect(() => {
+    let frameId = 0;
+
+    const animate = () => {
+      let shouldContinue = false;
+
+      setPosition((current) => {
+        const next = moveOfficeAvatarTowards(current, targetPosition, 0.01);
+        shouldContinue = next.x !== targetPosition.x || next.y !== targetPosition.y;
+        return next;
+      });
+
+      if (shouldContinue) {
+        frameId = window.requestAnimationFrame(animate);
+      }
+    };
+
+    frameId = window.requestAnimationFrame(animate);
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [targetPosition]);
+
+  const displayedMembers = useMemo(() => {
+    const nextMembers = members.map((member) =>
+      member.self
+        ? {
+            ...member,
+            position,
+            posX: position.x,
+            posY: position.y,
+          }
+        : member,
+    );
+
+    if (nextMembers.some((member) => member.self)) {
+      return nextMembers;
+    }
+
+    return [
+      {
+        userId: profile.id,
+        nickname: profile.nickname,
+        roomId: "lobby" as const,
+        topLevelState: dashboard.top_level_state,
+        statusLabel,
+        onlineAt: new Date().toISOString(),
+        posX: position.x,
+        posY: position.y,
+        self: true,
+        connectionCount: 1,
+        presenceKey: profile.id,
+        position,
+      },
+      ...nextMembers,
+    ];
+  }, [dashboard.top_level_state, members, position, profile.id, profile.nickname, statusLabel]);
 
   return (
     <div className="space-y-5">
@@ -49,17 +118,26 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[#5d4b3d]">{OFFICE_TAGLINE}</p>
           </div>
           <div className="text-sm text-[#6c5848]">
-            {profile.nickname}님이 지금 메인 오피스에 연결되어 있습니다.
+            {profile.nickname}님이 지금 메인 오피스에서 움직이며 함께 일하고 있습니다.
           </div>
         </div>
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
-        <OfficeFloor connectionState={connectionState} members={members} profileId={profile.id} />
+        <OfficeFloor
+          chatBubbles={chatBubbles}
+          connectionState={connectionState}
+          members={displayedMembers}
+          onMove={setTargetPosition}
+          profileId={profile.id}
+        />
         <OfficeSidebar
           activity={officePulse.recentActivity}
+          chatMessages={chatMessages}
+          connectionState={connectionState}
           isLocked={Boolean(dashboard.workday?.check_out_at)}
-          members={members}
+          members={displayedMembers}
+          onSendChat={sendChatMessage}
           profile={profile}
           statusLabel={statusLabel}
           tasks={dashboard.tasks}

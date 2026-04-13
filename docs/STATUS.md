@@ -10,8 +10,9 @@ SoloShift is no longer just a dashboard-first productivity MVP. The product base
 - one shared 2D office
 - four desks
 - large office canvas as the primary screen
-- right sidebar for quick work actions and feed reading
+- right sidebar for quick work actions, chat, and feed reading
 - private authenticated realtime presence
+- private realtime chat with speech bubbles
 - shared office activity timeline
 - dashboard and history as supporting views
 
@@ -25,10 +26,11 @@ The current build supports:
 - daily and weekly history at `/history`
 - one shared main office with four visible desks
 - a large office-first layout where the floor owns most of the screen
-- a right sidebar that now handles quick task entry and office-feed reading
-- larger desk pods with more grounded pixel-office furniture and decor
-- seat-level status badges directly above occupied desks
+- a right sidebar that now handles quick task entry, office chat, and office-feed reading
+- a wide office map with click-to-move movement
+- asset-ready sprite slots for background, desks, props, and avatars
 - live online presence in the office through Supabase Realtime
+- speech bubbles above avatars when users chat
 - privacy-safe shared office activity summaries
 
 ## Implemented
@@ -54,21 +56,17 @@ The current build supports:
   - `Desk B`
   - `Desk C`
   - `Desk D`
-- Office floor rendered as a compact 2D/pixel-style shared workspace
+- Office floor rendered as a wider asset-ready 2D/pixel-style shared workspace
 - Office screen now favors one large office scene instead of multiple equal-weight cards
-- Office canvas now uses a more grounded 2D office composition:
-  - larger desk pods
-  - windows
-  - board zone
-  - shelf / storage blocks
-  - coffee bar context
-- Desk occupancy derived from realtime online users
-- Empty desks remain visible so the office always reads as a small shared space
-- Seat-level status badges now surface whether someone is working, resting, away, checked out, or still before check-in
+- Office canvas now uses a fixed map layout with desks and decor anchors for future sprite replacement
+- Users move by clicking the floor, with local avatar coordinates synced through Supabase Presence
+- Empty desks remain visible so the office still reads as a small shared space
+- Avatar labels and speech bubbles now surface who is present and what they just said
 - Office sidebar now includes:
   - quick task creation
+  - lightweight office chat
   - lightweight task state updates
-  - chat-like office feed reading
+  - office activity feed reading
 - Dashboard and history are still available, but no longer compete with the office for screen priority
 
 ### Realtime and backend
@@ -80,8 +78,10 @@ The current build supports:
 - Task and activity-feed schema with dedicated migration and RLS policies
 - Dedicated `office_activity_events` storage for the main shared office
 - Private authenticated-only Presence channel at `office:soloshift-commons:presence`
+- Private broadcast chat on the same office channel
 - Realtime client calls `supabase.realtime.setAuth()` before joining the private channel
 - Shared office activity writes sanitize descriptions and metadata before insert
+- Asset path mapping lives in `src/lib/office/assets.ts` so real sprites can replace placeholders without changing the office logic
 
 ### Workday logic
 
@@ -151,12 +151,12 @@ The main remaining work is now:
 
 - run a full manual smoke test from signup to checkout in the deployed environment
 - verify `/office` with two or more real sessions using the new four-desk layout
-- verify that desk occupancy feels stable enough for a two-person household use case
-- verify that the larger desk composition feels natural at real browser sizes
-- verify that seat-level status badges stay legible when two users are online together
+- verify that click-to-move feels natural enough during longer shared sessions
+- verify that chat bubbles stay readable when two users talk at the same time
+- verify that the asset-ready layout still feels balanced after replacing placeholders with real sprites
 - decide whether desk assignment should remain deterministic-in-memory or move to persistent stored assignments
 - decide whether NPCs still matter in the new office-first product or should be reduced further
-- extend seat-level visual signals:
+- extend avatar / floor signals:
   - focus timer
   - stronger checked-out treatment
   - lightweight motion or pulse when a status changes
@@ -179,4 +179,5 @@ After each meaningful development pass, update these files together:
 - `docs/NEXT_STEPS.md`: current QA and product backlog
 - `docs/SHARED_OFFICE_VISION.md`: current office-first product direction
 - `docs/OFFICE_PRIVATE_CHANNEL_PLAN.md`: office realtime security baseline
+- `docs/OFFICE_ASSET_CHECKLIST.md`: office asset preparation guide
 - `docs/WORK_LOG.md`: dated implementation history

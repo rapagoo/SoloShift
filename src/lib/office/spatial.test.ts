@@ -4,6 +4,7 @@ import {
   buildDefaultRoomPositions,
   clampOfficeAvatarPosition,
   getPreferredOfficeDesk,
+  moveOfficeAvatarTowards,
   projectOfficeAvatarPosition,
   resolveOfficeAvatarPosition,
 } from "@/lib/office/spatial";
@@ -32,6 +33,15 @@ describe("office spatial helpers", () => {
     expect(resolveOfficeAvatarPosition(undefined, { x: 0.48, y: 0.52 })).toEqual({
       x: 0.48,
       y: 0.52,
+    });
+  });
+
+  it("moves an avatar smoothly toward the target", () => {
+    expect(
+      moveOfficeAvatarTowards({ x: 0.2, y: 0.2 }, { x: 0.3, y: 0.2 }, 0.05),
+    ).toEqual({
+      x: 0.25,
+      y: 0.2,
     });
   });
 

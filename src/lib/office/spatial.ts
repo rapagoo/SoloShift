@@ -23,6 +23,25 @@ export function clampOfficeAvatarPosition(
   };
 }
 
+export function moveOfficeAvatarTowards(
+  current: OfficeAvatarPosition,
+  target: OfficeAvatarPosition,
+  step = 0.012,
+) {
+  const deltaX = target.x - current.x;
+  const deltaY = target.y - current.y;
+  const distance = Math.hypot(deltaX, deltaY);
+
+  if (distance <= step || distance === 0) {
+    return clampOfficeAvatarPosition(target);
+  }
+
+  return clampOfficeAvatarPosition({
+    x: current.x + (deltaX / distance) * step,
+    y: current.y + (deltaY / distance) * step,
+  });
+}
+
 export function resolveOfficeAvatarPosition(
   position: Partial<OfficeAvatarPosition> | null | undefined,
   fallback: OfficeAvatarPosition,

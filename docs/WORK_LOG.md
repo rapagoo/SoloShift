@@ -225,6 +225,23 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Added clearer “my desk” treatment and better occupied / empty desk labeling.
 - Cleaned the main office shell, sidebar, office config, and presence error strings so visible Korean copy is readable again.
 
+### Asset-Ready Movement + Chat Pass
+
+- Added `docs/OFFICE_ASSET_CHECKLIST.md` so the office art pipeline now has a concrete list of required assets, slot names, and recommended file sizes.
+- Added `src/lib/office/assets.ts` as the sprite-slot mapping file for future background, desk, prop, and avatar images.
+- Expanded office-domain types with:
+  - asset slots
+  - decor items
+  - office chat messages
+  - speech-bubble data
+- Added fixed decor anchors so the office map can keep the same layout when placeholder graphics are replaced by real art.
+- Reworked the office floor from a mostly seat-centric board into a wider click-to-move office map.
+- Added local avatar movement interpolation so the user moves smoothly toward the clicked target instead of snapping instantly.
+- Shifted avatar rendering to realtime presence coordinates, making the floor ready for broader office movement rather than just desk occupancy.
+- Added private Realtime broadcast chat on the office channel and rendered recent chat as temporary speech bubbles above avatars.
+- Added an office chat card to the right sidebar so quick coworking-style messages can be sent without leaving the main office.
+- Added a movement helper test so avatar interpolation can be changed later without losing the current behavior.
+
 ### Verification
 
 - `npx tsc --noEmit`

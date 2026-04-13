@@ -1,4 +1,9 @@
-import { OfficeDeskConfig, OfficeNpcConfig, OfficeRoomConfig } from "@/lib/office/types";
+import {
+  OfficeDecorConfig,
+  OfficeDeskConfig,
+  OfficeNpcConfig,
+  OfficeRoomConfig,
+} from "@/lib/office/types";
 
 export const OFFICE_SLUG = "soloshift-commons";
 export const OFFICE_NAME = "SoloShift Commons";
@@ -34,6 +39,55 @@ export const OFFICE_DESKS: OfficeDeskConfig[] = [
     neighborhood: "커피 바 옆",
     position: { x: 0.72, y: 0.72 },
     accentClassName: "bg-rose-200 text-rose-900",
+  },
+];
+
+export const OFFICE_DECOR_ITEMS: OfficeDecorConfig[] = [
+  {
+    id: "whiteboard-zone",
+    label: "화이트보드",
+    assetSlot: "whiteboard",
+    position: { x: 0.14, y: 0.18 },
+    widthPercent: 0.16,
+    heightPercent: 0.14,
+    accentClassName: "bg-[#fff5e8]",
+  },
+  {
+    id: "window-strip",
+    label: "창문",
+    assetSlot: "window-strip",
+    position: { x: 0.5, y: 0.12 },
+    widthPercent: 0.56,
+    heightPercent: 0.16,
+    accentClassName: "bg-[#a7d8ff]",
+    zIndex: 1,
+  },
+  {
+    id: "plant-cluster",
+    label: "식물",
+    assetSlot: "plant",
+    position: { x: 0.87, y: 0.2 },
+    widthPercent: 0.1,
+    heightPercent: 0.12,
+    accentClassName: "bg-[#cfe6bf]",
+  },
+  {
+    id: "coffee-bar",
+    label: "커피 바",
+    assetSlot: "coffee-bar",
+    position: { x: 0.16, y: 0.85 },
+    widthPercent: 0.14,
+    heightPercent: 0.11,
+    accentClassName: "bg-[#ffe8c9]",
+  },
+  {
+    id: "locker-wall",
+    label: "수납장",
+    assetSlot: "locker",
+    position: { x: 0.86, y: 0.84 },
+    widthPercent: 0.14,
+    heightPercent: 0.12,
+    accentClassName: "bg-[#f6d5dd]",
   },
 ];
 

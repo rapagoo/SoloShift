@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, useTransition } from "react";
 
 import { createTaskAction, updateTaskStatusAction } from "@/app/actions/tasks";
 import { FormPendingNotice } from "@/components/ui/form-pending-notice";
@@ -8,7 +8,11 @@ import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getTaskStatusLabel } from "@/lib/constants";
-import { OfficePresenceMember } from "@/lib/office/types";
+import {
+  OfficeChatMessage,
+  OfficePresenceMember,
+  OfficeRealtimeConnectionState,
+} from "@/lib/office/types";
 import { formatTimestamp } from "@/lib/time";
 import { ActionState, OfficeActivityEvent, Profile, Task } from "@/lib/types";
 
@@ -16,7 +20,10 @@ const initialState: ActionState = { ok: false };
 
 interface OfficeSidebarProps {
   activity: OfficeActivityEvent[];
+  chatMessages: OfficeChatMessage[];
+  connectionState: OfficeRealtimeConnectionState;
   members: OfficePresenceMember[];
+  onSendChat: (message: string) => Promise<void>;
   profile: Profile;
   tasks: Task[];
   statusLabel: string | null;
@@ -26,7 +33,10 @@ interface OfficeSidebarProps {
 
 export function OfficeSidebar({
   activity,
+  chatMessages,
+  connectionState,
   members,
+  onSendChat,
   profile,
   tasks,
   statusLabel,
@@ -35,6 +45,29 @@ export function OfficeSidebar({
 }: OfficeSidebarProps) {
   const [taskCreateState, taskCreateAction] = useActionState(createTaskAction, initialState);
   const [taskStatusState, taskStatusAction] = useActionState(updateTaskStatusAction, initialState);
+  const [chatDraft, setChatDraft] = useState("");
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [isSendingChat, startChatTransition] = useTransition();
+
+  const submitChat = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const trimmed = chatDraft.trim();
+    if (!trimmed) {
+      setChatError("메시지를 입력해주세요.");
+      return;
+    }
+
+    setChatError(null);
+    startChatTransition(async () => {
+      try {
+        await onSendChat(trimmed);
+        setChatDraft("");
+      } catch {
+        setChatError("채팅을 보내는 중 문제가 생겼습니다.");
+      }
+    });
+  };
 
   return (
     <aside className="space-y-4 xl:sticky xl:top-6">
@@ -59,6 +92,55 @@ export function OfficeSidebar({
             <FormSubmitButton idleLabel="작업 추가" pendingLabel="작업 추가 중..." size="sm" />
           </form>
         )}
+      </SidebarCard>
+
+      <SidebarCard eyebrow="Office Chat" title="옆자리처럼 짧게 말하기">
+        <form className="space-y-3" onSubmit={submitChat}>
+          <Textarea
+            onChange={(event) => setChatDraft(event.target.value)}
+            placeholder="예: 25분 집중 들어갈게요"
+            rows={2}
+            value={chatDraft}
+          />
+          {chatError ? <p className="text-sm text-rose-700">{chatError}</p> : null}
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs text-[#7a6656]">
+              {connectionState === "live" ? "실시간 채팅 연결됨" : "연결이 불안정하면 채팅이 늦을 수 있습니다."}
+            </span>
+            <button
+              className="rounded-xl border-2 border-[#5a4635] bg-[#5a4635] px-3 py-2 text-sm font-semibold text-[#fff7ef] transition hover:bg-[#473628] disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSendingChat || connectionState !== "live"}
+              type="submit"
+            >
+              {isSendingChat ? "전송 중..." : "보내기"}
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-4 space-y-3">
+          {chatMessages.length === 0 ? (
+            <p className="text-sm leading-6 text-[#7a6656]">아직 짧은 오피스 채팅이 없습니다.</p>
+          ) : (
+            chatMessages.slice(0, 8).map((message) => (
+              <div
+                className={`rounded-[1.2rem] border p-3 ${
+                  message.self
+                    ? "border-[#f3c98e] bg-[#fff1db]"
+                    : "border-[#dcc8b1] bg-white/80"
+                }`}
+                key={message.id}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-medium text-[#2a1f17]">{message.nickname}</p>
+                  <span className="text-[11px] text-[#7a6656]">
+                    {formatTimestamp(message.createdAt, profile.timezone)}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-[#4f3d31]">{message.message}</p>
+              </div>
+            ))
+          )}
+        </div>
       </SidebarCard>
 
       <SidebarCard eyebrow="Today Tasks" title="오늘 작업 보드">
@@ -100,7 +182,7 @@ export function OfficeSidebar({
         {taskStatusState.error ? <p className="mt-3 text-sm text-rose-700">{taskStatusState.error}</p> : null}
       </SidebarCard>
 
-      <SidebarCard eyebrow="Office Feed" title="채팅처럼 읽는 오피스 반응">
+      <SidebarCard eyebrow="Office Feed" title="오피스 흐름 피드">
         {activity.length === 0 ? (
           <p className="text-sm leading-6 text-[#7a6656]">아직 오피스 피드가 조용합니다.</p>
         ) : (

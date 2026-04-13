@@ -4,21 +4,17 @@ Last updated: 2026-04-13
 
 ## Product Direction
 
-SoloShift is no longer primarily a personal dashboard with an office-like extra view.
+SoloShift is no longer mainly a personal dashboard with an office-like extra page.
 
-The product direction is now:
+The direction is now:
 
-**a small shared virtual office where being present beside someone helps you keep working**
+**a small shared virtual office where seeing someone else present makes it easier to keep going**
 
-The goal is not to simulate a giant MMO office. The goal is to create a believable, compact, daily-use online office where a very small group can feel:
-
-- we are in the same place
-- we can see whether the other person is working
-- our desks and presence create soft accountability
+The goal is not a giant multiplayer office. The goal is a believable, compact, daily-use office for a very small group.
 
 ## Current Baseline
 
-The current office-first product baseline is:
+The current baseline is:
 
 - `/office` as the main entry screen
 - `/dashboard` as a supporting detailed control page
@@ -26,8 +22,10 @@ The current office-first product baseline is:
 - one main shared office
 - four desks only
 - private authenticated realtime presence
+- private realtime office chat
 - privacy-safe shared office feed
 - large office canvas with a right sidebar
+- click-to-move movement inside the shared office
 
 ## Why One Small Office
 
@@ -37,7 +35,7 @@ Reasons:
 
 - a two-person household test should not feel empty
 - four desks are enough to feel shared without making the scene look abandoned
-- “my desk” becomes easier to understand than constant room switching
+- “my desk” is easier to understand than room switching
 - the office reads more like a place and less like a dashboard skin
 
 ## Spatial Principles
@@ -45,40 +43,41 @@ Reasons:
 The office should feel more like:
 
 - a compact pixel coworking room
-- clear desk ownership or desk expectation
-- visible status above each desk
-- a central walkway and a few environmental props
+- visible desks and props
+- a central walkway and environmental context
+- avatars moving through one shared space
+- brief visible reactions such as speech bubbles
 
 The office should feel less like:
 
 - many empty rooms
-- free movement with no purpose
-- a game map that happens to have work UI on top
+- movement without meaning
+- a productivity dashboard with decorative background art
 
 ## Desk-Centered UX
 
-The desk is the key unit of the experience.
+The desk is still the anchor of the experience, even as movement becomes more important.
 
-We want each desk to communicate:
+We want the office to communicate:
 
-- who is there
+- who is present
+- where they are
 - whether they are working, resting, away, or checked out
-- whether that desk is empty
-- whether it is my current seat
+- where the natural home desks are
 
-The “why” of the office is not movement by itself. The value is that seeing another person at their desk changes how your own work feels.
+The point of movement is not to “play a game.” The point is that a real shared map makes coworking feel more alive than static cards.
 
 ## Main Screen Strategy
 
-`/office` should keep behaving like the primary product surface.
+`/office` remains the dominant screen.
 
 That means:
 
-- the office canvas gets most of the screen
-- quick work actions live in the right sidebar
-- detailed controls still exist, but they do not dominate the product
+- the office canvas owns most of the page
+- quick work actions and chat live in the right sidebar
+- detailed work controls still exist, but they do not dominate the product
 
-The intended hierarchy is:
+Hierarchy:
 
 1. shared office first
 2. personal controls second
@@ -86,32 +85,34 @@ The intended hierarchy is:
 
 ## Visual Direction
 
-The main office should move toward:
+The office should move toward:
 
 - a 2D pixel office look
-- larger desks with more believable furniture silhouettes
-- windows, boards, shelves, and a small coffee area for context
-- strong seat-level status badges
+- a larger floor with fixed desks and furniture
+- clear sprite slots for real art replacement
+- visible avatar states
+- lightweight speech bubbles for social presence
 
-This aligns with the product thesis behind virtual-office tools such as Gather and WorkAdventure, where a visible shared map, clear desks, and immediate teammate presence help remote work feel more like being in the office.
+The art should support the feeling of a quiet shared coworking room, not a noisy game lobby.
 
 ## Near-Term Priorities
 
-### Phase A: Seat-Level Clarity
+### Phase A: Asset-Ready Spatial Office
 
 Goals:
 
-- larger and more believable desks
-- seat status above each occupied desk
-- stronger “my desk” affordance
-- empty seats that still look intentional
+- fixed map layout
+- click-to-move movement
+- replaceable sprite slots for desk, background, props, and avatars
+- stable visual anchors for later art passes
 
-### Phase B: Lightweight Social Signals
+### Phase B: Lightweight Social Presence
 
 Goals:
 
-- quick ambient reactions
-- low-friction acknowledgements
+- quick office chat
+- speech bubbles above avatars
+- low-friction ambient coworking feeling
 - no heavy chat-first UX
 
 ### Phase C: Persistent Desk Ownership
@@ -125,17 +126,17 @@ Goals:
 
 Goals:
 
-- move from simple desk markers toward small character presence
-- keep readability high and avoid visual clutter
+- direction-aware sprites
+- walking frames
+- better silhouette and personality without losing readability
 
 ## Data Direction
 
 The current baseline can still run on:
 
 - private Presence
+- private Broadcast chat
 - shared office activity events
-
-Additional models should only be introduced when they become necessary.
 
 Likely future additions:
 
@@ -155,6 +156,7 @@ The current implementation is intentionally narrow:
 - four desks
 - office-first entry
 - private realtime presence
+- private realtime chat
 - privacy-safe office feed
 
-That narrowness is a feature, not a limitation. It gives the product a realistic way to test whether a shared office truly improves focus and consistency in daily use.
+That narrowness is a feature. It gives the product a realistic path to test whether a small shared office really changes how consistently people work.

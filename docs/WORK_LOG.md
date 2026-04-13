@@ -212,6 +212,19 @@ For each meaningful development pass, add a dated entry here and sync the summar
 - Expanded the office page width so the floor can breathe as the main scene.
 - Revalidated `/office` and `/dashboard` in task actions so sidebar task updates refresh the new office-first layout correctly.
 
+### Desk Realism + Seat Status Pass
+
+- Reworked the shared office floor to feel closer to a believable compact pixel office instead of a rough placeholder sketch.
+- Enlarged the desk pods so each seat reads like a real workstation rather than a tiny tile.
+- Added more environmental context to the floor:
+  - windows
+  - board area
+  - coffee bar
+  - storage / shelf blocks
+- Added seat-level status badges above occupied desks so users can read work state directly from the floor.
+- Added clearer “my desk” treatment and better occupied / empty desk labeling.
+- Cleaned the main office shell, sidebar, office config, and presence error strings so visible Korean copy is readable again.
+
 ### Verification
 
 - `npx tsc --noEmit`

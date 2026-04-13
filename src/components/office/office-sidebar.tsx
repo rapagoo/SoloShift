@@ -8,9 +8,9 @@ import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getTaskStatusLabel } from "@/lib/constants";
-import { ActionState, OfficeActivityEvent, Profile, Task } from "@/lib/types";
-import { formatTimestamp } from "@/lib/time";
 import { OfficePresenceMember } from "@/lib/office/types";
+import { formatTimestamp } from "@/lib/time";
+import { ActionState, OfficeActivityEvent, Profile, Task } from "@/lib/types";
 
 const initialState: ActionState = { ok: false };
 
@@ -38,21 +38,21 @@ export function OfficeSidebar({
 
   return (
     <aside className="space-y-4 xl:sticky xl:top-6">
-      <SidebarCard eyebrow="Desk Panel" title="지금 자리에서 보이는 오늘 업무">
+      <SidebarCard eyebrow="Desk Panel" title="내 자리 패널">
         <div className="space-y-3 text-sm leading-6 text-[#5d4b3d]">
           <SidebarRow label="현재 상태" value={statusLabel ?? "출근 전"} />
-          <SidebarRow label="오늘 목표" value={workdayGoal ?? "아직 정해지지 않음"} />
+          <SidebarRow label="오늘 목표" value={workdayGoal ?? "아직 정해지지 않았음"} />
           <SidebarRow label="온라인" value={`${members.length}명`} />
         </div>
       </SidebarCard>
 
-      <SidebarCard eyebrow="Quick Task" title="사이드바에서 바로 업무 추가">
+      <SidebarCard eyebrow="Quick Task" title="오피스에서 바로 작업 추가">
         {isLocked ? (
           <p className="text-sm leading-6 text-[#7a6656]">퇴근 후에는 새 작업을 추가할 수 없습니다.</p>
         ) : (
           <form action={taskCreateAction} className="space-y-3">
-            <Input name="title" placeholder="예: 알고리즘 1문제 풀기" required />
-            <Textarea name="detail" placeholder="짧게 메모를 남겨도 됩니다." rows={3} />
+            <Input name="title" placeholder="예: 알고리즘 1문제 정리" required />
+            <Textarea name="detail" placeholder="짧은 메모가 필요하면 적어두세요." rows={3} />
             {taskCreateState.error ? <p className="text-sm text-rose-700">{taskCreateState.error}</p> : null}
             {taskCreateState.message ? <p className="text-sm text-emerald-700">{taskCreateState.message}</p> : null}
             <FormPendingNotice message="작업을 오피스 사이드바에서 추가하는 중입니다." />
@@ -63,7 +63,9 @@ export function OfficeSidebar({
 
       <SidebarCard eyebrow="Today Tasks" title="오늘 작업 보드">
         {tasks.length === 0 ? (
-          <p className="text-sm leading-6 text-[#7a6656]">오늘 작업이 아직 없습니다. 사이드바에서 바로 추가해보세요.</p>
+          <p className="text-sm leading-6 text-[#7a6656]">
+            오늘 작업이 아직 없습니다. 사이드바에서 바로 추가해보세요.
+          </p>
         ) : (
           <ul className="space-y-3">
             {tasks.slice(0, 5).map((task) => (

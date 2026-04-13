@@ -27,6 +27,7 @@ The current baseline includes:
 - History view at `/history`
 - Large office canvas as the primary visual surface
 - Right sidebar for quick tasks and office-feed reading
+- Larger pixel-office desk pods with seat-level status badges
 - Check-in, status change, focus session, and check-out flows
 - Dashboard profile editing for nickname, timezone, and default check-in time
 - Task board for the current workday

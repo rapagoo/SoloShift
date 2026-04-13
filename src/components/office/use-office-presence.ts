@@ -3,7 +3,6 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { countOfficePresenceByRoom, listOfficePresenceMembers } from "@/lib/office/presence";
 import {
   OfficeAvatarPosition,
@@ -13,6 +12,7 @@ import {
   OfficeRoomId,
   OfficeRoomSummary,
 } from "@/lib/office/types";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Profile, TopLevelState } from "@/lib/types";
 
 interface UseOfficePresenceParams {
@@ -93,7 +93,7 @@ export function useOfficePresence({
             setConnectionState("error");
             setErrorDetail(
               sessionError?.message ??
-                "브라우저 세션 토큰을 찾지 못했습니다. 다시 로그인한 뒤 시도해 주세요.",
+                "브라우저 세션 토큰을 찾지 못했습니다. 다시 로그인한 뒤에 오피스를 열어주세요.",
             );
           }
           return;
@@ -146,7 +146,7 @@ export function useOfficePresence({
           setMembers([]);
           setPresenceReady(false);
           setConnectionState("error");
-          setErrorDetail("실시간 채널 연결 중 알 수 없는 오류가 발생했습니다.");
+          setErrorDetail("실시간 채널 연결 중 예상하지 못한 오류가 발생했습니다.");
         }
       }
     })();

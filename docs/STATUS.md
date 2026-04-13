@@ -26,6 +26,8 @@ The current build supports:
 - one shared main office with four visible desks
 - a large office-first layout where the floor owns most of the screen
 - a right sidebar that now handles quick task entry and office-feed reading
+- larger desk pods with more grounded pixel-office furniture and decor
+- seat-level status badges directly above occupied desks
 - live online presence in the office through Supabase Realtime
 - privacy-safe shared office activity summaries
 
@@ -54,8 +56,15 @@ The current build supports:
   - `Desk D`
 - Office floor rendered as a compact 2D/pixel-style shared workspace
 - Office screen now favors one large office scene instead of multiple equal-weight cards
+- Office canvas now uses a more grounded 2D office composition:
+  - larger desk pods
+  - windows
+  - board zone
+  - shelf / storage blocks
+  - coffee bar context
 - Desk occupancy derived from realtime online users
 - Empty desks remain visible so the office always reads as a small shared space
+- Seat-level status badges now surface whether someone is working, resting, away, checked out, or still before check-in
 - Office sidebar now includes:
   - quick task creation
   - lightweight task state updates
@@ -143,12 +152,14 @@ The main remaining work is now:
 - run a full manual smoke test from signup to checkout in the deployed environment
 - verify `/office` with two or more real sessions using the new four-desk layout
 - verify that desk occupancy feels stable enough for a two-person household use case
+- verify that the larger desk composition feels natural at real browser sizes
+- verify that seat-level status badges stay legible when two users are online together
 - decide whether desk assignment should remain deterministic-in-memory or move to persistent stored assignments
 - decide whether NPCs still matter in the new office-first product or should be reduced further
-- add seat-level visual signals:
+- extend seat-level visual signals:
   - focus timer
-  - away indicator
-  - checked-out indicator
+  - stronger checked-out treatment
+  - lightweight motion or pulse when a status changes
 - add lightweight social reactions or ambient signals without turning the product into chat-first UX
 - test both email-confirmation-on and email-confirmation-off auth flows
 - run real-account E2E verification against the connected Supabase project

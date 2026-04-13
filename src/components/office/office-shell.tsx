@@ -2,11 +2,16 @@
 
 import { OfficeFloor } from "@/components/office/office-floor";
 import { OfficeSidebar } from "@/components/office/office-sidebar";
+import { useOfficePresence } from "@/components/office/use-office-presence";
 import { getStatusLabel } from "@/lib/constants";
-import { OFFICE_NAME, OFFICE_REALTIME_TOPIC, OFFICE_TAGLINE } from "@/lib/office/config";
+import {
+  OFFICE_DESKS,
+  OFFICE_NAME,
+  OFFICE_REALTIME_TOPIC,
+  OFFICE_TAGLINE,
+} from "@/lib/office/config";
 import { OfficeExperience } from "@/lib/office/types";
 import { Profile } from "@/lib/types";
-import { useOfficePresence } from "@/components/office/use-office-presence";
 
 interface OfficeShellProps {
   experience: OfficeExperience;
@@ -24,7 +29,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
 
   const { members, connectionState } = useOfficePresence({
     currentRoomId: "lobby",
-    position: { x: 0.24, y: 0.34 },
+    position: OFFICE_DESKS[0].position,
     profile: { id: profile.id, nickname: profile.nickname },
     roomOptions,
     statusLabel,
@@ -44,7 +49,7 @@ export function OfficeShell({ experience, profile }: OfficeShellProps) {
             <p className="mt-2 max-w-3xl text-sm leading-7 text-[#5d4b3d]">{OFFICE_TAGLINE}</p>
           </div>
           <div className="text-sm text-[#6c5848]">
-            {profile.nickname}님이 지금 오피스에 들어와 있습니다.
+            {profile.nickname}님이 지금 메인 오피스에 연결되어 있습니다.
           </div>
         </div>
       </section>
